@@ -1,58 +1,130 @@
-Alumni Tracking System
+# Alumni Tracking System
 
-Bu proje, Yönetim Bilişim Sistemleri (YBS) bölümü Web Programlama dersi kapsamında geliştirilmiş bir Mezun Takip Sistemi'dir. Uygulama, mezunların iletişim bilgilerini ve kariyer durumlarını merkezi bir veritabanında güvenli bir şekilde tutmayı ve yönetmeyi amaçlamaktadır.
+**Alumni Tracking System** is an **Alumni Tracking System** developed as part of the **Web Programming** course in the **Management Information Systems (MIS)** department.
 
-🚀 Geliştirici
+The main purpose of the project is to **securely store and manage alumni contact information and career status in a centralized database**.
 
-Beyza Anaçoğlu
+## Developer
 
-🛠 Kullanılan Teknolojiler
+**Beyza Anaçoğlu**
 
-Backend: PHP, Laravel
+## Project
 
-Veritabanı: MySQL
+**GitHub Repository:**
+https://github.com/beyzaanacoglu/Alumni.git
 
-Frontend: Laravel Blade Templates, HTML, CSS
+## Technologies
 
-⚙️ Kurulum Adımları (Local Development)
+| Layer    | Technology                         |
+| -------- | ---------------------------------- |
+| Backend  | PHP, Laravel                       |
+| Database | MySQL                              |
+| Frontend | Laravel Blade Templates, HTML, CSS |
 
-Projeyi yerel ortamınızda çalıştırmak için aşağıdaki adımları sırasıyla uygulayın:
+## Installation
 
-Repoyu Klonlayın:
+Follow the steps below in order to run the project in a local development environment.
+
+### 1. Clone the Repository
+
+Clone the repository and navigate to the project directory:
+
+```bash
 git clone https://github.com/beyzaanacoglu/Alumni.git
 cd Alumni
+```
 
-Gerekli Bağımlılıkları Yükleyin:
+### 2. Install Dependencies
+
+Install the PHP dependencies using Composer:
+
+```bash
 composer install
+```
+
+Install the frontend dependencies:
+
+```bash
 npm install
+```
+
+Build the frontend assets:
+
+```bash
 npm run build
+```
 
-Çevre (Environment) Değişkenlerini Ayarlayın:
+### 3. Create the `.env` File
+
+Create the `.env` file from the provided `.env.example` file:
+
+```bash
 cp .env.example .env
+```
 
-Veritabanı Bağlantısını Yapılandırın:
-Bilgisayarınızda (XAMPP, MAMP, Laragon vb. üzerinden) "alumni" adında boş bir MySQL veritabanı oluşturun. Ardından projedeki .env dosyasını açarak veritabanı ayarlarını şu şekilde güncelleyin:
+### 4. Configure the MySQL Database Connection
 
+Create a MySQL database named `alumni`.
+
+Then, configure the database settings in the `.env` file as follows:
+
+```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=alumni
 DB_USERNAME=root
 DB_PASSWORD=
+```
 
-Application Key Oluşturun:
+Enter your local MySQL `root` user's password in the `DB_PASSWORD` field. If no password is configured for the `root` user, leave the field empty.
+
+### 5. Generate the Application Key
+
+Generate the Laravel application key:
+
+```bash
 php artisan key:generate
+```
 
-Veritabanı Tablolarını Oluşturun (Migrations):
+### 6. Run Database Migrations
+
+Run the Laravel migrations to create the required database tables:
+
+```bash
 php artisan migrate
+```
 
-Projeyi Çalıştırın:
+### 7. Start the Development Server
+
+Start the Laravel development server:
+
+```bash
 php artisan serve
+```
 
-Uygulama artık http://localhost:8000 adresinde yayındadır.
+The application will be available at:
 
-🗄️ Temel Veritabanı Tabloları
+```text
+http://localhost:8000
+```
 
-users: Sisteme giriş yapan yetkili kullanıcıları ve rolleri tutar.
+## Database Structure
 
-alumni: Mezunların kişisel detaylarını, iletişim bilgilerini ve mesleki durumlarını içerir.
+The project uses **MySQL** to store and manage information about system users and alumni.
+
+### `users`
+
+Stores information about **authorized users who can log into the system**, including their roles.
+
+### `alumni`
+
+Stores **alumni personal details, contact information, and professional status**.
+
+## Project Purpose
+
+The Alumni Tracking System is designed to manage alumni information through a centralized system. It enables the organized storage and management of alumni contact and career information by authorized users.
+
+## License
+
+This project was developed for **educational purposes** as part of the **Management Information Systems (MIS) Web Programming course**.

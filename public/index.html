@@ -385,6 +385,7 @@
     <header>
       <a href="/" class="logo">🎓 Alumni Portal</a>
       <div class="nav-links">
+        <a href="/docs" class="nav-link" style="color: var(--accent);">📖 Swagger UI</a>
         <a href="/about" class="nav-link">Hakkında (About)</a>
         <span class="badge">v1.0 Live</span>
       </div>
@@ -471,6 +472,21 @@
           <div class="controls">
             <button class="btn" onclick="testRoute('/api/health', 'res-health')">Sağlık Kontrolü Yap</button>
             <div class="result-box" id="res-health">Sonuç bekleniyor...</div>
+          </div>
+        </div>
+
+        <!-- 5. Kullanıcıları Listele (Get All Users) -->
+        <div class="card">
+          <div class="card-top">
+            <div class="card-header">
+              <span class="card-title">Kullanıcı Listesi</span>
+              <span class="method">GET /api/users</span>
+            </div>
+            <p class="card-desc">Kayıtlı tüm kullanıcıları JSON listesi olarak getirir.</p>
+          </div>
+          <div class="controls">
+            <button class="btn" onclick="testRoute('/api/users', 'res-users')">Kullanıcıları Getir</button>
+            <div class="result-box" id="res-users">Sonuç bekleniyor...</div>
           </div>
         </div>
       </div>

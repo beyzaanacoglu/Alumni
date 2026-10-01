@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "name": "Beyza Patched Name",
+    "email": "beyza.updated@example.com",
+    "passwordHash": "c669cbf60788269aaa2298484fba1f20:3e6b274bbb092748992e31668e2efb2ceccb4dc56b3bbf31696fede9200265fc85fd76da661c5d69cadcdb9a54c8bb10641a825cdbb7cf441e9a5c11e486defd",
+    "createdAt": "2026-10-01T21:11:23.178Z",
+    "updatedAt": "2026-10-01T21:31:11.370Z"
+  }
+]

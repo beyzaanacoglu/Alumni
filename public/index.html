@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -456,6 +456,21 @@
             </div>
             <button class="btn" onclick="testMath()">Hesapla</button>
             <div class="result-box" id="res-math">Sonuç bekleniyor...</div>
+          </div>
+        </div>
+
+        <!-- 4. API Sağlık Kontrolü (Health Check) -->
+        <div class="card">
+          <div class="card-top">
+            <div class="card-header">
+              <span class="card-title">API Sağlık Kontrolü</span>
+              <span class="method">GET /api/health</span>
+            </div>
+            <p class="card-desc">API'nin çalıştığını belirten JSON sağlık durumunu döndürür.</p>
+          </div>
+          <div class="controls">
+            <button class="btn" onclick="testRoute('/api/health', 'res-health')">Sağlık Kontrolü Yap</button>
+            <div class="result-box" id="res-health">Sonuç bekleniyor...</div>
           </div>
         </div>
       </div>

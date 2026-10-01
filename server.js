@@ -1,4 +1,4 @@
-﻿const http = require('http');
+const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
@@ -34,7 +34,16 @@ function requestHandler(req, res) {
     return res.end('ok');
   }
 
-  // 2. GET /about (Temporary About Page)
+  // 2. GET /api/health (Health check)
+  if (pathWithoutPrefix.toLowerCase() === '/api/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    return res.end(JSON.stringify({
+      status: 'ok',
+      message: 'API is running'
+    }, null, 2));
+  }
+
+  // 3. GET /about (Temporary About Page)
   if (pathWithoutPrefix.toLowerCase() === '/about' || pathWithoutPrefix.toLowerCase() === '/about.html') {
     const htmlPath = path.join(__dirname, 'public', 'about.html');
     if (fs.existsSync(htmlPath)) {

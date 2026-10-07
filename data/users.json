@@ -6,5 +6,12 @@
     "passwordHash": "c669cbf60788269aaa2298484fba1f20:3e6b274bbb092748992e31668e2efb2ceccb4dc56b3bbf31696fede9200265fc85fd76da661c5d69cadcdb9a54c8bb10641a825cdbb7cf441e9a5c11e486defd",
     "createdAt": "2026-10-01T21:11:23.178Z",
     "updatedAt": "2026-10-01T21:31:11.370Z"
+  },
+  {
+    "id": 2,
+    "name": "Ahmet Yilmaz",
+    "email": "ahmet@example.com",
+    "passwordHash": "e194823f35ee2c7b2b3b682ee7823fc9:1c010003b4091346662af6d820d9eaa7351695425679feca24236f39a0f9a61d3d30d7edb89505008f7327c121e0427956dbea79155e68df98864560f47aff7f",
+    "createdAt": "2026-10-07T23:09:27.149Z"
   }
 ]

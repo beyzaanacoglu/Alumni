@@ -1,4 +1,4 @@
-﻿{
+{
   "openapi": "3.0.3",
   "info": {
     "title": "Alumni Portal Backend API",
@@ -20,7 +20,9 @@
       "get": {
         "summary": "Check API Health",
         "description": "Returns HTTP 200 and a JSON status message indicating that the API is running correctly.",
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "responses": {
           "200": {
             "description": "API is healthy and operational",
@@ -39,7 +41,9 @@
       "get": {
         "summary": "Retrieve all users",
         "description": "Fetches all registered users from the database. Password hashes and sensitive data are excluded.",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "responses": {
           "200": {
             "description": "A list of users (empty array if no users exist)",
@@ -59,7 +63,9 @@
       "post": {
         "summary": "Create a new user",
         "description": "Registers a new user. The password will be hashed with a cryptographic salt prior to storage.",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -105,10 +111,53 @@
       }
     },
     "/api/users/{id}": {
+      "get": {
+        "summary": "Retrieve a user by ID",
+        "description": "Fetches a single user by their ID. Excludes password and sensitive information.",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the user to retrieve",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "summary": "Full update of a user",
         "description": "Replaces all editable fields (name, email, password) for the user with the specified ID.",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -177,7 +226,9 @@
       "patch": {
         "summary": "Partial update of a user",
         "description": "Updates only the supplied fields for the user with the specified ID.",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -246,7 +297,9 @@
       "delete": {
         "summary": "Delete a user",
         "description": "Deletes the user with the specified ID from the database.",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -322,7 +375,11 @@
       },
       "CreateUserRequest": {
         "type": "object",
-        "required": ["name", "email", "password"],
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -342,7 +399,11 @@
       },
       "UpdateUserPutRequest": {
         "type": "object",
-        "required": ["name", "email", "password"],
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
         "properties": {
           "name": {
             "type": "string",

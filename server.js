@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const { handleApiUserRoutes } = require('./routes/apiUserRoutes');
 const { handleUserRoutes } = require('./routes/userRoutes');
+const { handleApiAnnouncementRoutes } = require('./routes/apiAnnouncementRoutes');
+const { handleAnnouncementRoutes } = require('./routes/announcementRoutes');
 
 const PORT = process.env.PORT || 80;
 const FALLBACK_PORT = 3000;
@@ -36,6 +38,14 @@ async function requestHandler(req, res) {
   // 2. View User Routes (/users...)
   const isViewUserHandled = await handleUserRoutes(req, res, pathWithoutPrefix);
   if (isViewUserHandled) return;
+
+  // 3. API Announcement Routes (/api/announcements...)
+  const isApiAnnouncementHandled = await handleApiAnnouncementRoutes(req, res, pathWithoutPrefix);
+  if (isApiAnnouncementHandled) return;
+
+  // 4. View Announcement Routes (/announcements...)
+  const isViewAnnouncementHandled = await handleAnnouncementRoutes(req, res, pathWithoutPrefix);
+  if (isViewAnnouncementHandled) return;
 
   // 3. General GET Routes
   if (req.method === 'GET') {

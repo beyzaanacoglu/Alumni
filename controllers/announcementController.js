@@ -17,9 +17,9 @@ const AnnouncementController = {
    * GET /announcements
    * Renders announcements list and create form view.
    */
-  listAnnouncements(req, res) {
+  async listAnnouncements(req, res) {
     try {
-      const announcements = AnnouncementModel.getAllAnnouncements();
+      const announcements = await AnnouncementModel.getAllAnnouncements();
       const templatePath = path.join(__dirname, '..', 'public', 'announcements.html');
 
       let html = fs.readFileSync(templatePath, 'utf8');
@@ -99,9 +99,9 @@ const AnnouncementController = {
    * GET /announcements/:id
    * Renders the single announcement detail view.
    */
-  showAnnouncement(req, res, id) {
+  async showAnnouncement(req, res, id) {
     try {
-      const announcement = AnnouncementModel.getAnnouncementById(id);
+      const announcement = await AnnouncementModel.getAnnouncementById(id);
       if (!announcement) {
         res.writeHead(302, { Location: getRedirectUrl(req, '/announcements?error=not_found') });
         return res.end();
@@ -143,9 +143,9 @@ const AnnouncementController = {
    * GET /announcements/:id/edit
    * Renders the announcement edit form with pre-filled data.
    */
-  editAnnouncement(req, res, id) {
+  async editAnnouncement(req, res, id) {
     try {
-      const announcement = AnnouncementModel.getAnnouncementById(id);
+      const announcement = await AnnouncementModel.getAnnouncementById(id);
       if (!announcement) {
         res.writeHead(302, { Location: getRedirectUrl(req, '/announcements?error=not_found') });
         return res.end();
@@ -188,7 +188,7 @@ const AnnouncementController = {
    * POST /announcements
    * Receives new announcement form data and creates record via AnnouncementModel.
    */
-  createAnnouncement(req, res, announcementData) {
+  async createAnnouncement(req, res, announcementData) {
     try {
       const { title, content } = announcementData || {};
 
@@ -198,7 +198,7 @@ const AnnouncementController = {
         return res.end();
       }
 
-      AnnouncementModel.createAnnouncement({
+      await AnnouncementModel.createAnnouncement({
         title: title.trim(),
         content: content.trim()
       });
@@ -215,9 +215,9 @@ const AnnouncementController = {
    * POST /announcements/:id/update
    * Receives updated announcement form data and updates via AnnouncementModel.
    */
-  updateAnnouncement(req, res, id, announcementData) {
+  async updateAnnouncement(req, res, id, announcementData) {
     try {
-      const target = AnnouncementModel.getAnnouncementById(id);
+      const target = await AnnouncementModel.getAnnouncementById(id);
       if (!target) {
         res.writeHead(302, { Location: getRedirectUrl(req, '/announcements?error=not_found') });
         return res.end();
@@ -231,7 +231,7 @@ const AnnouncementController = {
         return res.end();
       }
 
-      AnnouncementModel.updateAnnouncement(id, {
+      await AnnouncementModel.updateAnnouncement(id, {
         title: title.trim(),
         content: content.trim()
       });
@@ -248,9 +248,9 @@ const AnnouncementController = {
    * POST /announcements/:id/delete
    * Deletes an announcement via AnnouncementModel and redirects to list.
    */
-  deleteAnnouncement(req, res, id) {
+  async deleteAnnouncement(req, res, id) {
     try {
-      const deleted = AnnouncementModel.deleteAnnouncement(id);
+      const deleted = await AnnouncementModel.deleteAnnouncement(id);
       if (!deleted) {
         res.writeHead(302, { Location: getRedirectUrl(req, '/announcements?error=not_found') });
         return res.end();

@@ -1,4 +1,4 @@
-﻿const AnnouncementModel = require('../models/announcementModel');
+const AnnouncementModel = require('../models/announcementModel');
 
 /**
  * Helper to parse request body as JSON
@@ -33,7 +33,7 @@ const ApiAnnouncementController = {
    */
   async getAllAnnouncements(req, res) {
     try {
-      const list = AnnouncementModel.getAllAnnouncements();
+      const list = await AnnouncementModel.getAllAnnouncements();
       return sendJson(res, 200, list);
     } catch (err) {
       return sendJson(res, 500, { error: 'Internal server error.' });
@@ -46,7 +46,7 @@ const ApiAnnouncementController = {
    */
   async getAnnouncementById(req, res, id) {
     try {
-      const item = AnnouncementModel.getAnnouncementById(id);
+      const item = await AnnouncementModel.getAnnouncementById(id);
       if (!item) {
         return sendJson(res, 404, { error: 'Announcement not found.' });
       }
@@ -80,7 +80,7 @@ const ApiAnnouncementController = {
         });
       }
 
-      const created = AnnouncementModel.createAnnouncement({
+      const created = await AnnouncementModel.createAnnouncement({
         title: title.trim(),
         content: content.trim()
       });
@@ -96,7 +96,7 @@ const ApiAnnouncementController = {
    * Fully updates an existing announcement.
    */
   async updateAnnouncement(req, res, id) {
-    const existing = AnnouncementModel.getAnnouncementById(id);
+    const existing = await AnnouncementModel.getAnnouncementById(id);
     if (!existing) {
       return sendJson(res, 404, { error: 'Announcement not found.' });
     }
@@ -120,7 +120,7 @@ const ApiAnnouncementController = {
         });
       }
 
-      const updated = AnnouncementModel.updateAnnouncement(id, {
+      const updated = await AnnouncementModel.updateAnnouncement(id, {
         title: title.trim(),
         content: content.trim()
       });
@@ -136,7 +136,7 @@ const ApiAnnouncementController = {
    * Partially updates an existing announcement.
    */
   async patchAnnouncement(req, res, id) {
-    const existing = AnnouncementModel.getAnnouncementById(id);
+    const existing = await AnnouncementModel.getAnnouncementById(id);
     if (!existing) {
       return sendJson(res, 404, { error: 'Announcement not found.' });
     }
@@ -178,7 +178,7 @@ const ApiAnnouncementController = {
         updateData.content = content.trim();
       }
 
-      const updated = AnnouncementModel.updateAnnouncement(id, updateData);
+      const updated = await AnnouncementModel.updateAnnouncement(id, updateData);
 
       return sendJson(res, 200, updated);
     } catch (err) {
@@ -191,13 +191,13 @@ const ApiAnnouncementController = {
    * Deletes an announcement by ID.
    */
   async deleteAnnouncement(req, res, id) {
-    const existing = AnnouncementModel.getAnnouncementById(id);
+    const existing = await AnnouncementModel.getAnnouncementById(id);
     if (!existing) {
       return sendJson(res, 404, { error: 'Announcement not found.' });
     }
 
     try {
-      const deleted = AnnouncementModel.deleteAnnouncement(id);
+      const deleted = await AnnouncementModel.deleteAnnouncement(id);
       if (!deleted) {
         return sendJson(res, 404, { error: 'Announcement not found.' });
       }

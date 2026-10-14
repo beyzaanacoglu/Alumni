@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: alumni_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: alumni_user
+      POSTGRES_PASSWORD: alumni_secret_pass
+      POSTGRES_DB: alumni_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - alumni_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alumni_user -d alumni_database"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: alumni_app
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: alumni_user
+      DB_PASSWORD: alumni_secret_pass
+      DB_NAME: alumni_database
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  alumni_pgdata:
+    name: alumni_pgdata

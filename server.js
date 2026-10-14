@@ -5,6 +5,7 @@ const { handleApiUserRoutes } = require('./routes/apiUserRoutes');
 const { handleUserRoutes } = require('./routes/userRoutes');
 const { handleApiAnnouncementRoutes } = require('./routes/apiAnnouncementRoutes');
 const { handleAnnouncementRoutes } = require('./routes/announcementRoutes');
+const { initDb } = require('./config/db');
 
 const PORT = process.env.PORT || 80;
 const FALLBACK_PORT = 3000;
@@ -172,16 +173,22 @@ async function requestHandler(req, res) {
 
 const server = http.createServer(requestHandler);
 
-server.listen(PORT, () => {
-  const base = PORT === 80 ? 'http://localhost' : 'http://localhost:' + PORT;
-  console.log('Server running on ' + base + '/Alumni');
-}).on('error', (err) => {
-  if ((err.code === 'EACCES' || err.code === 'EADDRINUSE') && PORT === 80) {
-    console.log('Port 80 kullanılamadı (' + err.code + '), port ' + FALLBACK_PORT + ' deneniyor...');
-    server.listen(FALLBACK_PORT, () => {
-      console.log('Server running on http://localhost:' + FALLBACK_PORT + '/Alumni');
-    });
-  } else {
-    console.error(err);
-  }
-});
+async function start() {
+  await initDb();
+
+  server.listen(PORT, '0.0.0.0', () => {
+    const base = PORT === 80 ? 'http://localhost' : 'http://localhost:' + PORT;
+    console.log('Server running on ' + base + '/Alumni');
+  }).on('error', (err) => {
+    if ((err.code === 'EACCES' || err.code === 'EADDRINUSE') && PORT === 80) {
+      console.log('Port 80 kullanılamadı (' + err.code + '), port ' + FALLBACK_PORT + ' deneniyor...');
+      server.listen(FALLBACK_PORT, '0.0.0.0', () => {
+        console.log('Server running on http://localhost:' + FALLBACK_PORT + '/Alumni');
+      });
+    } else {
+      console.error(err);
+    }
+  });
+}
+
+start();

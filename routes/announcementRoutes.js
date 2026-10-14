@@ -40,21 +40,21 @@ async function handleAnnouncementRoutes(req, res, pathWithoutPrefix) {
 
   // GET /announcements
   if (method === 'GET' && (path === '/announcements' || path === '/announcements/')) {
-    AnnouncementController.listAnnouncements(req, res);
+    await AnnouncementController.listAnnouncements(req, res);
     return true;
   }
 
   // POST /announcements
   if (method === 'POST' && (path === '/announcements' || path === '/announcements/')) {
     const body = await parseBody(req);
-    AnnouncementController.createAnnouncement(req, res, body);
+    await AnnouncementController.createAnnouncement(req, res, body);
     return true;
   }
 
   // GET /announcements/:id/edit
   const editMatch = pathWithoutPrefix.match(/^\/announcements\/([^\/]+)\/edit$/i);
   if (method === 'GET' && editMatch) {
-    AnnouncementController.editAnnouncement(req, res, editMatch[1]);
+    await AnnouncementController.editAnnouncement(req, res, editMatch[1]);
     return true;
   }
 
@@ -62,21 +62,21 @@ async function handleAnnouncementRoutes(req, res, pathWithoutPrefix) {
   const updateMatch = pathWithoutPrefix.match(/^\/announcements\/([^\/]+)\/update$/i);
   if (method === 'POST' && updateMatch) {
     const body = await parseBody(req);
-    AnnouncementController.updateAnnouncement(req, res, updateMatch[1], body);
+    await AnnouncementController.updateAnnouncement(req, res, updateMatch[1], body);
     return true;
   }
 
   // POST /announcements/:id/delete
   const deleteMatch = pathWithoutPrefix.match(/^\/announcements\/([^\/]+)\/delete$/i);
   if (method === 'POST' && deleteMatch) {
-    AnnouncementController.deleteAnnouncement(req, res, deleteMatch[1]);
+    await AnnouncementController.deleteAnnouncement(req, res, deleteMatch[1]);
     return true;
   }
 
   // GET /announcements/:id
   const showMatch = pathWithoutPrefix.match(/^\/announcements\/([^\/]+)$/i);
   if (method === 'GET' && showMatch) {
-    AnnouncementController.showAnnouncement(req, res, showMatch[1]);
+    await AnnouncementController.showAnnouncement(req, res, showMatch[1]);
     return true;
   }
 

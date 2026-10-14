@@ -1,0 +1,12 @@
+{
+  "name": "alumni-tracking-system",
+  "version": "1.0.0",
+  "description": "Alumni Tracking System Node.js MVC Web Application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

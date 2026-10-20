@@ -1,6 +1,8 @@
 # Alumni Tracking System (Node.js)
 
-A dependency-light Node.js REST API and server-rendered web application for managing **users**, **announcements** and an **alumni directory**. Built for the *Web Programming* course, Management Information Systems (MIS).
+The Alumni Tracking System helps a university stay connected with its graduates. It brings alumni records, community announcements and user accounts together in a single, well-organized application, so that contact details and career information remain accurate and easy to find.
+
+The project is a lightweight Node.js REST API with a simple web interface. It follows a clear layered structure (routes, controllers, models and repositories) and relies on the built-in `http` module instead of a web framework, which keeps the code easy to read, run and extend. It was developed for the *Web Programming* course in Management Information Systems (MIS).
 
 - **Developer:** Beyza Anaçoğlu
 - **Repository:** https://github.com/beyzaanacoglu/Alumni.git

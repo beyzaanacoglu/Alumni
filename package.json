@@ -4,7 +4,11 @@
   "description": "Alumni Tracking System Node.js MVC Web Application",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "migrate": "node data/migrate.js up",
+    "migrate:down": "node data/migrate.js down",
+    "seed": "node data/migrate.js seed",
+    "db:fresh": "node data/migrate.js fresh"
   },
   "dependencies": {
     "pg": "^8.13.1"

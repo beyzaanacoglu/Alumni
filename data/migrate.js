@@ -7,8 +7,8 @@
  *   node data/migrate.js fresh     # down + up + seed
  */
 const { pool } = require('../config/db');
-const migration = require('./migrations/001_create_alumni_table');
-const alumniSeeder = require('./seeders/alumniSeeder');
+const migrations = require('./migrations');
+const seeders = [require('./seeders/alumniSeeder'), require('./seeders/jobPostingSeeder')];
 
 async function main() {
   const cmd = process.argv[2] || 'up';
@@ -18,16 +18,22 @@ async function main() {
   }
   try {
     if (cmd === 'down' || cmd === 'fresh') {
-      await migration.down(pool);
-      console.log(`[migrate] down: ${migration.name}`);
+      for (const m of [...migrations].reverse()) {
+        await m.down(pool);
+        console.log(`[migrate] down: ${m.name}`);
+      }
     }
     if (cmd === 'up' || cmd === 'fresh') {
-      await migration.up(pool);
-      console.log(`[migrate] up: ${migration.name}`);
+      for (const m of migrations) {
+        await m.up(pool);
+        console.log(`[migrate] up: ${m.name}`);
+      }
     }
     if (cmd === 'seed' || cmd === 'fresh') {
-      const n = await alumniSeeder.run(pool);
-      console.log(`[seed] ${alumniSeeder.name}: ${n} kayit eklendi`);
+      for (const s of seeders) {
+        const n = await s.run(pool);
+        console.log(`[seed] ${s.name}: ${n} kayit eklendi`);
+      }
     }
     if (!['up', 'down', 'seed', 'fresh'].includes(cmd)) {
       console.error('Gecersiz komut. up | down | seed | fresh');

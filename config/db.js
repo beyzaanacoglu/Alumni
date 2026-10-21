@@ -52,8 +52,10 @@ async function initDb() {
       console.log('[DB] Seeded initial announcements.');
     }
 
-    // Alumni table (data/migrations)
-    await require('../data/migrations/001_create_alumni_table').up(pool);
+    // Alumni and job posting tables (data/migrations)
+    for (const migration of require('../data/migrations')) {
+      await migration.up(pool);
+    }
 
     console.log('[DB] Database tables initialized and ready.');
   } catch (err) {

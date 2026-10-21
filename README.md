@@ -15,6 +15,7 @@ The project is a lightweight Node.js REST API with a simple web interface. It fo
 | Users | `data/users.json` (PBKDF2-hashed passwords) | `/api/users` | `/users` |
 | Announcements | PostgreSQL (in-memory fallback) | `/api/announcements` | `/announcements` |
 | Alumni | PostgreSQL (in-memory fallback) | `/api/alumni` | – |
+| Job Postings | PostgreSQL (in-memory fallback) | `/api/job-postings` | – |
 
 All resources support full CRUD (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`). Interactive API docs are served at `/docs` (OpenAPI 3.0, [`docs/openapi.json`](docs/openapi.json)).
 
@@ -103,6 +104,10 @@ Base path: `/api` (an optional `/Alumni` prefix is accepted).
 | GET / PUT / PATCH / DELETE | `/api/announcements/{id}` | Manage an announcement |
 | GET / POST | `/api/alumni` | List (filters: `department`, `graduationYear`, `city`, `search`) / create |
 | GET / PUT / PATCH / DELETE | `/api/alumni/{id}` | Manage an alumni record |
+| GET / POST | `/api/job-postings` | List (filters: `status`, `employmentType`, `workMode`, `city`, `search`) / create |
+| GET / PUT / PATCH / DELETE | `/api/job-postings/{id}` | Read / replace / update / delete job posting |
+| GET / POST | `/api/job-postings/{id}/applications` | List internal applications / apply |
+| PATCH / DELETE | `/api/job-postings/{id}/applications/{appId}` | Update status (`submitted`, `reviewing`, `accepted`, `rejected`) / remove |
 
 Status codes: `200`, `201`, `204`, `400` (validation), `404`, `409` (duplicate email), `500`.
 

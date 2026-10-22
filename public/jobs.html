@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>İş, Staj ve Proje İlanları - Alumni Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet.js CSS (Harita Görünümü) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #06b6d4;
+      --bg: #0b0f19;
+      --card-bg: rgba(23, 32, 53, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: #111827;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      /* Kullanıcı tercihlerine göre kesin durum renkleri */
+      --status-pending: #fbffa8;
+      --status-pending-text: #713f12;
+      --status-closed: #64748b;
+      --status-rejected: #ef4444;
+      --status-open: #10b981;
+      --status-accepted: #10b981;
+      --status-submitted: #f59e0b;
+      --status-reviewing: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Ambient Glows */
+    .glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-1 {
+      top: -120px;
+      left: -100px;
+      width: 450px;
+      height: 450px;
+      background: rgba(99, 102, 241, 0.22);
+    }
+    .glow-2 {
+      bottom: -150px;
+      right: -100px;
+      width: 500px;
+      height: 500px;
+      background: rgba(6, 182, 212, 0.16);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo {
+      font-size: 1.35rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #818cf8, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--card-border);
+    }
+
+    /* Role Simulator Switcher */
+    .role-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(17, 24, 39, 0.7);
+      border: 1px solid var(--card-border);
+      padding: 10px 18px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .role-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .role-pills {
+      display: flex;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px;
+      border-radius: 10px;
+    }
+
+    .role-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .role-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Navigation Tabs */
+    .tabs-nav {
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 18px;
+      border-radius: 10px 10px 0 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid var(--card-border);
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .tab-badge {
+      background: rgba(255, 255, 255, 0.1);
+      font-size: 0.75rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    /* Main Layout with Sidebar (Soru 2: B - Sol Kenar Çubuğu) */
+    .jobs-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .jobs-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Sidebar Filters */
+    .sidebar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 22px 18px;
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .sidebar-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .clear-filters-btn {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .clear-filters-btn:hover {
+      text-decoration: underline;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .filter-input, .filter-select {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+      width: 100%;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Content Area */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Top Toolbar */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 18px;
+      backdrop-filter: blur(12px);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .results-count {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .results-count strong {
+      color: #fff;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Soru 5: Leaflet Harita Toggle Butonu */
+    .toggle-view-btn {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .toggle-view-btn:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Leaflet Harita Konteyneri */
+    #map-container {
+      display: none;
+      height: 480px;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Soru 1: A - Kart Izgarası (Card Grid) */
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 20px;
+    }
+
+    .job-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 22px;
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .job-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .company-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(6, 182, 212, 0.25));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    /* Soru 4: Durum Renk Kodları */
+    .status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* pending: #fbffa8 */
+    .status-pending {
+      background: var(--status-pending);
+      color: var(--status-pending-text);
+      font-weight: 800;
+      box-shadow: 0 0 10px rgba(251, 255, 168, 0.4);
+    }
+    /* closed: nötr gri */
+    .status-closed {
+      background: rgba(100, 116, 139, 0.2);
+      color: var(--status-closed);
+      border: 1px solid rgba(100, 116, 139, 0.35);
+    }
+    /* rejected: ef4444 */
+    .status-rejected {
+      background: rgba(239, 68, 68, 0.18);
+      color: var(--status-rejected);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+    /* open & accepted: #10b981 */
+    .status-open, .status-accepted {
+      background: rgba(16, 185, 129, 0.18);
+      color: var(--status-open);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    /* submitted: #f59e0b */
+    .status-submitted {
+      background: rgba(245, 158, 11, 0.18);
+      color: var(--status-submitted);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+    /* reviewing: #38bdf8 */
+    .status-reviewing {
+      background: rgba(56, 189, 248, 0.18);
+      color: var(--status-reviewing);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.35;
+      margin-bottom: 4px;
+    }
+
+    .card-company {
+      font-size: 0.9rem;
+      color: var(--accent);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .meta-tag {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-desc {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .skills-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .skill-pill {
+      font-size: 0.72rem;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      color: #c7d2fe;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .deadline-text {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-external {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+    .btn-external:hover {
+      background: var(--accent);
+      color: #0b0f19;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Soru 3: A - Modal / Popup Pencere (Karartılmış arka plan yerine BLURLANMIŞ ekran) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      /* İstenen: karartılmış arka plan yerine blurlanmış ekran */
+      background: rgba(11, 15, 25, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-box {
+      background: #111827;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(99, 102, 241, 0.15);
+      position: relative;
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+    }
+    .modal-close:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .modal-header {
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .modal-header p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      margin-top: 4px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-control {
+      background: #080c14;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    /* Tablo Görünümü (Başvurularım ve Başvuru Yönetimi İçin) */
+    .table-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      backdrop-filter: blur(16px);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Toast Bildirimleri */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      z-index: 2000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-success {
+      background: #065f46;
+      border: 1px solid #10b981;
+    }
+    .toast-error {
+      background: #881337;
+      border: 1px solid #f43f5e;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Yeni İlan Formu Kartı */
+    .create-job-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(16px);
+      margin-bottom: 24px;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) {
+      .form-grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <a href="/" class="logo">🎓 Alumni Portal</a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Ana Sayfa</a>
+        <a href="/jobs" class="nav-link active">💼 İş & Staj İlanları</a>
+        <a href="/users" class="nav-link">👥 Kullanıcılar</a>
+        <a href="/announcements" class="nav-link">📢 Duyurular</a>
+        <a href="/docs" class="nav-link" style="color: var(--accent);">📖 Swagger UI</a>
+      </div>
+    </header>
+
+    <!-- Soru 6: Rol / Kullanıcı Simülatörü Barı -->
+    <div class="role-bar">
+      <div class="role-bar-left">
+        <span>👤 <strong>Aktif Görünüm / Rol:</strong></span>
+        <span id="active-user-label" style="color: var(--accent);">Aday Öğrenci (Örn: Ahmet Yılmaz)</span>
+      </div>
+      <div class="role-pills">
+        <button class="role-btn active" onclick="setRole('student', 2, 'Ahmet Yılmaz (Öğrenci)')">🎓 Öğrenci (Aday)</button>
+        <button class="role-btn" onclick="setRole('alumni', 1, 'Ayşe Yılmaz (Mezun / Şirket)')">👔 Mezun (İlan Sahibi)</button>
+        <button class="role-btn" onclick="setRole('admin', 1, 'Sistem Yöneticisi (Admin)')">🛡️ Admin</button>
+      </div>
+    </div>
+
+    <!-- Sekmeler (Tabs) -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" id="tab-btn-jobs" onclick="switchTab('jobs')">
+        📌 Tüm İlanlar <span class="tab-badge" id="badge-jobs-count">0</span>
+      </button>
+      <button class="tab-btn" id="tab-btn-my-apps" onclick="switchTab('my-apps')">
+        📋 Başvurularım <span class="tab-badge" id="badge-my-apps-count">0</span>
+      </button>
+      <button class="tab-btn" id="tab-btn-manage" onclick="switchTab('manage')">
+        💼 İlan Yönetimi & Başvuranlar <span class="tab-badge" id="badge-manage-count">0</span>
+      </button>
+    </div>
+
+    <!-- ==================== SEKME 1: TÜM İLANLAR (SIDEBAR + CARD GRID + HARİTA) ==================== -->
+    <div id="tab-content-jobs">
+      <div class="jobs-layout">
+        <!-- Soru 2: B - Sol Kenar Çubuğu (Sidebar Filters) -->
+        <aside class="sidebar">
+          <div class="sidebar-title">
+            <span>Filtreler</span>
+            <button class="clear-filters-btn" onclick="resetFilters()">Temizle</button>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="search-input">Arama</label>
+            <input type="text" id="search-input" class="filter-input" placeholder="Pozisyon, şirket veya yetenek..." oninput="handleFilterChange()">
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filter-type">Çalışma Türü</label>
+            <select id="filter-type" class="filter-select" onchange="handleFilterChange()">
+              <option value="">Tümü</option>
+              <option value="full_time">Tam Zamanlı (Full-Time)</option>
+              <option value="internship">Staj (Internship)</option>
+              <option value="volunteer">Gönüllü (Volunteer)</option>
+              <option value="project">Proje (Project)</option>
+              <option value="part_time">Yarı Zamanlı (Part-Time)</option>
+              <option value="contract">Sözleşmeli (Contract)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filter-mode">Çalışma Modeli</label>
+            <select id="filter-select-mode" class="filter-select" onchange="handleFilterChange()">
+              <option value="">Tümü</option>
+              <option value="hybrid">Hibrit (Hybrid)</option>
+              <option value="remote">Uzaktan (Remote)</option>
+              <option value="onsite">Ofiste (Onsite)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filter-city">Şehir</label>
+            <select id="filter-city" class="filter-select" onchange="handleFilterChange()">
+              <option value="">Tüm Şehirler</option>
+              <option value="Istanbul">İstanbul</option>
+              <option value="Ankara">Ankara</option>
+              <option value="Izmir">İzmir</option>
+              <option value="Bursa">Bursa</option>
+              <option value="Berlin">Berlin</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filter-status">İlan Durumu</label>
+            <select id="filter-status" class="filter-select" onchange="handleFilterChange()">
+              <option value="">Tümü</option>
+              <option value="open" selected>Sadece Açık İlanlar</option>
+              <option value="closed">Kapalı İlanlar</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filter-app-mode">Başvuru Kanalı</label>
+            <select id="filter-app-mode" class="filter-select" onchange="handleFilterChange()">
+              <option value="">Tümü</option>
+              <option value="internal">Dahili Başvuru (Portal Üzerinden)</option>
+              <option value="external">Harici Yönlendirme (Şirket Sitesi)</option>
+            </select>
+          </div>
+        </aside>
+
+        <!-- Sağ Alan: Toolbar + Card Grid + Harita -->
+        <main class="content-area">
+          <div class="toolbar">
+            <div class="results-count" id="results-count-text">İlanlar yükleniyor...</div>
+            <div class="toolbar-actions">
+              <!-- Soru 5: Haritada Göster Butonu -->
+              <button class="toggle-view-btn" id="toggle-map-btn" onclick="toggleMapView()">
+                🗺️ Haritada Göster
+              </button>
+            </div>
+          </div>
+
+          <!-- Soru 5: Leaflet Harita Konteyneri -->
+          <div id="map-container"></div>
+
+          <!-- Soru 1: A - Kart Izgarası (Card Grid) -->
+          <div class="jobs-grid" id="jobs-grid">
+            <div class="empty-state">İlanlar taranıyor...</div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ==================== SEKME 2: BAŞVURULARIM ==================== -->
+    <div id="tab-content-my-apps" style="display: none;">
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>İlan Başlığı & Şirket</th>
+              <th>Başvuru Tipi</th>
+              <th>Ön Yazı (Cover Letter)</th>
+              <th>Başvuru Tarihi</th>
+              <th>Durum</th>
+              <th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody id="my-apps-tbody">
+            <tr><td colspan="6" class="empty-state">Başvurularınız yükleniyor...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== SEKME 3: İLAN & BAŞVURU YÖNETİMİ ==================== -->
+    <div id="tab-content-manage" style="display: none;">
+      <!-- Yeni İlan Yayınlama Formu -->
+      <div class="create-job-card">
+        <h3 style="margin-bottom: 14px; font-size: 1.15rem; color: #fff;">➕ Yeni İlan / Staj / Proje Yayınla</h3>
+        <form id="create-job-form" onsubmit="handleCreateJob(event)">
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>İlan Başlığı *</label>
+              <input type="text" class="form-control" id="new-title" placeholder="Örn: Junior Frontend React Geliştirici" required>
+            </div>
+            <div class="form-group">
+              <label>Şirket / Kurum Adı *</label>
+              <input type="text" class="form-control" id="new-company" placeholder="Örn: Trendyol veya Mezunlar Kulübü" required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Çalışma Türü *</label>
+              <select class="form-control" id="new-type" required>
+                <option value="full_time">Tam Zamanlı (Full-Time)</option>
+                <option value="internship">Staj (Internship)</option>
+                <option value="volunteer">Gönüllü Topluluk Projesi (Volunteer)</option>
+                <option value="project">Ar-Ge / Mezun Projesi (Project)</option>
+                <option value="part_time">Yarı Zamanlı (Part-Time)</option>
+                <option value="contract">Sözleşmeli (Contract)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Çalışma Modeli *</label>
+              <select class="form-control" id="new-mode" required>
+                <option value="hybrid">Hibrit</option>
+                <option value="remote">Uzaktan (Remote)</option>
+                <option value="onsite">Ofiste (Onsite)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Şehir</label>
+              <input type="text" class="form-control" id="new-city" placeholder="Örn: İstanbul">
+            </div>
+            <div class="form-group">
+              <label>Son Başvuru Tarihi</label>
+              <input type="date" class="form-control" id="new-deadline">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Harici Başvuru Bağlantısı (Varsa dış link, yoksa boş bırakın)</label>
+            <input type="url" class="form-control" id="new-external-link" placeholder="https://careers.company.com/job/123 (Boş bırakırsanız adaylar portal içi başvurur)">
+          </div>
+
+          <div class="form-group">
+            <label>Aranan Yetkinlikler (Virgülle ayırın)</label>
+            <input type="text" class="form-control" id="new-skills" placeholder="Örn: Node.js, PostgreSQL, Docker, Git">
+          </div>
+
+          <div class="form-group">
+            <label>İlan Detaylı Açıklaması *</label>
+            <textarea class="form-control" id="new-description" rows="3" placeholder="Pozisyon görev tanımı, aranan nitelikler..." required></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary" id="btn-submit-job">🚀 İlanı Yayınla</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Yayınlanan İlanlar ve Başvuru İnceleme Tablosu -->
+      <h3 style="margin-bottom: 12px; font-size: 1.15rem; color: #fff;">📂 Yayınlanan İlanlar ve Aday Başvuruları</h3>
+      <div id="manage-postings-list">
+        <div class="empty-state">İlanlar yükleniyor...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Soru 3: A - MODAL PENCERE (BLURLANMIŞ EKRAN) ==================== -->
+  <!-- 1. Dahili Başvuru Yapma Modalı -->
+  <div class="modal-overlay" id="apply-modal" onclick="closeModalOnBackdrop(event, 'apply-modal')">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('apply-modal')">✕</button>
+      <div class="modal-header">
+        <h2 id="apply-modal-job-title">İlana Başvur</h2>
+        <p id="apply-modal-company-info">Şirket bilgisi</p>
+      </div>
+
+      <form id="apply-form" onsubmit="submitApplication(event)">
+        <input type="hidden" id="apply-job-id">
+        <input type="hidden" id="apply-job-type">
+
+        <div class="form-group">
+          <label>Başvuru Yapan Aday:</label>
+          <input type="text" class="form-control" id="apply-candidate-display" readonly style="opacity: 0.8; cursor: not-allowed;">
+        </div>
+
+        <div class="form-group">
+          <label>Ön Yazı (Cover Letter) - <small style="color: var(--accent); cursor: pointer;" onclick="insertSampleCoverLetter()">Örnek Yazı Ekle</small></label>
+          <textarea class="form-control" id="apply-cover-letter" rows="5" placeholder="Kendinizi, yeteneklerinizi ve bu pozisyona neden uygun olduğunuzu anlatan kısa bir not yazın..." required></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('apply-modal')">İptal</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-app">📩 Başvuruyu Gönder</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. İlan Detay Modalı -->
+  <div class="modal-overlay" id="detail-modal" onclick="closeModalOnBackdrop(event, 'detail-modal')">
+    <div class="modal-box" style="max-width: 640px;">
+      <button class="modal-close" onclick="closeModal('detail-modal')">✕</button>
+      <div class="modal-header">
+        <div style="display: flex; gap: 8px; margin-bottom: 6px;" id="detail-modal-badges"></div>
+        <h2 id="detail-modal-title">İlan Detayı</h2>
+        <p id="detail-modal-company" style="color: var(--accent); font-weight: 600;"></p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px; font-size: 0.9rem;">
+        <div>
+          <h4 style="color: #fff; margin-bottom: 6px;">İş Tanımı & Detaylar</h4>
+          <p id="detail-modal-desc" style="color: var(--text-muted); line-height: 1.6; white-space: pre-wrap;"></p>
+        </div>
+
+        <div>
+          <h4 style="color: #fff; margin-bottom: 6px;">Aranan Beceriler</h4>
+          <div id="detail-modal-skills" class="skills-pills"></div>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); padding: 12px; border-radius: 10px; font-size: 0.82rem; color: var(--text-muted);">
+          <div>📍 <strong>Konum:</strong> <span id="detail-modal-location">-</span></div>
+          <div style="margin-top: 4px;">⏳ <strong>Son Başvuru:</strong> <span id="detail-modal-deadline">-</span></div>
+          <div style="margin-top: 4px;" id="detail-modal-contact-row">✉️ <strong>İletişim:</strong> <span id="detail-modal-contact">-</span></div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;" id="detail-modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('detail-modal')">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Bildirimi -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Leaflet.js (Vanilla Harita Kütüphanesi) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script>
+    // Global State
+    let allPostings = [];
+    let myApplications = [];
+    let currentRole = 'student';
+    let currentUserId = 2;
+    let currentUserName = 'Ahmet Yılmaz';
+    let currentTab = 'jobs';
+    let isMapView = false;
+    let leafletMap = null;
+    let mapMarkers = [];
+
+    // Çeviri Tablosu
+    const TYPE_LABELS = {
+      full_time: 'Tam Zamanlı',
+      part_time: 'Yarı Zamanlı',
+      internship: 'Staj',
+      volunteer: 'Gönüllü Proje',
+      project: 'Ar-Ge Projesi',
+      contract: 'Sözleşmeli'
+    };
+
+    const MODE_LABELS = {
+      hybrid: 'Hibrit',
+      remote: 'Uzaktan',
+      onsite: 'Ofiste'
+    };
+
+    const STATUS_LABELS = {
+      open: 'Açık',
+      closed: 'Kapalı',
+      pending: 'Beklemede',
+      submitted: 'İletildi',
+      reviewing: 'İnceleniyor',
+      accepted: 'Kabul Edildi',
+      rejected: 'Reddedildi'
+    };
+
+    // DOM Ready
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchJobs();
+      fetchMyApplications();
+    });
+
+    // Rol Değiştirme
+    function setRole(role, userId, displayName) {
+      currentRole = role;
+      currentUserId = userId;
+      currentUserName = displayName.split(' ')[0] + ' ' + (displayName.split(' ')[1] || '');
+      
+      document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+
+      document.getElementById('active-user-label').textContent = displayName;
+      
+      // Aday başvurularını yeni kullanıcıya göre çek
+      fetchMyApplications();
+
+      // Sekme görünürlüklerini ve butonları tazele
+      renderJobs(getFilteredPostings());
+      if (currentTab === 'manage') {
+        renderManagePostings();
+      }
+
+      showToast(`Aktif rol değiştirildi: ${displayName}`, 'success');
+    }
+
+    // Sekme Değiştirme
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`tab-btn-${tabId}`).classList.add('active');
+
+      document.getElementById('tab-content-jobs').style.display = tabId === 'jobs' ? 'block' : 'none';
+      document.getElementById('tab-content-my-apps').style.display = tabId === 'my-apps' ? 'block' : 'none';
+      document.getElementById('tab-content-manage').style.display = tabId === 'manage' ? 'block' : 'none';
+
+      if (tabId === 'my-apps') {
+        fetchMyApplications();
+      } else if (tabId === 'manage') {
+        renderManagePostings();
+      }
+    }
+
+    // İlanları API'den Getir
+    async function fetchJobs() {
+      try {
+        const res = await fetch('/api/job-postings');
+        if (!res.ok) throw new Error('İlanlar alınamadı');
+        allPostings = await res.json();
+        
+        document.getElementById('badge-jobs-count').textContent = allPostings.length;
+        renderJobs(getFilteredPostings());
+      } catch (err) {
+        document.getElementById('jobs-grid').innerHTML = `
+          <div class="empty-state" style="color: var(--status-rejected);">
+            ❌ İlanlar yüklenirken bir hata oluştu: ${err.message}
+          </div>`;
+      }
+    }
+
+    // Filtreleri Uygula
+    function getFilteredPostings() {
+      const search = document.getElementById('search-input').value.toLowerCase().trim();
+      const type = document.getElementById('filter-type').value;
+      const mode = document.getElementById('filter-select-mode').value;
+      const city = document.getElementById('filter-city').value;
+      const status = document.getElementById('filter-status').value;
+      const appMode = document.getElementById('filter-app-mode').value;
+
+      return allPostings.filter(p => {
+        if (search) {
+          const matchTitle = (p.title || '').toLowerCase().includes(search);
+          const matchComp = (p.companyName || '').toLowerCase().includes(search);
+          const matchSkills = (p.requiredSkills || '').toLowerCase().includes(search);
+          if (!matchTitle && !matchComp && !matchSkills) return false;
+        }
+
+        if (type && p.employmentType !== type) return false;
+        if (mode && p.workMode !== mode) return false;
+        if (city && p.city !== city) return false;
+        if (status && p.status !== status) return false;
+
+        if (appMode === 'internal' && p.externalApplicationLink) return false;
+        if (appMode === 'external' && !p.externalApplicationLink) return false;
+
+        return true;
+      });
+    }
+
+    function handleFilterChange() {
+      const filtered = getFilteredPostings();
+      renderJobs(filtered);
+      if (isMapView) {
+        updateMapMarkers(filtered);
+      }
+    }
+
+    function resetFilters() {
+      document.getElementById('search-input').value = '';
+      document.getElementById('filter-type').value = '';
+      document.getElementById('filter-select-mode').value = '';
+      document.getElementById('filter-city').value = '';
+      document.getElementById('filter-status').value = 'open';
+      document.getElementById('filter-app-mode').value = '';
+      handleFilterChange();
+    }
+
+    // Kart Izgarasını Render Et (Soru 1: A)
+    function renderJobs(postings) {
+      const grid = document.getElementById('jobs-grid');
+      document.getElementById('results-count-text').innerHTML = `<strong>${postings.length}</strong> ilan listeleniyor`;
+
+      if (!postings || postings.length === 0) {
+        grid.innerHTML = `<div class="empty-state">Kriterlerinize uygun iş veya staj ilanı bulunamadı.</div>`;
+        return;
+      }
+
+      grid.innerHTML = postings.map(p => {
+        const monogram = (p.companyName || 'A').charAt(0).toUpperCase();
+        const typeLabel = TYPE_LABELS[p.employmentType] || p.employmentType;
+        const modeLabel = MODE_LABELS[p.workMode] || p.workMode;
+        
+        // Soru 4: Durum Renk Kodları
+        const statusClass = `status-${p.status || 'open'}`;
+        const statusLabel = STATUS_LABELS[p.status] || p.status;
+
+        const skills = (p.requiredSkills || '').split(',').map(s => s.trim()).filter(Boolean);
+        const deadline = p.applicationDeadline ? new Date(p.applicationDeadline).toLocaleDateString('tr-TR') : 'Süresiz';
+
+        // Başvuru Butonu
+        let actionBtn = '';
+        if (p.externalApplicationLink) {
+          actionBtn = `<a href="${p.externalApplicationLink}" target="_blank" rel="noopener" class="btn btn-external">🔗 Şirket Sitesinden Başvur</a>`;
+        } else if (p.status === 'open') {
+          actionBtn = `<button class="btn btn-primary" onclick="openApplyModal(${p.id})">📝 Başvur</button>`;
+        } else {
+          actionBtn = `<button class="btn btn-secondary" disabled style="opacity: 0.5;">Kapalı</button>`;
+        }
+
+        return `
+          <div class="job-card">
+            <div>
+              <div class="card-head">
+                <div class="company-badge">${monogram}</div>
+                <span class="status-badge ${statusClass}">${statusLabel}</span>
+              </div>
+
+              <div style="margin-top: 12px;">
+                <h3 class="card-title">${escapeHtml(p.title)}</h3>
+                <div class="card-company">🏢 ${escapeHtml(p.companyName)}</div>
+              </div>
+
+              <div class="card-meta-tags">
+                <span class="meta-tag">💼 ${typeLabel}</span>
+                <span class="meta-tag">🌐 ${modeLabel}</span>
+                ${p.city ? `<span class="meta-tag">📍 ${escapeHtml(p.city)}</span>` : ''}
+              </div>
+
+              <p class="card-desc" style="margin-top: 10px;">${escapeHtml(p.description)}</p>
+
+              ${skills.length > 0 ? `
+                <div class="skills-pills" style="margin-top: 12px;">
+                  ${skills.slice(0, 4).map(s => `<span class="skill-pill">${escapeHtml(s)}</span>`).join('')}
+                  ${skills.length > 4 ? `<span class="skill-pill">+${skills.length - 4}</span>` : ''}
+                </div>` : ''}
+            </div>
+
+            <div class="card-footer">
+              <span class="deadline-text">⏳ ${deadline}</span>
+              <div class="card-actions">
+                <button class="btn btn-secondary" onclick="openDetailModal(${p.id})">Detay</button>
+                ${actionBtn}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Soru 5: Leaflet Harita Görünümü Toggle
+    function toggleMapView() {
+      isMapView = !isMapView;
+      const mapBox = document.getElementById('map-container');
+      const grid = document.getElementById('jobs-grid');
+      const toggleBtn = document.getElementById('toggle-map-btn');
+
+      if (isMapView) {
+        mapBox.style.display = 'block';
+        toggleBtn.innerHTML = '📋 Liste Görünümü';
+        initOrUpdateMap();
+      } else {
+        mapBox.style.display = 'none';
+        toggleBtn.innerHTML = '🗺️ Haritada Göster';
+      }
+    }
+
+    function initOrUpdateMap() {
+      if (!leafletMap) {
+        leafletMap = L.map('map-container').setView([39.9334, 32.8597], 6); // Türkiye odaklı
+
+        // CartoDB Dark Matter karo katmanı (Dark tema ile mükemmel uyumlu)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+          maxZoom: 19
+        }).addTo(leafletMap);
+      }
+
+      setTimeout(() => {
+        leafletMap.invalidateSize();
+        updateMapMarkers(getFilteredPostings());
+      }, 100);
+    }
+
+    function updateMapMarkers(postings) {
+      if (!leafletMap) return;
+
+      // Eski işaretçileri temizle
+      mapMarkers.forEach(m => leafletMap.removeLayer(m));
+      mapMarkers = [];
+
+      const bounds = [];
+
+      postings.forEach(p => {
+        if (p.latitude && p.longitude) {
+          const lat = parseFloat(p.latitude);
+          const lng = parseFloat(p.longitude);
+
+          if (!isNaN(lat) && !isNaN(lng)) {
+            const marker = L.marker([lat, lng]).addTo(leafletMap);
+            bounds.push([lat, lng]);
+
+            const popupContent = `
+              <div style="font-family: sans-serif; color: #1e293b; min-width: 200px;">
+                <strong style="font-size: 14px; color: #0f172a;">${escapeHtml(p.title)}</strong>
+                <div style="font-size: 12px; color: #6366f1; margin: 3px 0;">🏢 ${escapeHtml(p.companyName)} (${p.city || ''})</div>
+                <div style="font-size: 11px; margin: 4px 0;">Çalışma: <strong>${TYPE_LABELS[p.employmentType] || p.employmentType}</strong></div>
+                <div style="margin-top: 8px;">
+                  <button onclick="openDetailModal(${p.id})" style="background: #6366f1; color: #fff; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px;">İlan Detayı</button>
+                </div>
+              </div>
+            `;
+            marker.bindPopup(popupContent);
+            mapMarkers.push(marker);
+          }
+        }
+      });
+
+      if (bounds.length > 0) {
+        leafletMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
+      }
+    }
+
+    // Soru 3: A - Modal Açma / Kapatma (Blurlanmış Ekran)
+    function openApplyModal(jobId) {
+      const job = allPostings.find(p => p.id === jobId);
+      if (!job) return;
+
+      document.getElementById('apply-job-id').value = job.id;
+      document.getElementById('apply-job-type').value = job.employmentType || 'job';
+      document.getElementById('apply-modal-job-title').textContent = `${job.title} - Başvuru`;
+      document.getElementById('apply-modal-company-info').textContent = `🏢 ${job.companyName} | ${TYPE_LABELS[job.employmentType] || job.employmentType}`;
+      document.getElementById('apply-candidate-display').value = `${currentUserName} (ID: ${currentUserId})`;
+      document.getElementById('apply-cover-letter').value = '';
+
+      openModal('apply-modal');
+    }
+
+    function insertSampleCoverLetter() {
+      const type = document.getElementById('apply-job-type').value;
+      const textarea = document.getElementById('apply-cover-letter');
+
+      if (type === 'internship') {
+        textarea.value = 'Merhaba, lisans eğitimim kapsamında şirketinizin dinamik ekibinde stajyer mühendis olarak yer almak ve gerçek dünya projelerinde pratik tecrübe edinmek istiyorum.';
+      } else if (type === 'volunteer') {
+        textarea.value = 'Merhaba, mezunlarımızın başlattığı bu açık kaynak gönüllü topluluk projesine kodlama, dokümantasyon ve test süreçlerinde gönüllü destek vermek istiyorum.';
+      } else if (type === 'project') {
+        textarea.value = 'Merhaba, duyurulan mezun projesinin gereksinimlerini inceledim. Mimari tasarım ve veri tabanı entegrasyonu aşamalarında katkı sunmak istiyorum.';
+      } else {
+        textarea.value = 'Merhaba, ilanınızda belirtilen yetkinlikler yazılım geliştirme alanındaki hedeflerimle ve üniversitede geliştirdiğim projelerle birebir örtüşüyor. Ekibinize katılarak hızla katma değer üretmek isterim.';
+      }
+    }
+
+    function openDetailModal(jobId) {
+      const job = allPostings.find(p => p.id === jobId);
+      if (!job) return;
+
+      document.getElementById('detail-modal-title').textContent = job.title;
+      document.getElementById('detail-modal-company').textContent = `🏢 ${job.companyName}`;
+      document.getElementById('detail-modal-desc').textContent = job.description;
+      document.getElementById('detail-modal-location').textContent = `${job.city || '-'}, ${job.country || 'TR'} (${MODE_LABELS[job.workMode] || job.workMode})`;
+      document.getElementById('detail-modal-deadline').textContent = job.applicationDeadline ? new Date(job.applicationDeadline).toLocaleDateString('tr-TR') : 'Süresiz';
+      
+      const contactRow = document.getElementById('detail-modal-contact-row');
+      if (job.contactEmail) {
+        contactRow.style.display = 'block';
+        document.getElementById('detail-modal-contact').textContent = job.contactEmail;
+      } else {
+        contactRow.style.display = 'none';
+      }
+
+      // Rozetler
+      const badgesBox = document.getElementById('detail-modal-badges');
+      badgesBox.innerHTML = `
+        <span class="status-badge status-${job.status || 'open'}">${STATUS_LABELS[job.status] || job.status}</span>
+        <span class="meta-tag">💼 ${TYPE_LABELS[job.employmentType] || job.employmentType}</span>
+      `;
+
+      // Yetenekler
+      const skillsBox = document.getElementById('detail-modal-skills');
+      const skills = (job.requiredSkills || '').split(',').map(s => s.trim()).filter(Boolean);
+      skillsBox.innerHTML = skills.length ? skills.map(s => `<span class="skill-pill">${escapeHtml(s)}</span>`).join('') : '<span style="color: var(--text-muted);">Belirtilmedi</span>';
+
+      // Alt Butonlar
+      const actionsBox = document.getElementById('detail-modal-actions');
+      let applyBtn = '';
+      if (job.externalApplicationLink) {
+        applyBtn = `<a href="${job.externalApplicationLink}" target="_blank" class="btn btn-external">🔗 Şirket Sitesinden Başvur</a>`;
+      } else if (job.status === 'open') {
+        applyBtn = `<button class="btn btn-primary" onclick="closeModal('detail-modal'); openApplyModal(${job.id});">📝 Hemen Başvur</button>`;
+      }
+      actionsBox.innerHTML = `
+        <button type="button" class="btn btn-secondary" onclick="closeModal('detail-modal')">Kapat</button>
+        ${applyBtn}
+      `;
+
+      openModal('detail-modal');
+    }
+
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOnBackdrop(e, modalId) {
+      if (e.target.id === modalId) {
+        closeModal(modalId);
+      }
+    }
+
+    // Dahili Başvuruyu Sunucuya Gönder (POST /api/job-postings/:id/applications)
+    async function submitApplication(e) {
+      e.preventDefault();
+      const jobId = document.getElementById('apply-job-id').value;
+      const coverLetter = document.getElementById('apply-cover-letter').value.trim();
+      const btn = document.getElementById('btn-submit-app');
+
+      btn.disabled = true;
+      btn.textContent = 'Gönderiliyor...';
+
+      try {
+        const res = await fetch(`/api/job-postings/${jobId}/applications`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            applicantUserId: currentUserId,
+            coverLetter: coverLetter
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Başvuru yapılamadı.');
+        }
+
+        closeModal('apply-modal');
+        showToast('✅ Başvurunuz başarıyla iletildi!', 'success');
+        fetchMyApplications();
+      } catch (err) {
+        showToast(`❌ ${err.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '📩 Başvuruyu Gönder';
+      }
+    }
+
+    // Adayın Başvurularını Getir (Sekme 2)
+    async function fetchMyApplications() {
+      try {
+        const res = await fetch(`/api/applications?userId=${currentUserId}`);
+        if (!res.ok) throw new Error('Başvurular alınamadı');
+        myApplications = await res.json();
+
+        document.getElementById('badge-my-apps-count').textContent = myApplications.length;
+        renderMyApplications();
+      } catch (err) {
+        console.error('Başvurular alınırken hata:', err);
+      }
+    }
+
+    function renderMyApplications() {
+      const tbody = document.getElementById('my-apps-tbody');
+      if (!myApplications || myApplications.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Henüz herhangi bir ilana başvuruda bulunmadınız.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = myApplications.map(app => {
+        const posting = allPostings.find(p => p.id === app.jobPostingId) || { title: `İlan #${app.jobPostingId}`, companyName: 'Bilinmiyor' };
+        const statusClass = `status-${app.status || 'pending'}`;
+        const statusLabel = STATUS_LABELS[app.status] || app.status;
+        const createdDate = app.createdAt ? new Date(app.createdAt).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
+        const typeLabel = TYPE_LABELS[app.type] || app.type || 'İş Başvurusu';
+
+        const canWithdraw = app.status === 'pending' || app.status === 'submitted';
+
+        return `
+          <tr>
+            <td>
+              <strong>${escapeHtml(posting.title)}</strong><br>
+              <small style="color: var(--accent);">🏢 ${escapeHtml(posting.companyName)}</small>
+            </td>
+            <td><span class="meta-tag">${typeLabel}</span></td>
+            <td style="max-width: 280px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">
+              ${escapeHtml(app.coverLetter || 'Ön yazı eklenmedi.')}
+            </td>
+            <td>${createdDate}</td>
+            <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+            <td>
+              ${canWithdraw ? `
+                <button class="btn btn-secondary" style="color: #f87171; padding: 4px 10px; font-size: 0.78rem;" onclick="withdrawApplication(${app.id})">
+                  Geri Çek
+                </button>` : `<span style="font-size: 0.75rem; color: var(--text-muted);">-</span>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function withdrawApplication(appId) {
+      if (!confirm('Bu başvurunuzu geri çekmek istediğinizden emin misiniz?')) return;
+      try {
+        const res = await fetch(`/api/applications/${appId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Başvuru silinemedi');
+        showToast('Başvuru başarıyla geri çekildi.', 'success');
+        fetchMyApplications();
+      } catch (err) {
+        showToast(`Hata: ${err.message}`, 'error');
+      }
+    }
+
+    // Yeni İlan Oluşturma (Sekme 3)
+    async function handleCreateJob(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-job');
+      btn.disabled = true;
+      btn.textContent = 'Yayınlanıyor...';
+
+      const jobData = {
+        alumniId: currentUserId,
+        title: document.getElementById('new-title').value.trim(),
+        companyName: document.getElementById('new-company').value.trim(),
+        employmentType: document.getElementById('new-type').value,
+        workMode: document.getElementById('new-mode').value,
+        city: document.getElementById('new-city').value.trim() || null,
+        applicationDeadline: document.getElementById('new-deadline').value || null,
+        externalApplicationLink: document.getElementById('new-external-link').value.trim() || null,
+        requiredSkills: document.getElementById('new-skills').value.trim() || null,
+        description: document.getElementById('new-description').value.trim()
+      };
+
+      try {
+        const res = await fetch('/api/job-postings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(jobData)
+        });
+
+        const created = await res.json();
+        if (!res.ok) throw new Error(created.error || 'İlan oluşturulamadı');
+
+        showToast('🚀 İlan başarıyla yayınlandı!', 'success');
+        document.getElementById('create-job-form').reset();
+        await fetchJobs();
+        renderManagePostings();
+      } catch (err) {
+        showToast(`❌ ${err.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🚀 İlanı Yayınla';
+      }
+    }
+
+    // İlan & Başvuru Yönetimi Tablosunu Render Et (Sekme 3)
+    async function renderManagePostings() {
+      const box = document.getElementById('manage-postings-list');
+      
+      // Admin tüm ilanları görür; Alumni ise kendi ilanlarını görür
+      const myJobs = currentRole === 'admin' 
+        ? allPostings 
+        : allPostings.filter(p => String(p.alumniId) === String(currentUserId));
+
+      document.getElementById('badge-manage-count').textContent = myJobs.length;
+
+      if (!myJobs || myJobs.length === 0) {
+        box.innerHTML = `<div class="empty-state">Henüz oluşturduğunuz bir ilan bulunmuyor. Yukarıdaki formu kullanarak yeni bir iş veya staj ilanı yayınlayabilirsiniz.</div>`;
+        return;
+      }
+
+      box.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">Başvurular taranıyor...</div>';
+
+      const itemsHtml = await Promise.all(myJobs.map(async job => {
+        let appsHtml = '';
+        if (!job.externalApplicationLink) {
+          try {
+            const res = await fetch(`/api/job-postings/${job.id}/applications`);
+            const apps = res.ok ? await res.json() : [];
+
+            if (apps.length === 0) {
+              appsHtml = `<div style="font-size: 0.84rem; color: var(--text-muted); padding: 8px 0;">Henüz bu ilana başvuran aday bulunmuyor.</div>`;
+            } else {
+              appsHtml = `
+                <div style="margin-top: 10px; overflow-x: auto;">
+                  <table style="font-size: 0.82rem;">
+                    <thead>
+                      <tr>
+                        <th>Aday ID</th>
+                        <th>Tür</th>
+                        <th>Ön Yazı</th>
+                        <th>Mevcut Durum</th>
+                        <th>Durum Güncelle</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${apps.map(a => `
+                        <tr>
+                          <td><strong>Aday #${a.applicantUserId}</strong></td>
+                          <td><span class="meta-tag">${TYPE_LABELS[a.type] || a.type || 'İş'}</span></td>
+                          <td style="max-width: 240px; color: var(--text-muted);">${escapeHtml(a.coverLetter || '-')}</td>
+                          <td><span class="status-badge status-${a.status}">${STATUS_LABELS[a.status] || a.status}</span></td>
+                          <td>
+                            <div style="display: flex; gap: 4px;">
+                              <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.72rem; color: var(--status-reviewing);" onclick="updateAppStatus(${job.id}, ${a.id}, 'reviewing')">İncele</button>
+                              <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.72rem; color: var(--status-accepted);" onclick="updateAppStatus(${job.id}, ${a.id}, 'accepted')">Kabul</button>
+                              <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.72rem; color: var(--status-rejected);" onclick="updateAppStatus(${job.id}, ${a.id}, 'rejected')">Ret</button>
+                            </div>
+                          </td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `;
+            }
+          } catch (e) {
+            appsHtml = '<div style="color: var(--status-rejected); font-size: 0.8rem;">Başvurular yüklenemedi.</div>';
+          }
+        } else {
+          appsHtml = `<div style="font-size: 0.84rem; color: var(--accent); padding: 6px 0;">🔗 Bu ilanın başvuruları şirket dış linki (${job.externalApplicationLink}) üzerinden toplanmaktadır.</div>`;
+        }
+
+        return `
+          <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; margin-bottom: 16px; backdrop-filter: blur(12px);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap;">
+              <div>
+                <h4 style="font-size: 1.05rem; color: #fff;">${escapeHtml(job.title)}</h4>
+                <div style="font-size: 0.86rem; color: var(--accent);">🏢 ${escapeHtml(job.companyName)} | ${job.city || '-'} | ${TYPE_LABELS[job.employmentType] || job.employmentType}</div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <span class="status-badge status-${job.status || 'open'}">${STATUS_LABELS[job.status] || job.status}</span>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.76rem; color: #f87171;" onclick="deleteJob(${job.id})">Sil</button>
+              </div>
+            </div>
+
+            <div style="margin-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 12px;">
+              <strong style="font-size: 0.88rem; color: #fff;">📥 Gelen Başvurular:</strong>
+              ${appsHtml}
+            </div>
+          </div>
+        `;
+      }));
+
+      box.innerHTML = itemsHtml.join('');
+    }
+
+    // Aday Durumunu Güncelle (PATCH /api/job-postings/:id/applications/:appId)
+    async function updateAppStatus(jobId, appId, newStatus) {
+      try {
+        const res = await fetch(`/api/job-postings/${jobId}/applications/${appId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        if (!res.ok) throw new Error('Durum güncellenemedi');
+        showToast(`Aday durumu güncellendi: ${STATUS_LABELS[newStatus]}`, 'success');
+        renderManagePostings();
+        fetchMyApplications();
+      } catch (err) {
+        showToast(`Hata: ${err.message}`, 'error');
+      }
+    }
+
+    // İlanı Sil (DELETE /api/job-postings/:id)
+    async function deleteJob(jobId) {
+      if (!confirm('Bu ilanı ve ilana bağlı tüm başvuruları silmek istediğinizden emin misiniz?')) return;
+      try {
+        const res = await fetch(`/api/job-postings/${jobId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('İlan silinemedi');
+        showToast('İlan başarıyla silindi.', 'success');
+        await fetchJobs();
+        renderManagePostings();
+      } catch (err) {
+        showToast(`Hata: ${err.message}`, 'error');
+      }
+    }
+
+    // Yardımcı Toast Bildirimi (5 saniye)
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast toast-${type} show`;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 5000);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>

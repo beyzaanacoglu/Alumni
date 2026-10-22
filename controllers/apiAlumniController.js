@@ -153,7 +153,21 @@ const ApiAlumniController = {
     } catch (err) {
       return sendJson(res, 500, { error: 'Internal server error.' });
     }
+  },
+
+  /** GET /api/alumni/:id/jobs */
+  async getJobs(req, res, id) {
+    try {
+      const alumni = await AlumniModel.getById(id);
+      if (!alumni) return sendJson(res, 404, { error: 'Alumni not found.' });
+      const jobPostingRepository = require('../repositories/jobPostingRepository');
+      const jobs = await jobPostingRepository.findAll({ alumniId: id });
+      return sendJson(res, 200, jobs);
+    } catch (err) {
+      return sendJson(res, 500, { error: 'Internal server error.' });
+    }
   }
 };
 
 module.exports = ApiAlumniController;
+

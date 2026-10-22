@@ -376,6 +376,7 @@
       <a href="/" class="logo">🎓 Alumni Portal</a>
       <div class="nav-links">
         <a href="/" class="nav-link">Ana Sayfa</a>
+        <a href="/jobs" class="nav-link">İş & Staj İlanları</a>
         <a href="/users" class="nav-link">Kullanıcılar</a>
         <a href="/announcements" class="nav-link active">Duyurular</a>
         <a href="/docs" class="nav-link">Swagger UI</a>
@@ -428,8 +429,27 @@
     // Ensure form action adapts to sub-path prefix if needed
     window.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('create-announcement-form');
-      if (window.location.pathname.toLowerCase().startsWith('/alumni')) {
+      if (form && window.location.pathname.toLowerCase().startsWith('/alumni')) {
         form.action = '/Alumni/announcements';
+      }
+
+      // Bilgilendiriciler (alert) sadece 5 saniye kalsın
+      const alerts = document.querySelectorAll('.alert, .alert-success, .alert-error');
+      if (alerts.length > 0) {
+        setTimeout(() => {
+          alerts.forEach(al => {
+            al.style.transition = 'opacity 0.6s ease, transform 0.6s ease, max-height 0.6s ease, margin 0.6s ease, padding 0.6s ease';
+            al.style.opacity = '0';
+            al.style.transform = 'translateY(-10px)';
+            setTimeout(() => al.remove(), 600);
+          });
+        }, 5000);
+
+        // URL'deki query parametrelerini temizle (?success=updated vb.)
+        if (window.history && window.history.replaceState) {
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+        }
       }
     });
   </script>

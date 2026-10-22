@@ -21,6 +21,14 @@ async function handleApiAlumniRoutes(req, res, pathWithoutPrefix) {
     return false;
   }
 
+  // Match /api/alumni/:id/jobs
+  const jobsMatch = pathWithoutPrefix.match(/^\/api\/alumni\/([^\/]+)\/jobs$/i);
+  if (jobsMatch) {
+    const id = jobsMatch[1];
+    if (method === 'GET') { await ApiAlumniController.getJobs(req, res, id); return true; }
+    return false;
+  }
+
   const match = pathWithoutPrefix.match(/^\/api\/alumni\/([^\/]+)$/i);
   if (match) {
     const id = match[1];

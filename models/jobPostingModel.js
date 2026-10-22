@@ -47,6 +47,14 @@ const JobPostingModel = {
     return jobApplicationRepository.updateStatus(id, status);
   },
 
+  async getApplicationsByUser(userId) {
+    return jobApplicationRepository.findByUser(userId);
+  },
+
+  async getAllApplications(filters) {
+    return jobApplicationRepository.findAll(filters);
+  },
+
   async deleteApplication(id) {
     return jobApplicationRepository.delete(id);
   }

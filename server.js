@@ -106,7 +106,23 @@ async function requestHandler(req, res) {
       });
     }
 
-    // 5. GET /about (Temporary About Page)
+    // 5. GET /jobs or /job-postings (İş İlanları ve Başvurular Sayfası)
+    if (pathWithoutPrefix.toLowerCase() === '/jobs' ||
+        pathWithoutPrefix.toLowerCase() === '/jobs/' ||
+        pathWithoutPrefix.toLowerCase() === '/job-postings' ||
+        pathWithoutPrefix.toLowerCase() === '/job-postings/' ||
+        pathWithoutPrefix.toLowerCase() === '/jobs.html' ||
+        pathWithoutPrefix.toLowerCase() === '/job-postings.html') {
+      const htmlPath = path.join(__dirname, 'public', 'jobs.html');
+      if (fs.existsSync(htmlPath)) {
+        const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        return res.end(htmlContent);
+      }
+      return sendText(res, 404, 'Jobs page not found.');
+    }
+
+    // 6. GET /about (Temporary About Page)
     if (pathWithoutPrefix.toLowerCase() === '/about' || pathWithoutPrefix.toLowerCase() === '/about.html') {
       const htmlPath = path.join(__dirname, 'public', 'about.html');
       if (fs.existsSync(htmlPath)) {

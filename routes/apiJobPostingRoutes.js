@@ -8,6 +8,26 @@ async function handleApiJobPostingRoutes(req, res, pathWithoutPrefix) {
   const method = req.method;
   const path = pathWithoutPrefix.toLowerCase();
 
+  // /api/applications or /api/my-applications
+  if (path === '/api/applications' || path === '/api/my-applications') {
+    if (method === 'GET') {
+      const url = new URL(req.url, 'http://localhost');
+      await ApiJobPostingController.listApplications(req, res, Object.fromEntries(url.searchParams));
+      return true;
+    }
+    return false;
+  }
+
+  // DELETE /api/applications/:id
+  const directAppMatch = pathWithoutPrefix.match(/^\/api\/applications\/([^\/]+)$/i);
+  if (directAppMatch) {
+    const appId = directAppMatch[1];
+    if (method === 'DELETE') {
+      await ApiJobPostingController.deleteApplicationDirect(req, res, appId);
+      return true;
+    }
+  }
+
   // /api/job-postings
   if (path === '/api/job-postings') {
     if (method === 'GET') {

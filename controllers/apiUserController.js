@@ -1,4 +1,4 @@
-﻿const UserModel = require('../models/userModel');
+const UserModel = require('../models/userModel');
 
 /**
  * Helper to parse request body as JSON
@@ -276,7 +276,66 @@ const ApiUserController = {
     } catch (err) {
       return sendJson(res, 500, { error: 'Internal server error.' });
     }
+  },
+
+  /**
+   * GET /api/users/:id/jobs
+   * Retrieves all job postings created by a specific user.
+   */
+  async getUserJobs(req, res, id) {
+    try {
+      const user = UserModel.getUserById(id);
+      if (!user) {
+        return sendJson(res, 404, { error: 'User not found.' });
+      }
+
+      const jobPostingRepository = require('../repositories/jobPostingRepository');
+      const jobs = await jobPostingRepository.findAll({ alumniId: id });
+      return sendJson(res, 200, jobs);
+    } catch (err) {
+      return sendJson(res, 500, { error: 'Internal server error.' });
+    }
+  },
+
+  /**
+   * POST /api/users/:id/jobs
+   * Creates a new job posting associated with a specific user.
+   */
+  async createUserJob(req, res, id) {
+    const user = UserModel.getUserById(id);
+    if (!user) {
+      return sendJson(res, 404, { error: 'User not found.' });
+    }
+
+    try {
+      const rawBody = await getRequestBody(req);
+      let parsed;
+      try {
+        parsed = JSON.parse(rawBody || '{}');
+      } catch (jsonErr) {
+        return sendJson(res, 400, { error: 'Invalid JSON format.' });
+      }
+
+      const { title, description, companyName, employmentType } = parsed;
+      if (!title || !description || !companyName || !employmentType) {
+        return sendJson(res, 400, {
+          error: "Validation failed: 'title', 'description', 'companyName', and 'employmentType' are required."
+        });
+      }
+
+      const jobPostingRepository = require('../repositories/jobPostingRepository');
+      const postingData = {
+        ...parsed,
+        alumniId: Number(id)
+      };
+
+      const created = await jobPostingRepository.create(postingData);
+      return sendJson(res, 201, created);
+    } catch (err) {
+      return sendJson(res, 500, { error: 'Internal server error.' });
+    }
   }
 };
 
 module.exports = ApiUserController;
+

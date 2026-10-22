@@ -1,4 +1,4 @@
-﻿const ApiUserController = require('../controllers/apiUserController');
+const ApiUserController = require('../controllers/apiUserController');
 
 /**
  * Dispatches API User requests to ApiUserController.
@@ -21,6 +21,21 @@ async function handleApiUserRoutes(req, res, pathWithoutPrefix) {
   if (method === 'POST' && path === '/api/users') {
     await ApiUserController.createUser(req, res);
     return true;
+  }
+
+  // Match /api/users/:id/jobs
+  const userJobsMatch = pathWithoutPrefix.match(/^\/api\/users\/([^\/]+)\/jobs$/i);
+  if (userJobsMatch) {
+    const id = userJobsMatch[1];
+    if (method === 'GET') {
+      await ApiUserController.getUserJobs(req, res, id);
+      return true;
+    }
+    if (method === 'POST') {
+      await ApiUserController.createUserJob(req, res, id);
+      return true;
+    }
+    return false;
   }
 
   // Match /api/users/:id

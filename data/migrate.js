@@ -8,7 +8,11 @@
  */
 const { pool } = require('../config/db');
 const migrations = require('./migrations');
-const seeders = [require('./seeders/alumniSeeder'), require('./seeders/jobPostingSeeder')];
+const seeders = [
+  require('./seeders/alumniSeeder'),
+  require('./seeders/jobPostingSeeder'),
+  require('./seeders/applicationSeeder')
+];
 
 async function main() {
   const cmd = process.argv[2] || 'up';

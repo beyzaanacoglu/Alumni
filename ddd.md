@@ -116,6 +116,8 @@ Internal applications transition through the following states:
 | Submit application (Nested) | `/api/jobs/{id}/applications` | POST | Candidate (Student/Alumni) | `201 Created` | `400`, `403`, `409` |
 | List applicants for posting (Nested) | `/api/jobs/{id}/applications` | GET | Author, Admin | `200 OK` | `403`, `404` |
 | Update application status (Nested) | `/api/jobs/{id}/applications/{appId}` | PATCH | Author, Admin | `200 OK` | `400`, `403`, `404` |
+| List user postings (Nested) | `/api/users/{id}/jobs` | GET | Public | `200 OK` | `404` |
+| Create user posting (Nested) | `/api/users/{id}/jobs` | POST | User (Self), Admin | `201 Created` | `400`, `403`, `404` |
 | Withdraw application | `/api/jobs/{id}/applications/{appId}` | DELETE | Candidate (while pending) | `204 No Content` | `403`, `404` |
 
 ## 7. Data Lifecycle & Migrations
@@ -159,6 +161,8 @@ Running migrations and seeders:
 | Scholarship → Applications | `/scholarships/{scholarship}/applications` | `scholarships.applications.index` | Burs veren mezunun aday öğrencileri incelemesi |
 | Company → Jobs | `/companies/{company}/jobs` | `companies.jobs.index` | Belirli bir şirkete ait ilanları listeleme |
 | Alumnus → Experiences | `/alumni/{user}/experiences` | `alumni.experiences.index` | Belirli bir mezunun kariyer geçmişini listeleme |
+| User / Alumnus → Jobs | `/users/{user}/jobs` & `/alumni/{user}/jobs` | `users.jobs.index`, `alumni.jobs.index` | Belirli bir kullanıcı veya mezunun yayınladığı iş ilanları |
+
 
 ### 8.3 Role-Based Middleware Groups
 | Group | Middleware | Permitted Roles | Actions Allowed |

@@ -25,8 +25,54 @@ const iso = (v) => (v ? new Date(v).toISOString() : null);
 const normalize = (r) => ({ ...r, createdAt: iso(r.createdAt), updatedAt: iso(r.updatedAt) });
 const isId = (id) => /^\d+$/.test(String(id));
 
-const memory = [];
-let nextId = 1;
+const memory = [
+  {
+    id: 1, alumniId: 1, title: 'Junior Backend Geliştirici (Node.js & PostgreSQL)',
+    description: 'Node.js ve PostgreSQL ile çalışacak, takım çalışmasına yatkın junior geliştirici aranıyor.',
+    companyName: 'Trendyol', city: 'Istanbul', country: 'TR', employmentType: 'full_time',
+    workMode: 'hybrid', experienceLevel: 'entry', requiredSkills: 'Node.js, PostgreSQL, Git, REST API',
+    contactEmail: 'kariyer@trendyol.example.com', externalApplicationLink: null,
+    applicationDeadline: '2026-12-31', status: 'open', latitude: 41.0643, longitude: 29.0069,
+    createdAt: new Date().toISOString(), updatedAt: null
+  },
+  {
+    id: 2, alumniId: 1, title: 'Yaz Stajı - İş Analizi & Süreç Yönetimi',
+    description: 'Yönetim Bilişim Sistemleri öğrencileri için 8 haftalık kurumsal staj programı. Dahili başvuru takibi yapılmaktadır.',
+    companyName: 'Garanti BBVA', city: 'Istanbul', country: 'TR', employmentType: 'internship',
+    workMode: 'onsite', experienceLevel: 'entry', requiredSkills: 'SQL, Excel, UML, Problem Çözme',
+    contactEmail: null, externalApplicationLink: null,
+    applicationDeadline: '2026-12-15', status: 'open', latitude: 41.0138, longitude: 28.9497,
+    createdAt: new Date().toISOString(), updatedAt: null
+  },
+  {
+    id: 3, alumniId: 1, title: 'Frontend React Geliştirici',
+    description: 'Kullanıcı deneyimini en üst seviyeye taşıyacak, modern ve responsive web arayüzleri geliştirecek takım arkadaşı arıyoruz.',
+    companyName: 'Getir', city: 'Izmir', country: 'TR', employmentType: 'full_time',
+    workMode: 'hybrid', experienceLevel: 'mid', requiredSkills: 'React, TypeScript, CSS3, Redux',
+    contactEmail: 'kariyer@getir.example.com', externalApplicationLink: 'https://careers.example.com/getir/fe',
+    applicationDeadline: '2027-01-15', status: 'open', latitude: 38.4237, longitude: 27.1428,
+    createdAt: new Date().toISOString(), updatedAt: null
+  },
+  {
+    id: 4, alumniId: 2, title: 'Mezunlar Web Portali Açık Kaynak Gönüllü Geliştirici',
+    description: 'Üniversitemiz mezun ağı tarafından geliştirilen açık kaynaklı web uygulamasına gönüllü olarak katkıda bulunacak geliştiriciler aranıyor.',
+    companyName: 'Mezunlar Bilişim Kulübü', city: 'Ankara', country: 'TR', employmentType: 'volunteer',
+    workMode: 'remote', experienceLevel: null, requiredSkills: 'JavaScript, HTML5, CSS3, Git, Topluluk Katılımı',
+    contactEmail: null, externalApplicationLink: null,
+    applicationDeadline: '2027-02-28', status: 'open', latitude: 39.9334, longitude: 32.8597,
+    createdAt: new Date().toISOString(), updatedAt: null
+  },
+  {
+    id: 5, alumniId: 1, title: 'Ürün Yöneticisi Asistanı (Remote)',
+    description: 'Mezun ağımız üzerinden duyurulan, mentorluk destekli part-time asistan pozisyonu.',
+    companyName: 'SAP', city: 'Berlin', country: 'DE', employmentType: 'part_time',
+    workMode: 'remote', experienceLevel: 'mid', requiredSkills: 'Ürün yönetimi, analitik düşünme, İngilizce',
+    contactEmail: 'mehmet.demir@mezun.example.com', externalApplicationLink: null,
+    applicationDeadline: '2027-03-30', status: 'open', latitude: 52.5200, longitude: 13.4050,
+    createdAt: new Date().toISOString(), updatedAt: null
+  }
+];
+let nextId = 6;
 
 const jobPostingRepository = {
   /** filters: status, employmentType, workMode, city, alumniId, search */

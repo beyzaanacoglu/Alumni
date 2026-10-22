@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -201,5 +201,21 @@
       <a href="/users" class="btn-cancel">İptal</a>
     </form>
   </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const alerts = document.querySelectorAll('.alert, .alert-error, .alert-success');
+      if (alerts.length > 0) {
+        setTimeout(() => {
+          alerts.forEach(al => {
+            al.style.transition = 'opacity 0.6s ease, transform 0.6s ease, max-height 0.6s ease, margin 0.6s ease, padding 0.6s ease';
+            al.style.opacity = '0';
+            al.style.transform = 'translateY(-10px)';
+            setTimeout(() => al.remove(), 600);
+          });
+        }, 5000);
+      }
+    });
+  </script>
 </body>
 </html>

@@ -300,6 +300,28 @@ const ApiJobPostingController = {
     } catch (err) {
       return sendJson(res, 500, { error: 'Internal server error.' });
     }
+  },
+
+  /** GET /api/applications or /api/my-applications */
+  async listApplications(req, res, query = {}) {
+    try {
+      const applications = await JobPostingModel.getAllApplications(query);
+      return sendJson(res, 200, applications);
+    } catch (err) {
+      return sendJson(res, 500, { error: 'Internal server error.' });
+    }
+  },
+
+  /** DELETE /api/applications/:id */
+  async deleteApplicationDirect(req, res, id) {
+    try {
+      const deleted = await JobPostingModel.deleteApplication(id);
+      if (!deleted) return sendJson(res, 404, { error: 'Application not found.' });
+      res.writeHead(204);
+      return res.end();
+    } catch (err) {
+      return sendJson(res, 500, { error: 'Internal server error.' });
+    }
   }
 };
 

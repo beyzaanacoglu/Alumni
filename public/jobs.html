@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Leaflet.js CSS (Harita Görünümü) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
     :root {
@@ -389,14 +389,16 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 16px;
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
       position: relative;
+      will-change: transform;
     }
 
     .job-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(99, 102, 241, 0.4);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+      transform: scale(1.025);
+      z-index: 5;
+      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 20px rgba(99, 102, 241, 0.15);
     }
 
     .card-head {
@@ -807,6 +809,19 @@
     @media (max-width: 640px) {
       .form-grid-2 { grid-template-columns: 1fr; }
     }
+    .leaflet-control-zoom-reset {
+      font-size: 14px;
+      line-height: 30px;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+    .leaflet-control-zoom-reset:hover {
+      background-color: #f1f5f9 !important;
+    }
   </style>
 </head>
 <body>
@@ -842,7 +857,10 @@
     <!-- Sekmeler (Tabs) -->
     <div class="tabs-nav">
       <button class="tab-btn active" id="tab-btn-jobs" onclick="switchTab('jobs')">
-        📌 Tüm İlanlar <span class="tab-badge" id="badge-jobs-count">0</span>
+        📌 Tüm İlanlar (Kartlar) <span class="tab-badge" id="badge-jobs-count">0</span>
+      </button>
+      <button class="tab-btn" id="tab-btn-map" onclick="switchTab('map')" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.35);">
+        🗺️ İlan Haritası (Leaflet) <span class="tab-badge" id="badge-map-count" style="background: var(--primary); color: #fff;">0</span>
       </button>
       <button class="tab-btn" id="tab-btn-my-apps" onclick="switchTab('my-apps')">
         📋 Başvurularım <span class="tab-badge" id="badge-my-apps-count">0</span>
@@ -941,6 +959,39 @@
             <div class="empty-state">İlanlar taranıyor...</div>
           </div>
         </main>
+      </div>
+    </div>
+
+    <!-- ==================== SEKME: LEAFLET HARİTA GÖRÜNÜMÜ ==================== -->
+    <div id="tab-content-map" style="display: none;">
+      <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 18px 22px; backdrop-filter: blur(16px); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 style="font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+            🗺️ İnteraktif İlan & Kariyer Haritası (Leaflet.js)
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.86rem; margin-top: 3px;">
+            Lokasyon koordinatları olan iş, staj ve proje fırsatları haritada işaretlenmiştir. İlan detayına gitmek veya başvurmak için pinlere tıklayabilirsiniz.
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-primary" onclick="switchTab('jobs')">📋 Kart Listesine Geç</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start;" class="map-view-grid">
+        <!-- Harita Alanı -->
+        <div id="dedicated-leaflet-map" style="height: 600px; width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid var(--card-border); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); z-index: 1;"></div>
+
+        <!-- Haritadaki İlanların Listesi -->
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 18px; backdrop-filter: blur(16px); max-height: 600px; overflow-y: auto;">
+          <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <span>📍 Haritadaki İlanlar</span>
+            <span class="tab-badge" id="map-sidebar-count">0</span>
+          </h4>
+          <div id="map-sidebar-list" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="empty-state">İlanlar taranıyor...</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1114,7 +1165,7 @@
   <div class="toast" id="toast"></div>
 
   <!-- Leaflet.js (Vanilla Harita Kütüphanesi) -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
     // Global State
@@ -1187,13 +1238,17 @@
     function switchTab(tabId) {
       currentTab = tabId;
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(`tab-btn-${tabId}`).classList.add('active');
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      if (activeBtn) activeBtn.classList.add('active');
 
       document.getElementById('tab-content-jobs').style.display = tabId === 'jobs' ? 'block' : 'none';
+      document.getElementById('tab-content-map').style.display = tabId === 'map' ? 'block' : 'none';
       document.getElementById('tab-content-my-apps').style.display = tabId === 'my-apps' ? 'block' : 'none';
       document.getElementById('tab-content-manage').style.display = tabId === 'manage' ? 'block' : 'none';
 
-      if (tabId === 'my-apps') {
+      if (tabId === 'map') {
+        initDedicatedMap();
+      } else if (tabId === 'my-apps') {
         fetchMyApplications();
       } else if (tabId === 'manage') {
         renderManagePostings();
@@ -1208,7 +1263,15 @@
         allPostings = await res.json();
         
         document.getElementById('badge-jobs-count').textContent = allPostings.length;
+        const mappedCount = allPostings.filter(p => p.latitude && p.longitude).length;
+        const mapBadge = document.getElementById('badge-map-count');
+        if (mapBadge) mapBadge.textContent = mappedCount;
+
         renderJobs(getFilteredPostings());
+
+        if (window.location.hash === '#map' || window.location.hash === '#harita') {
+          switchTab('map');
+        }
       } catch (err) {
         document.getElementById('jobs-grid').innerHTML = `
           <div class="empty-state" style="color: var(--status-rejected);">
@@ -1312,7 +1375,7 @@
               <div class="card-meta-tags">
                 <span class="meta-tag">💼 ${typeLabel}</span>
                 <span class="meta-tag">🌐 ${modeLabel}</span>
-                ${p.city ? `<span class="meta-tag">📍 ${escapeHtml(p.city)}</span>` : ''}
+                ${p.city ? `<span class="meta-tag" style="cursor: pointer; color: var(--accent); border-color: rgba(6, 182, 212, 0.35); background: rgba(6, 182, 212, 0.08);" onclick="goToJobOnMap(${p.id})" title="Bu ilanın haritadaki konumuna git">📍 ${escapeHtml(p.city)} (Haritada Gör) ↗</span>` : ''}
               </div>
 
               <p class="card-desc" style="margin-top: 10px;">${escapeHtml(p.description)}</p>
@@ -1336,77 +1399,159 @@
       }).join('');
     }
 
-    // Soru 5: Leaflet Harita Görünümü Toggle
-    function toggleMapView() {
-      isMapView = !isMapView;
-      const mapBox = document.getElementById('map-container');
-      const grid = document.getElementById('jobs-grid');
-      const toggleBtn = document.getElementById('toggle-map-btn');
+    // ==================== LEAFLET HARİTA YÖNETİMİ ====================
+    let dedicatedLeafletMap = null;
+    let dedicatedMarkers = {};
 
-      if (isMapView) {
-        mapBox.style.display = 'block';
-        toggleBtn.innerHTML = '📋 Liste Görünümü';
-        initOrUpdateMap();
-      } else {
-        mapBox.style.display = 'none';
-        toggleBtn.innerHTML = '🗺️ Haritada Göster';
+    function initDedicatedMap() {
+      const mapDiv = document.getElementById('dedicated-leaflet-map');
+      if (!window.L) {
+        mapDiv.innerHTML = `
+          <div class="empty-state" style="padding: 60px 20px; color: var(--status-rejected);">
+            ❌ Leaflet.js kütüphanesi yüklenemedi. Lütfen internet bağlantınızı kontrol edip sayfayı yenileyin.
+          </div>`;
+        return;
       }
-    }
 
-    function initOrUpdateMap() {
-      if (!leafletMap) {
-        leafletMap = L.map('map-container').setView([39.9334, 32.8597], 6); // Türkiye odaklı
+      if (!dedicatedLeafletMap) {
+        // Türkiye merkezli Leaflet haritası
+        dedicatedLeafletMap = L.map('dedicated-leaflet-map').setView([39.9334, 32.8597], 6);
 
-        // CartoDB Dark Matter karo katmanı (Dark tema ile mükemmel uyumlu)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-          maxZoom: 19
-        }).addTo(leafletMap);
+        // Standart ve kesintisiz OpenStreetMap karo katmanı
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(dedicatedLeafletMap);
+
+        ensureMapRefreshControl();
       }
 
       setTimeout(() => {
-        leafletMap.invalidateSize();
-        updateMapMarkers(getFilteredPostings());
-      }, 100);
+        dedicatedLeafletMap.invalidateSize();
+        ensureMapRefreshControl();
+        updateDedicatedMapData();
+      }, 150);
     }
 
-    function updateMapMarkers(postings) {
-      if (!leafletMap) return;
+    function updateDedicatedMapData() {
+      if (!dedicatedLeafletMap) return;
 
-      // Eski işaretçileri temizle
-      mapMarkers.forEach(m => leafletMap.removeLayer(m));
-      mapMarkers = [];
+      // Eski markerları temizle
+      Object.values(dedicatedMarkers).forEach(m => dedicatedLeafletMap.removeLayer(m));
+      dedicatedMarkers = {};
 
       const bounds = [];
+      const mappedPostings = allPostings.filter(p => p.latitude && p.longitude && !isNaN(parseFloat(p.latitude)) && !isNaN(parseFloat(p.longitude)));
 
-      postings.forEach(p => {
-        if (p.latitude && p.longitude) {
-          const lat = parseFloat(p.latitude);
-          const lng = parseFloat(p.longitude);
+      // Rozet sayılarını güncelle
+      const badgeCount = document.getElementById('badge-map-count');
+      if (badgeCount) badgeCount.textContent = mappedPostings.length;
+      const sidebarCount = document.getElementById('map-sidebar-count');
+      if (sidebarCount) sidebarCount.textContent = mappedPostings.length;
 
-          if (!isNaN(lat) && !isNaN(lng)) {
-            const marker = L.marker([lat, lng]).addTo(leafletMap);
-            bounds.push([lat, lng]);
-
-            const popupContent = `
-              <div style="font-family: sans-serif; color: #1e293b; min-width: 200px;">
-                <strong style="font-size: 14px; color: #0f172a;">${escapeHtml(p.title)}</strong>
-                <div style="font-size: 12px; color: #6366f1; margin: 3px 0;">🏢 ${escapeHtml(p.companyName)} (${p.city || ''})</div>
-                <div style="font-size: 11px; margin: 4px 0;">Çalışma: <strong>${TYPE_LABELS[p.employmentType] || p.employmentType}</strong></div>
-                <div style="margin-top: 8px;">
-                  <button onclick="openDetailModal(${p.id})" style="background: #6366f1; color: #fff; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px;">İlan Detayı</button>
-                </div>
+      // Harita yan listesi
+      const sidebarList = document.getElementById('map-sidebar-list');
+      if (sidebarList) {
+        if (mappedPostings.length === 0) {
+          sidebarList.innerHTML = `<div class="empty-state">Haritada gösterilecek koordinatlı ilan bulunamadı.</div>`;
+        } else {
+          sidebarList.innerHTML = mappedPostings.map(p => `
+            <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; cursor: pointer; transition: all 0.2s ease;"
+                 onmouseover="this.style.borderColor='var(--primary)'"
+                 onmouseout="this.style.borderColor='var(--card-border)'"
+                 onclick="focusDedicatedMarker(${p.id})">
+              <strong style="color: #fff; font-size: 0.88rem; display: block;">${escapeHtml(p.title)}</strong>
+              <div style="color: var(--accent); font-size: 0.78rem; margin: 2px 0;">🏢 ${escapeHtml(p.companyName)} (${escapeHtml(p.city || '')})</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                <span class="meta-tag" style="font-size: 0.7rem;">${TYPE_LABELS[p.employmentType] || p.employmentType}</span>
+                <span style="color: var(--text-muted); font-size: 0.72rem;">📍 Pini Aç →</span>
               </div>
-            `;
-            marker.bindPopup(popupContent);
-            mapMarkers.push(marker);
-          }
+            </div>
+          `).join('');
         }
+      }
+
+      mappedPostings.forEach(p => {
+        const lat = parseFloat(p.latitude);
+        const lng = parseFloat(p.longitude);
+
+        const marker = L.marker([lat, lng]).addTo(dedicatedLeafletMap);
+        bounds.push([lat, lng]);
+        dedicatedMarkers[p.id] = marker;
+
+        const popupContent = `
+          <div style="font-family: sans-serif; color: #0f172a; min-width: 220px; line-height: 1.4;">
+            <strong style="font-size: 14px; color: #1e293b; display: block; margin-bottom: 3px;">${escapeHtml(p.title)}</strong>
+            <div style="font-size: 12px; color: #4338ca; font-weight: 600;">🏢 ${escapeHtml(p.companyName)} (${escapeHtml(p.city || '')})</div>
+            <div style="font-size: 11px; color: #64748b; margin: 4px 0;">Çalışma: <strong>${TYPE_LABELS[p.employmentType] || p.employmentType}</strong> (${MODE_LABELS[p.workMode] || p.workMode})</div>
+            <div style="margin-top: 8px; display: flex; gap: 6px;">
+              <button onclick="openDetailModal(${p.id})" style="background: #4f46e5; color: #fff; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">İlan Detayı</button>
+              ${p.externalApplicationLink ? '' : `<button onclick="openApplyModal(${p.id})" style="background: #10b981; color: #fff; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">Başvur</button>`}
+            </div>
+          </div>
+        `;
+        marker.bindPopup(popupContent);
       });
 
       if (bounds.length > 0) {
-        leafletMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
+        dedicatedLeafletMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
       }
+    }
+
+    function fitAllMapMarkers() {
+      if (!dedicatedLeafletMap) return;
+      const bounds = [];
+      allPostings.forEach(p => {
+        if (p.latitude && p.longitude) {
+          bounds.push([parseFloat(p.latitude), parseFloat(p.longitude)]);
+        }
+      });
+      if (bounds.length > 0) {
+        dedicatedLeafletMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+      }
+    }
+
+    function ensureMapRefreshControl() {
+      if (!dedicatedLeafletMap || !window.L) return;
+      const zoomContainer = document.querySelector('#dedicated-leaflet-map .leaflet-control-zoom');
+      if (zoomContainer && !zoomContainer.querySelector('.leaflet-control-zoom-reset')) {
+        const resetBtn = L.DomUtil.create('a', 'leaflet-control-zoom-reset leaflet-bar-part', zoomContainer);
+        resetBtn.href = '#';
+        resetBtn.title = 'Tüm Pinleri Odakla (Haritayı Yenile)';
+        resetBtn.setAttribute('role', 'button');
+        resetBtn.setAttribute('aria-label', 'Tüm Pinleri Odakla');
+        resetBtn.innerHTML = '🔄';
+        resetBtn.style.fontSize = '14px';
+        resetBtn.style.display = 'flex';
+        resetBtn.style.alignItems = 'center';
+        resetBtn.style.justifyContent = 'center';
+        resetBtn.style.cursor = 'pointer';
+
+        L.DomEvent.disableClickPropagation(resetBtn);
+        L.DomEvent.on(resetBtn, 'click', function(e) {
+          L.DomEvent.preventDefault(e);
+          fitAllMapMarkers();
+        });
+      }
+    }
+
+    function focusDedicatedMarker(jobId) {
+      if (!dedicatedLeafletMap || !dedicatedMarkers[jobId]) return;
+      const marker = dedicatedMarkers[jobId];
+      dedicatedLeafletMap.setView(marker.getLatLng(), 13, { animate: true });
+      marker.openPopup();
+    }
+
+    function goToJobOnMap(jobId) {
+      switchTab('map');
+      setTimeout(() => {
+        focusDedicatedMarker(jobId);
+      }, 250);
+    }
+
+    // Liste üzerindeki toggle harita
+    function toggleMapView() {
+      switchTab('map');
     }
 
     // Soru 3: A - Modal Açma / Kapatma (Blurlanmış Ekran)

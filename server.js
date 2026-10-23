@@ -7,6 +7,7 @@ const { handleApiAnnouncementRoutes } = require('./routes/apiAnnouncementRoutes'
 const { handleAnnouncementRoutes } = require('./routes/announcementRoutes');
 const { handleApiAlumniRoutes } = require('./routes/apiAlumniRoutes');
 const { handleApiJobPostingRoutes } = require('./routes/apiJobPostingRoutes');
+const { handleApiFeedRoutes } = require('./routes/apiFeedRoutes');
 const { initDb } = require('./config/db');
 
 const PORT = process.env.PORT || 80;
@@ -53,6 +54,10 @@ async function requestHandler(req, res) {
   // 3c. API Job Posting Routes (/api/job-postings...)
   const isApiJobPostingHandled = await handleApiJobPostingRoutes(req, res, pathWithoutPrefix);
   if (isApiJobPostingHandled) return;
+
+  // 3d. API Feed Routes (/api/feed...)
+  const isApiFeedHandled = await handleApiFeedRoutes(req, res, pathWithoutPrefix);
+  if (isApiFeedHandled) return;
 
   // 4. View Announcement Routes (/announcements...)
   const isViewAnnouncementHandled = await handleAnnouncementRoutes(req, res, pathWithoutPrefix);

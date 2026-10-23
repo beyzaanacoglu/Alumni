@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alumni Portal</title>
+  <title>Alumni Portal • Mezun & Öğrenci Topluluk Akışı (Feed)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,12 +12,17 @@
       --primary: #6366f1;
       --primary-hover: #4f46e5;
       --accent: #06b6d4;
+      --accent-hover: #0891b2;
       --bg: #0b0f19;
-      --card-bg: rgba(23, 32, 53, 0.75);
+      --card-bg: rgba(23, 32, 53, 0.78);
       --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover-border: rgba(99, 102, 241, 0.35);
       --input-bg: #111827;
       --text: #f8fafc;
       --text-muted: #94a3b8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
     }
 
     * {
@@ -36,51 +41,6 @@
       flex-direction: column;
     }
 
-    /* === LOADING OVERLAY === */
-    #loader-overlay {
-      position: fixed;
-      inset: 0;
-      background: #080c14;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
-    }
-
-    .spinner-ring {
-      width: 60px;
-      height: 60px;
-      border: 4px solid rgba(99, 102, 241, 0.15);
-      border-top-color: var(--primary);
-      border-right-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.9s cubic-bezier(0.6, 0.2, 0.2, 0.8) infinite;
-      box-shadow: 0 0 30px rgba(99, 102, 241, 0.35);
-    }
-
-    .loader-text {
-      margin-top: 20px;
-      font-size: 1rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-weight: 700;
-      background: linear-gradient(135deg, #a5b4fc, #38bdf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 1; }
-    }
-
     /* === BACKGROUND GLOWS === */
     .glow {
       position: fixed;
@@ -92,45 +52,47 @@
     .glow-1 {
       top: -120px;
       left: -100px;
-      width: 450px;
-      height: 450px;
-      background: rgba(99, 102, 241, 0.22);
+      width: 500px;
+      height: 500px;
+      background: rgba(99, 102, 241, 0.18);
     }
     .glow-2 {
       bottom: -150px;
       right: -100px;
-      width: 500px;
-      height: 500px;
-      background: rgba(6, 182, 212, 0.18);
+      width: 550px;
+      height: 550px;
+      background: rgba(6, 182, 212, 0.15);
     }
 
-    /* === CONTAINER === */
-    .container {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 1100px;
+    /* === NAVBAR === */
+    nav.top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 15, 25, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 24px;
+    }
+
+    .nav-container {
+      max-width: 1380px;
       margin: 0 auto;
-      padding: 32px 20px 48px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-    }
-
-    /* === HEADER === */
-    header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--card-border);
-      flex-wrap: wrap;
-      gap: 16px;
+      gap: 20px;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .logo {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 800;
       background: linear-gradient(135deg, #818cf8, #38bdf8);
       -webkit-background-clip: text;
@@ -139,383 +101,2002 @@
       align-items: center;
       gap: 8px;
       text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-search {
+      position: relative;
+      width: 320px;
+    }
+
+    .nav-search input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 8px 16px 8px 38px;
+      color: #fff;
+      font-size: 0.88rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .nav-search input:focus {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .nav-search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      pointer-events: none;
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
 
-    .nav-link {
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 14px;
+      border-radius: 10px;
       color: var(--text-muted);
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      padding: 6px 14px;
+      transition: all 0.2s ease;
+      gap: 2px;
+      position: relative;
+    }
+
+    .nav-item i {
+      font-size: 1.15rem;
+      font-style: normal;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      width: 24px;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    .btn-api-console {
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      padding: 6px 12px;
       border-radius: 8px;
-      border: 1px solid transparent;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       transition: all 0.2s ease;
     }
 
-    .nav-link:hover {
+    .btn-api-console:hover {
+      background: rgba(99, 102, 241, 0.22);
       color: #fff;
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--card-border);
     }
 
-    .badge {
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: #a5b4fc;
-      padding: 4px 12px;
-      border-radius: 9999px;
+    /* === MAIN LAYOUT (EXPANSIVE WIDESCREEN GRID) === */
+    .app-layout {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr) 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* === LEFT COLUMN: PROFILE & SHORTCUTS === */
+    .left-rail {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: sticky;
+      top: 84px;
+    }
+
+    .profile-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .profile-cover {
+      height: 70px;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      position: relative;
+    }
+
+    .profile-avatar-wrap {
+      margin-top: -36px;
+      padding-left: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-right: 20px;
+    }
+
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #1e1b4b;
+      border: 3px solid var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #38bdf8;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+
+    .profile-info {
+      padding: 14px 20px 18px;
+    }
+
+    .profile-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .profile-headline {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .profile-stats {
+      border-top: 1px solid var(--card-border);
+      padding: 12px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       font-size: 0.8rem;
+    }
+
+    .profile-stat-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+    }
+
+    .profile-stat-val {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .left-menu-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .menu-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      padding-left: 6px;
+    }
+
+    .menu-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .menu-item a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .menu-item a:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      transform: translateX(3px);
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .topic-tag {
+      font-size: 0.76rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .topic-tag:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* === CENTER COLUMN: EXPANSIVE & SPACIOUS FEED === */
+    .feed-rail {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 0;
+    }
+
+    /* --- POST CREATOR BOX --- */
+    .post-creator-box {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 20px 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      transition: border-color 0.2s ease;
+    }
+
+    .creator-header-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .creator-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #1e1b4b;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .creator-fake-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 12px 20px;
+      color: var(--text-muted);
+      font-size: 0.94rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .creator-fake-input:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(99, 102, 241, 0.4);
+      color: #fff;
+    }
+
+    .creator-action-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .creator-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .creator-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+
+    /* --- FEED FILTER PILLS & CATEGORIES --- */
+    .feed-filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 10px 18px;
+      backdrop-filter: blur(14px);
+    }
+
+    .filter-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .filter-pill {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .filter-pill:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .filter-pill.active {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.4);
+      color: #a5b4fc;
+    }
+
+    /* --- POST CARDS (EXPANSIVE & BEAUTIFUL) --- */
+    .post-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .post-card:hover {
+      border-color: var(--card-hover-border);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    }
+
+    .post-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .author-info-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .author-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      border: 2px solid rgba(99, 102, 241, 0.4);
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .author-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .author-name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .author-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .author-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(99, 102, 241, 0.16);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    .author-headline {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    .post-time-row {
+      font-size: 0.78rem;
+      color: #64748b;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .category-tag-pill {
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .cat-career { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .cat-announcement { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .cat-story { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); }
+    .cat-advice { background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .cat-general { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); }
+
+    /* Post Content */
+    .post-content {
+      font-size: 0.96rem;
+      line-height: 1.65;
+      color: #e2e8f0;
+      white-space: pre-line;
+      word-break: break-word;
+    }
+
+    .post-content a.hashtag {
+      color: #38bdf8;
+      text-decoration: none;
       font-weight: 600;
     }
 
-    /* === HERO === */
-    .hero {
-      text-align: center;
-      padding: 24px 0 12px;
+    .post-content a.hashtag:hover {
+      text-decoration: underline;
     }
 
-    .hero h1 {
-      font-size: 2.6rem;
-      font-weight: 800;
-      line-height: 1.25;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #ffffff 50%, #94a3b8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero p {
-      font-size: 1.05rem;
-      color: var(--text-muted);
-      max-width: 580px;
-      margin: 0 auto;
-      line-height: 1.6;
-    }
-
-    /* === SECTION & CARDS === */
-    .section-title {
-      font-size: 1.35rem;
-      font-weight: 700;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
-    }
-
-    .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+    /* Embedded Media / Image */
+    .post-media-wrap {
+      border-radius: 14px;
+      overflow: hidden;
       border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      max-height: 480px;
+      background: #000;
     }
 
-    .card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(99, 102, 241, 0.4);
-      box-shadow: 0 14px 35px rgba(99, 102, 241, 0.15);
+    .post-media-wrap img {
+      width: 100%;
+      height: 100%;
+      max-height: 480px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
     }
 
-    .card-top {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .post-media-wrap:hover img {
+      transform: scale(1.015);
     }
 
-    .card-header {
+    /* Embedded Link Card (e.g. Job Posting or Announcement) */
+    .embedded-link-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
+      text-decoration: none;
+      transition: all 0.2s ease;
     }
 
-    .card-title {
-      font-size: 1.1rem;
-      font-weight: 700;
+    .embedded-link-card:hover {
+      background: rgba(99, 102, 241, 0.12);
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .embedded-link-info strong {
       color: #fff;
+      font-size: 0.92rem;
+      display: block;
     }
 
-    .method {
-      font-size: 0.75rem;
+    .embedded-link-info span {
+      color: var(--accent);
+      font-size: 0.8rem;
+    }
+
+    .embedded-link-action {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
       font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 6px;
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.3);
       white-space: nowrap;
     }
 
-    .card-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    /* === FORM ELEMENTS & CONTROLS === */
-    .controls {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-    }
-
-    .input-row {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-    }
-
-    .input-row-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      width: 100%;
-    }
-
-    input, select {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 0.92rem;
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    input:focus, select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-      border: none;
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.92rem;
-      padding: 11px 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      width: 100%;
-      transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
-    }
-
-    .btn:hover {
-      opacity: 0.95;
-      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    .result-box {
-      background: rgba(11, 15, 25, 0.85);
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-size: 0.88rem;
-      color: #38bdf8;
-      min-height: 44px;
-      display: flex;
-      align-items: center;
-      border: 1px dashed rgba(255, 255, 255, 0.12);
-      word-break: break-all;
-      width: 100%;
-    }
-
-    /* === FOOTER === */
-    footer {
-      text-align: center;
-      padding-top: 24px;
-      color: var(--text-muted);
-      font-size: 0.88rem;
-      border-top: 1px solid var(--card-border);
+    /* Metrics Bar */
+    .post-metrics-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .metrics-likes {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Interaction Action Bar */
+    .post-actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .action-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+
+    .action-btn.liked {
+      color: #38bdf8;
+      background: rgba(6, 182, 212, 0.12);
+    }
+
+    /* --- EXPANDABLE COMMENTS SECTION --- */
+    .comments-section {
+      border-top: 1px solid var(--card-border);
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .comment-input-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .comment-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #1e1b4b;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.88rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .comment-input-wrap {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+    }
+
+    .comment-input-wrap input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 10px 16px;
+      color: #fff;
+      font-size: 0.88rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .comment-input-wrap input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+    }
+
+    .btn-send-comment {
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      padding: 0 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-send-comment:hover {
+      background: var(--primary-hover);
+    }
+
+    .comments-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .comment-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .comment-bubble {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px 14px;
+      flex: 1;
+    }
+
+    .comment-author-name {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .comment-author-title {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .comment-text {
+      font-size: 0.86rem;
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+
+    /* === RIGHT COLUMN: JOBS & ANNOUNCEMENTS WIDGETS === */
+    .right-rail {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: sticky;
+      top: 84px;
+    }
+
+    .widget-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .widget-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .widget-link {
+      font-size: 0.78rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .widget-link:hover {
+      text-decoration: underline;
+    }
+
+    .widget-list {
+      display: flex;
+      flex-direction: column;
       gap: 12px;
     }
 
-    @media (max-width: 640px) {
-      .hero h1 { font-size: 2.1rem; }
-      .grid { grid-template-columns: 1fr; }
-      header { flex-direction: column; align-items: flex-start; }
+    .widget-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      transition: background 0.2s ease;
+      text-decoration: none;
+    }
+
+    .widget-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .widget-item-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .widget-item-meta {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Recommended Connections */
+    .user-suggest-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .user-suggest-item:last-child {
+      border-bottom: none;
+    }
+
+    .user-suggest-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-suggest-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #1e1b4b;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .btn-connect {
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-connect:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* === POST MODAL (CREATE POST MODAL) === */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-box {
+      background: #121827;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 640px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      transform: translateY(20px) scale(0.97);
+      transition: all 0.25s ease;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-backdrop.active .modal-box {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.15rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .modal-close-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .category-select-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cat-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .cat-btn.selected {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .modal-textarea {
+      width: 100%;
+      min-height: 140px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 0.95rem;
+      resize: vertical;
+      outline: none;
+      line-height: 1.5;
+    }
+
+    .modal-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .modal-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .modal-input:focus {
+      border-color: var(--primary);
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: #e2e8f0;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      border: none;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    /* === TOAST ALERTS === */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: rgba(18, 24, 39, 0.95);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--primary);
+      padding: 14px 20px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.88rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      animation: slideIn 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* === RESPONSIVE BREAKPOINTS === */
+    @media (max-width: 1200px) {
+      .app-layout {
+        grid-template-columns: 260px minmax(0, 1fr);
+      }
+      .right-rail {
+        display: none;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .app-layout {
+        grid-template-columns: 1fr;
+      }
+      .left-rail {
+        position: static;
+      }
+      .nav-search {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- LOADING OVERLAY -->
-  <div id="loader-overlay">
-    <div class="spinner-ring"></div>
-    <div class="loader-text">Alumni Yükleniyor...</div>
-  </div>
-
   <div class="glow glow-1"></div>
   <div class="glow glow-2"></div>
 
-  <div class="container">
-    <header>
-      <a href="/" class="logo">🎓 Alumni Portal</a>
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container"></div>
+
+  <!-- ==================== ÜST GEZİNME ÇUBUĞU (NAVBAR) ==================== -->
+  <nav class="top-navbar">
+    <div class="nav-container">
+      <div class="logo-group">
+        <a href="/" class="logo">🎓 Alumni Portal</a>
+        <div class="nav-search">
+          <span class="nav-search-icon">🔍</span>
+          <input type="text" id="feed-search-input" placeholder="Mezunlarda, gönderilerde ve konularda ara..." oninput="handleFeedSearch(this.value)" />
+        </div>
+      </div>
+
       <div class="nav-links">
-        <a href="/jobs" class="nav-link">💼 İş & Staj İlanları</a>
-        <a href="/users" class="nav-link">👥 Kullanıcılar</a>
-        <a href="/announcements" class="nav-link">📢 Duyurular</a>
-        <a href="/docs" class="nav-link" style="color: var(--accent);">📖 Swagger UI</a>
-        <a href="/about" class="nav-link">Hakkında (About)</a>
-        <span class="badge">v1.0 Live</span>
+        <a href="/" class="nav-item active">
+          <i>🏠</i>
+          <span>Ana Sayfa (Akış)</span>
+        </a>
+        <a href="/jobs" class="nav-item">
+          <i>💼</i>
+          <span>İş & Staj İlanları</span>
+        </a>
+        <a href="/jobs#map" class="nav-item">
+          <i>🗺️</i>
+          <span>İlan Haritası</span>
+        </a>
+        <a href="/announcements" class="nav-item">
+          <i>📢</i>
+          <span>Duyurular</span>
+        </a>
+        <a href="/users" class="nav-item">
+          <i>👥</i>
+          <span>Mezun Ağı</span>
+        </a>
+        <a href="/docs" class="nav-item" style="color: var(--accent);">
+          <i>📖</i>
+          <span>Swagger API</span>
+        </a>
+        <button class="btn-api-console" onclick="openApiConsoleModal()" title="Eski tek sayfa canlı test konsolunu aç">
+          ⚡ Canlı Test Konsolu
+        </button>
       </div>
-    </header>
+    </div>
+  </nav>
 
-    <section class="hero">
-      <h1>Tek Sayfa Web Portalı</h1>
-      <p>Alumni projesinin etkileşimli tek sayfalık arayüzü ve entegre test merkezi.</p>
-    </section>
-
-    <section>
-      <div class="section-title">⚡ Canlı Test Konsolu</div>
-      
-      <div class="grid">
-        <!-- 1. Durum Kontrolü -->
-        <div class="card">
-          <div class="card-top">
-            <div class="card-header">
-              <span class="card-title">Durum Kontrolü</span>
-              <span class="method">GET /</span>
-            </div>
-            <p class="card-desc">Kök API durumunu doğrular ve test eder.</p>
-          </div>
-          <div class="controls">
-            <button class="btn" onclick="testRoute('/alumni', 'res-root')">Test İsteği Gönder</button>
-            <div class="result-box" id="res-root">Sonuç bekleniyor...</div>
-          </div>
+  <!-- ==================== GENİŞ & FERAH ANA DÜZEN ==================== -->
+  <main class="app-layout">
+    <!-- SOL SÜTUN: PROFİL KARTI & HIZLI KISAYOLLAR -->
+    <aside class="left-rail">
+      <div class="profile-card">
+        <div class="profile-cover"></div>
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="current-user-avatar">BA</div>
         </div>
-
-        <!-- 2. Dinamik Selamla -->
-        <div class="card">
-          <div class="card-top">
-            <div class="card-header">
-              <span class="card-title">Dinamik Karşılama</span>
-              <span class="method">GET /hello, {isim}</span>
-            </div>
-            <p class="card-desc">URL parametresi ile dinamik selam mesajı döndürür.</p>
+        <div class="profile-info">
+          <div class="profile-name">
+            <span id="current-user-name">Beyza Anacoğlu</span>
+            <span style="font-size: 0.85rem;" title="Doğrulanmış Üye">⭐</span>
           </div>
-          <div class="controls">
-            <div class="input-row">
-              <input type="text" id="input-name" placeholder="İsim girin" value="Beyza" />
-            </div>
-            <button class="btn" onclick="testHello()">Selamla</button>
-            <div class="result-box" id="res-hello">Sonuç bekleniyor...</div>
-          </div>
+          <div class="profile-headline">Platform Yöneticisi • Yönetim Bilişim Sistemleri</div>
         </div>
-
-        <!-- 3. Matematiksel İşlem -->
-        <div class="card">
-          <div class="card-top">
-            <div class="card-header">
-              <span class="card-title">Matematiksel Hesaplama</span>
-              <span class="method">GET /{işlem}/{s1}/{s2}</span>
-            </div>
-            <p class="card-desc">Seçilen matematiksel işlemi URL rotası ile hesaplar.</p>
+        <div class="profile-stats">
+          <div class="profile-stat-row">
+            <span>Profilimi Görüntüleyenler</span>
+            <span class="profile-stat-val">142</span>
           </div>
-          <div class="controls">
-            <div class="input-row-grid">
-              <input type="number" id="input-n1" value="12" placeholder="1. Sayı" />
-              <input type="number" id="input-n2" value="8" placeholder="2. Sayı" />
-            </div>
-            <div class="input-row">
-              <select id="select-op">
-                <option value="sum">Toplama ( + )</option>
-                <option value="sub">Çıkarma ( - )</option>
-                <option value="mul">Çarpma ( × )</option>
-                <option value="div">Bölme ( ÷ )</option>
-              </select>
-            </div>
-            <button class="btn" onclick="testMath()">Hesapla</button>
-            <div class="result-box" id="res-math">Sonuç bekleniyor...</div>
+          <div class="profile-stat-row">
+            <span>Mezun Bağlantılarım</span>
+            <span class="profile-stat-val">86</span>
           </div>
-        </div>
-
-        <!-- 4. API Sağlık Kontrolü (Health Check) -->
-        <div class="card">
-          <div class="card-top">
-            <div class="card-header">
-              <span class="card-title">API Sağlık Kontrolü</span>
-              <span class="method">GET /api/health</span>
-            </div>
-            <p class="card-desc">API'nin çalıştığını belirten JSON sağlık durumunu döndürür.</p>
-          </div>
-          <div class="controls">
-            <button class="btn" onclick="testRoute('/api/health', 'res-health')">Sağlık Kontrolü Yap</button>
-            <div class="result-box" id="res-health">Sonuç bekleniyor...</div>
-          </div>
-        </div>
-
-        <!-- 5. Kullanıcıları Listele (Get All Users) -->
-        <div class="card">
-          <div class="card-top">
-            <div class="card-header">
-              <span class="card-title">Kullanıcı Listesi</span>
-              <span class="method">GET /api/users</span>
-            </div>
-            <p class="card-desc">Kayıtlı tüm kullanıcıları JSON listesi olarak getirir.</p>
-          </div>
-          <div class="controls">
-            <button class="btn" onclick="testRoute('/api/users', 'res-users')">Kullanıcıları Getir</button>
-            <div class="result-box" id="res-users">Sonuç bekleniyor...</div>
+          <div class="profile-stat-row">
+            <span>Kaydettiğim Gönderiler</span>
+            <span class="profile-stat-val" id="saved-posts-count">0</span>
           </div>
         </div>
       </div>
+
+      <div class="left-menu-card">
+        <div class="menu-title">Hızlı Modüller</div>
+        <ul class="menu-list">
+          <li class="menu-item"><a href="/jobs">💼 İş & Staj Fırsatları</a></li>
+          <li class="menu-item"><a href="/jobs#map">🗺️ İnteraktif İlan Haritası</a></li>
+          <li class="menu-item"><a href="/announcements">📢 Üniversite Duyuruları</a></li>
+          <li class="menu-item"><a href="/users">👥 Mezun Rehberi & Kullanıcılar</a></li>
+          <li class="menu-item"><a href="/about">ℹ️ Hakkında (About)</a></li>
+        </ul>
+
+        <div class="menu-title" style="margin-top: 18px;">Popüler Konular</div>
+        <div class="tags-container">
+          <span class="topic-tag" onclick="filterFeedByTag('#Kariyer')">#Kariyer</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#YBS')">#YBS</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#YazilimGelistirme')">#YazilimGelistirme</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#Mentorluk')">#Mentorluk</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#MezunBulusmasi')">#MezunBulusmasi</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#Fintek')">#Fintek</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ORTA SÜTUN: FERAH & GENİŞ FEED (AKIS) -->
+    <section class="feed-rail">
+      <!-- GÖNDERİ PAYLAŞMA KUTUSU (POST CREATOR) -->
+      <div class="post-creator-box">
+        <div class="creator-header-row">
+          <div class="creator-avatar">BA</div>
+          <div class="creator-fake-input" onclick="openCreatePostModal('general')">
+            Bir mezun hikayesi, iş fırsatı veya düşünceni paylaş...
+          </div>
+        </div>
+        <div class="creator-action-buttons">
+          <button class="creator-btn" onclick="openCreatePostModal('career')">
+            <span style="color: #34d399; font-size: 1.1rem;">💼</span>
+            <span>İş Fırsatı Paylaş</span>
+          </button>
+          <button class="creator-btn" onclick="openCreatePostModal('announcement')">
+            <span style="color: #fbbf24; font-size: 1.1rem;">📢</span>
+            <span>Duyuru / Etkinlik</span>
+          </button>
+          <button class="creator-btn" onclick="openCreatePostModal('story')">
+            <span style="color: #38bdf8; font-size: 1.1rem;">📷</span>
+            <span>Görsel / Mezun Hikayesi</span>
+          </button>
+          <button class="creator-btn" onclick="openCreatePostModal('advice')">
+            <span style="color: #a5b4fc; font-size: 1.1rem;">💡</span>
+            <span>Kariyer Tavsiyesi</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KATEGORİ FİLTRELEME & SIRALAMA ÇUBUĞU -->
+      <div class="feed-filter-bar">
+        <div class="filter-pills">
+          <button class="filter-pill active" data-cat="all" onclick="selectCategoryFilter('all')">🌟 Tümü</button>
+          <button class="filter-pill" data-cat="career" onclick="selectCategoryFilter('career')">💼 Kariyer & İlanlar</button>
+          <button class="filter-pill" data-cat="announcement" onclick="selectCategoryFilter('announcement')">📢 Duyurular</button>
+          <button class="filter-pill" data-cat="story" onclick="selectCategoryFilter('story')">🎓 Mezun Hikayeleri</button>
+          <button class="filter-pill" data-cat="advice" onclick="selectCategoryFilter('advice')">💡 Tavsiye & Görüşler</button>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">
+          Geniş Ekran Akışı ⚡
+        </div>
+      </div>
+
+      <!-- GÖNDERİ KARTLARI LİSTESİ (FEED CONTAINER) -->
+      <div id="feed-posts-container" style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+          <div style="font-size: 1.5rem; margin-bottom: 8px;">⏳</div>
+          <div>Mezun akışı yükleniyor...</div>
+        </div>
+      </div>
     </section>
 
-    <footer>
-      <p>© 2026 Alumni Web Project • Web Programming</p>
-      <p><a href="/about" style="color: var(--accent); text-decoration: none;">About Sayfasına Git →</a></p>
-    </footer>
+    <!-- SAĞ SÜTUN: ÖNE ÇIKAN İLANLAR & MEZUN ÖNERİLERİ -->
+    <aside class="right-rail">
+      <!-- Öne Çıkan İş & Staj Fırsatları -->
+      <div class="widget-card">
+        <div class="widget-header">
+          <div class="widget-title">
+            <span>💼</span>
+            <span>Gündemdeki İlanlar</span>
+          </div>
+          <a href="/jobs" class="widget-link">Tümü →</a>
+        </div>
+        <div class="widget-list" id="widget-jobs-list">
+          <div style="color: var(--text-muted); font-size: 0.82rem;">İlanlar taranıyor...</div>
+        </div>
+      </div>
+
+      <!-- Yaklaşan Duyurular & Etkinlikler -->
+      <div class="widget-card">
+        <div class="widget-header">
+          <div class="widget-title">
+            <span>📢</span>
+            <span>Resmi Duyurular</span>
+          </div>
+          <a href="/announcements" class="widget-link">Tümü →</a>
+        </div>
+        <div class="widget-list" id="widget-announcements-list">
+          <div style="color: var(--text-muted); font-size: 0.82rem;">Duyurular taranıyor...</div>
+        </div>
+      </div>
+
+      <!-- Tavsiye Edilen Mezun Bağlantıları -->
+      <div class="widget-card">
+        <div class="widget-header">
+          <div class="widget-title">
+            <span>👥</span>
+            <span>Ağını Genişlet</span>
+          </div>
+          <a href="/users" class="widget-link">Rehber →</a>
+        </div>
+        <div class="widget-list">
+          <div class="user-suggest-item">
+            <div class="user-suggest-info">
+              <div class="user-suggest-avatar">AY</div>
+              <div>
+                <strong style="color: #fff; font-size: 0.86rem; display: block;">Ayşe Yılmaz</strong>
+                <span style="color: var(--text-muted); font-size: 0.74rem;">Trendyol • Senior Engineer</span>
+              </div>
+            </div>
+            <a href="/users" class="btn-connect">Profil</a>
+          </div>
+          <div class="user-suggest-item">
+            <div class="user-suggest-info">
+              <div class="user-suggest-avatar">MD</div>
+              <div>
+                <strong style="color: #fff; font-size: 0.86rem; display: block;">Mehmet Demir</strong>
+                <span style="color: var(--text-muted); font-size: 0.74rem;">SAP Berlin • Product Lead</span>
+              </div>
+            </div>
+            <a href="/users" class="btn-connect">Profil</a>
+          </div>
+          <div class="user-suggest-item">
+            <div class="user-suggest-info">
+              <div class="user-suggest-avatar">EK</div>
+              <div>
+                <strong style="color: #fff; font-size: 0.86rem; display: block;">Elif Kaya</strong>
+                <span style="color: var(--text-muted); font-size: 0.74rem;">Garanti BBVA • İş Analisti</span>
+              </div>
+            </div>
+            <a href="/users" class="btn-connect">Profil</a>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ==================== GÖNDERİ OLUŞTURMA MODALI ==================== -->
+  <div class="modal-backdrop" id="create-post-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>✍️ Bir Gönderi Paylaş</h3>
+        <button class="modal-close-btn" onclick="closeCreatePostModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="creator-avatar" style="width: 44px; height: 44px; font-size: 1rem;">BA</div>
+          <div>
+            <strong style="color: #fff; font-size: 0.95rem;">Beyza Anacoğlu</strong>
+            <div style="font-size: 0.78rem; color: var(--accent);">🌍 Herkese Açık Paylaşım</div>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; display: block;">Kategori Seçin:</label>
+          <div class="category-select-group">
+            <button type="button" class="cat-btn selected" data-cat="general" onclick="selectModalCategory('general')">🌐 Genel</button>
+            <button type="button" class="cat-btn" data-cat="career" onclick="selectModalCategory('career')">💼 İş & Staj</button>
+            <button type="button" class="cat-btn" data-cat="announcement" onclick="selectModalCategory('announcement')">📢 Duyuru & Etkinlik</button>
+            <button type="button" class="cat-btn" data-cat="story" onclick="selectModalCategory('story')">🎓 Mezun Hikayesi</button>
+            <button type="button" class="cat-btn" data-cat="advice" onclick="selectModalCategory('advice')">💡 Kariyer Tavsiyesi</button>
+          </div>
+        </div>
+
+        <textarea id="modal-post-content" class="modal-textarea" placeholder="Mezunlarla veya öğrencilerle paylaşmak istediğiniz düşünce, fırsat ya da deneyimi yazın... (Örn: #Kariyer, #Staj)"></textarea>
+
+        <div>
+          <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: block;">Görsel URL'si (Opsiyonel):</label>
+          <input type="url" id="modal-image-url" class="modal-input" placeholder="https://images.unsplash.com/... veya doğrudan görsel bağlantısı" />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: block;">İlgili Bağlantı URL (Opsiyonel):</label>
+            <input type="text" id="modal-link-url" class="modal-input" placeholder="/jobs veya https://..." />
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: block;">Bağlantı Başlığı:</label>
+            <input type="text" id="modal-link-title" class="modal-input" placeholder="💼 İlanı İncele" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeCreatePostModal()">Vazgeç</button>
+        <button class="btn-primary" onclick="submitNewPost()">🚀 Yayınla</button>
+      </div>
+    </div>
   </div>
 
+  <!-- ==================== CANLI API TEST KONSOLU MODALI (GEÇMİŞ ÖDEV DESTEĞİ) ==================== -->
+  <div class="modal-backdrop" id="api-console-modal">
+    <div class="modal-box" style="max-width: 780px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h3>⚡ Canlı Test Konsolu (Önceki Ödev Modülleri)</h3>
+        <button class="modal-close-btn" onclick="closeApiConsoleModal()">✕</button>
+      </div>
+      <div class="modal-body" style="gap: 20px;">
+        <p style="color: var(--text-muted); font-size: 0.86rem;">
+          Bu konsol, kök endpoint ve önceki aşamalardaki REST/HTTP testlerinin sorunsuz doğrulanabilmesi için entegre edilmiştir.
+        </p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <!-- 1. Durum Kontrolü -->
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <strong style="color: #fff; font-size: 0.9rem;">Durum Kontrolü</strong>
+              <span style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px;">GET /</span>
+            </div>
+            <button class="btn-primary" style="width: 100%; padding: 8px;" onclick="testConsoleRoute('/alumni', 'res-root')">Kök Testi Gönder</button>
+            <div id="res-root" style="margin-top: 8px; font-family: monospace; font-size: 0.78rem; color: #38bdf8; background: #000; padding: 6px; border-radius: 6px; min-height: 28px;">Sonuç bekleniyor...</div>
+          </div>
+
+          <!-- 2. Dinamik Selamla -->
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <strong style="color: #fff; font-size: 0.9rem;">Dinamik Karşılama</strong>
+              <span style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px;">GET /hello</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="console-name" value="Beyza" class="modal-input" style="padding: 6px;" />
+              <button class="btn-primary" style="padding: 6px 12px;" onclick="testConsoleHello()">Selamla</button>
+            </div>
+            <div id="res-hello" style="margin-top: 8px; font-family: monospace; font-size: 0.78rem; color: #38bdf8; background: #000; padding: 6px; border-radius: 6px; min-height: 28px;">Sonuç bekleniyor...</div>
+          </div>
+
+          <!-- 3. Matematiksel İşlem -->
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <strong style="color: #fff; font-size: 0.9rem;">Matematiksel İşlem</strong>
+              <span style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px;">GET /{op}/{a}/{b}</span>
+            </div>
+            <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+              <input type="number" id="console-n1" value="12" class="modal-input" style="padding: 6px;" />
+              <input type="number" id="console-n2" value="8" class="modal-input" style="padding: 6px;" />
+              <select id="console-op" class="modal-input" style="padding: 6px;">
+                <option value="sum">+</option>
+                <option value="sub">-</option>
+                <option value="mul">×</option>
+                <option value="div">÷</option>
+              </select>
+            </div>
+            <button class="btn-primary" style="width: 100%; padding: 8px;" onclick="testConsoleMath()">Hesapla</button>
+            <div id="res-math" style="margin-top: 8px; font-family: monospace; font-size: 0.78rem; color: #38bdf8; background: #000; padding: 6px; border-radius: 6px; min-height: 28px;">Sonuç bekleniyor...</div>
+          </div>
+
+          <!-- 4. Health Check -->
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <strong style="color: #fff; font-size: 0.9rem;">API Sağlık Kontrolü</strong>
+              <span style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px;">GET /api/health</span>
+            </div>
+            <button class="btn-primary" style="width: 100%; padding: 8px;" onclick="testConsoleRoute('/api/health', 'res-health')">Sağlık Sorgula</button>
+            <div id="res-health" style="margin-top: 8px; font-family: monospace; font-size: 0.78rem; color: #38bdf8; background: #000; padding: 6px; border-radius: 6px; min-height: 28px;">Sonuç bekleniyor...</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeApiConsoleModal()">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FRONTEND JAVASCRIPT LOGIC ==================== -->
   <script>
-    // Loading Screen Transition
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const loader = document.getElementById('loader-overlay');
-        if (loader) {
-          loader.style.opacity = '0';
-          setTimeout(() => {
-            loader.style.display = 'none';
-          }, 500);
-        }
-      }, 500);
+    let allFeedPosts = [];
+    let currentCategory = 'all';
+    let modalSelectedCategory = 'general';
+    let savedPostIds = new Set(JSON.parse(localStorage.getItem('alumni_saved_posts') || '[]'));
+
+    const CATEGORY_META = {
+      career: { label: '💼 Kariyer Fırsatı', cls: 'cat-career' },
+      announcement: { label: '📢 Resmi Duyuru', cls: 'cat-announcement' },
+      story: { label: '🎓 Mezun Hikayesi', cls: 'cat-story' },
+      advice: { label: '💡 Mezun Tavsiyesi', cls: 'cat-advice' },
+      general: { label: '🌐 Topluluk Paylaşımı', cls: 'cat-general' }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateSavedCountUI();
+      loadFeedPosts();
+      loadRightSidebarWidgets();
     });
 
-    async function testRoute(path, targetId) {
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span>${type === 'success' ? '✅' : 'ℹ️'}</span> <span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatTimeAgo(isoString) {
+      if (!isoString) return 'Az önce';
+      const diffMs = Date.now() - new Date(isoString).getTime();
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      if (diffMins < 1) return 'Az önce';
+      if (diffMins < 60) return `${diffMins} dakika önce`;
+      const diffHours = Math.floor(diffMins / 60);
+      if (diffHours < 24) return `${diffHours} saat önce`;
+      const diffDays = Math.floor(diffHours / 24);
+      return `${diffDays} gün önce`;
+    }
+
+    function formatContentWithHashtags(text) {
+      const escaped = escapeHtml(text);
+      // Format #hashtags
+      return escaped.replace(/#(\w+)/g, '<a href="#" class="hashtag" onclick="filterFeedByTag(\'#$1\'); return false;">#$1</a>');
+    }
+
+    async function loadFeedPosts() {
+      const container = document.getElementById('feed-posts-container');
+      try {
+        const res = await fetch('/api/feed');
+        if (res.ok) {
+          const json = await res.json();
+          allFeedPosts = json.data || [];
+        } else {
+          allFeedPosts = getFallbackSeedPosts();
+        }
+      } catch (err) {
+        console.warn('API feed error, fallback used:', err);
+        allFeedPosts = getFallbackSeedPosts();
+      }
+      renderFeed();
+    }
+
+    function renderFeed(postsToRender = null) {
+      const container = document.getElementById('feed-posts-container');
+      let posts = postsToRender || allFeedPosts;
+
+      if (currentCategory !== 'all') {
+        posts = posts.filter(p => p.category === currentCategory);
+      }
+
+      if (posts.length === 0) {
+        container.innerHTML = `
+          <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 48px 24px; text-align: center; color: var(--text-muted);">
+            <div style="font-size: 2.2rem; margin-bottom: 12px;">📭</div>
+            <strong style="color: #fff; font-size: 1.1rem; display: block; margin-bottom: 6px;">Henüz bu kategoride gönderi yok</strong>
+            <p style="font-size: 0.9rem; margin-bottom: 16px;">Toplulukta ilk paylaşımı siz yaparak akışı başlatın!</p>
+            <button class="btn-primary" onclick="openCreatePostModal('${currentCategory}')">✍️ İlk Gönderiyi Paylaş</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = posts.map(post => {
+        const cat = CATEGORY_META[post.category] || CATEGORY_META.general;
+        const isSaved = savedPostIds.has(post.id);
+        const hasComments = Array.isArray(post.comments) && post.comments.length > 0;
+
+        return `
+          <article class="post-card" id="post-card-${post.id}">
+            <!-- Header -->
+            <div class="post-header">
+              <div class="author-info-group">
+                <div class="author-avatar">${escapeHtml(post.authorAvatar || 'BA')}</div>
+                <div class="author-details">
+                  <div class="author-name-row">
+                    <span class="author-name">${escapeHtml(post.authorName)}</span>
+                    <span class="author-badge">${escapeHtml(post.authorBadge || '🎓 Mezun')}</span>
+                  </div>
+                  <div class="author-headline">${escapeHtml(post.authorTitle || 'Mezun')}</div>
+                  <div class="post-time-row">
+                    <span>${formatTimeAgo(post.createdAt)}</span>
+                    <span>•</span>
+                    <span>🌍 Herkese Açık</span>
+                  </div>
+                </div>
+              </div>
+              <div class="category-tag-pill ${cat.cls}">
+                ${cat.label}
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="post-content">
+              ${formatContentWithHashtags(post.content)}
+            </div>
+
+            <!-- Media / Attached Image -->
+            ${post.imageUrl ? `
+              <div class="post-media-wrap">
+                <img src="${escapeHtml(post.imageUrl)}" alt="Gönderi Görseli" loading="lazy" onerror="this.parentElement.style.display='none'" />
+              </div>
+            ` : ''}
+
+            <!-- Attached Link / Opportunity Card -->
+            ${post.linkUrl ? `
+              <a href="${escapeHtml(post.linkUrl)}" class="embedded-link-card">
+                <div class="embedded-link-info">
+                  <strong>${escapeHtml(post.linkTitle || 'İlgili Fırsatı Görüntüle')}</strong>
+                  <span>${escapeHtml(post.linkUrl)}</span>
+                </div>
+                <div class="embedded-link-action">İncele →</div>
+              </a>
+            ` : ''}
+
+            <!-- Metrics Bar -->
+            <div class="post-metrics-bar">
+              <div class="metrics-likes">
+                <span>👍</span>
+                <span id="likes-count-${post.id}">${post.likesCount || 0}</span>
+                <span>Mezun beğendi</span>
+              </div>
+              <div>
+                <span>${(post.comments || []).length} Yorum</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="post-actions-bar">
+              <button class="action-btn ${post.isLiked ? 'liked' : ''}" id="like-btn-${post.id}" onclick="toggleLikePost(${post.id})">
+                <span>${post.isLiked ? '❤️' : '👍'}</span>
+                <span>${post.isLiked ? 'Beğenildi' : 'Beğen'}</span>
+              </button>
+              <button class="action-btn" onclick="toggleComments(${post.id})">
+                <span>💬</span>
+                <span>Yorum Yap</span>
+              </button>
+              <button class="action-btn" onclick="sharePost(${post.id})">
+                <span>🔁</span>
+                <span>Paylaş</span>
+              </button>
+              <button class="action-btn ${isSaved ? 'liked' : ''}" onclick="toggleSavePost(${post.id})">
+                <span>${isSaved ? '🔖' : '🏷️'}</span>
+                <span>${isSaved ? 'Kaydedildi' : 'Kaydet'}</span>
+              </button>
+            </div>
+
+            <!-- Expandable Comments Section -->
+            <div class="comments-section" id="comments-section-${post.id}" style="${hasComments ? 'display: flex;' : 'display: none;'}">
+              <div class="comment-input-row">
+                <div class="comment-avatar">BA</div>
+                <div class="comment-input-wrap">
+                  <input type="text" id="comment-input-${post.id}" placeholder="Düşünceni veya tebriklerini yaz..." onkeydown="if(event.key==='Enter') submitComment(${post.id})" />
+                  <button class="btn-send-comment" onclick="submitComment(${post.id})">Gönder</button>
+                </div>
+              </div>
+              <div class="comments-list" id="comments-list-${post.id}">
+                ${(post.comments || []).map(c => `
+                  <div class="comment-item">
+                    <div class="comment-avatar">${escapeHtml(c.authorAvatar || 'BA')}</div>
+                    <div class="comment-bubble">
+                      <div class="comment-author-name">${escapeHtml(c.authorName)}</div>
+                      <div class="comment-author-title">${escapeHtml(c.authorTitle || 'Mezun')}</div>
+                      <div class="comment-text">${escapeHtml(c.text)}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    async function toggleLikePost(postId) {
+      const post = allFeedPosts.find(p => p.id === postId);
+      if (!post) return;
+
+      // Optimistic UI update
+      post.isLiked = !post.isLiked;
+      post.likesCount = post.isLiked ? (post.likesCount || 0) + 1 : Math.max(0, (post.likesCount || 1) - 1);
+
+      const btn = document.getElementById(`like-btn-${postId}`);
+      const counter = document.getElementById(`likes-count-${postId}`);
+      if (btn) {
+        btn.classList.toggle('liked', post.isLiked);
+        btn.innerHTML = `<span>${post.isLiked ? '❤️' : '👍'}</span> <span>${post.isLiked ? 'Beğenildi' : 'Beğen'}</span>`;
+      }
+      if (counter) counter.textContent = post.likesCount;
+
+      try {
+        await fetch(`/api/feed/${postId}/like`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userName: 'Beyza Anacoğlu' })
+        });
+      } catch (err) {
+        console.warn('Like sync failed:', err);
+      }
+    }
+
+    function toggleComments(postId) {
+      const section = document.getElementById(`comments-section-${postId}`);
+      if (!section) return;
+      if (section.style.display === 'none' || !section.style.display) {
+        section.style.display = 'flex';
+        const input = document.getElementById(`comment-input-${postId}`);
+        if (input) input.focus();
+      } else {
+        section.style.display = 'none';
+      }
+    }
+
+    async function submitComment(postId) {
+      const input = document.getElementById(`comment-input-${postId}`);
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+
+      const post = allFeedPosts.find(p => p.id === postId);
+      if (!post) return;
+
+      const newComment = {
+        id: Date.now(),
+        authorName: 'Beyza Anacoğlu',
+        authorTitle: 'Platform Yöneticisi • YBS',
+        authorAvatar: 'BA',
+        text: text,
+        createdAt: new Date().toISOString()
+      };
+
+      if (!Array.isArray(post.comments)) post.comments = [];
+      post.comments.push(newComment);
+      input.value = '';
+
+      // Update UI list immediately
+      const list = document.getElementById(`comments-list-${postId}`);
+      if (list) {
+        const item = document.createElement('div');
+        item.className = 'comment-item';
+        item.innerHTML = `
+          <div class="comment-avatar">BA</div>
+          <div class="comment-bubble">
+            <div class="comment-author-name">Beyza Anacoğlu</div>
+            <div class="comment-author-title">Platform Yöneticisi • YBS</div>
+            <div class="comment-text">${escapeHtml(text)}</div>
+          </div>
+        `;
+        list.appendChild(item);
+      }
+
+      showToast('Yorumunuz başarıyla eklendi!');
+
+      try {
+        await fetch(`/api/feed/${postId}/comments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newComment)
+        });
+      } catch (err) {
+        console.warn('Comment sync failed:', err);
+      }
+    }
+
+    function sharePost(postId) {
+      const url = `${window.location.origin}/#post-${postId}`;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('Gönderi bağlantısı panoya kopyalandı! 🔗');
+      }).catch(() => {
+        showToast('Bağlantı kopyalandı!');
+      });
+    }
+
+    function toggleSavePost(postId) {
+      if (savedPostIds.has(postId)) {
+        savedPostIds.delete(postId);
+        showToast('Gönderi kaydedilenlerden çıkarıldı.');
+      } else {
+        savedPostIds.add(postId);
+        showToast('Gönderi kaydedildi! 🔖');
+      }
+      localStorage.setItem('alumni_saved_posts', JSON.stringify([...savedPostIds]));
+      updateSavedCountUI();
+      renderFeed();
+    }
+
+    function updateSavedCountUI() {
+      const el = document.getElementById('saved-posts-count');
+      if (el) el.textContent = savedPostIds.size;
+    }
+
+    function selectCategoryFilter(category) {
+      currentCategory = category;
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-cat') === category);
+      });
+      renderFeed();
+    }
+
+    function filterFeedByTag(tag) {
+      const searchBox = document.getElementById('feed-search-input');
+      if (searchBox) searchBox.value = tag;
+      handleFeedSearch(tag);
+      window.scrollTo({ top: 180, behavior: 'smooth' });
+    }
+
+    function handleFeedSearch(keyword) {
+      const query = (keyword || '').toLowerCase().trim();
+      if (!query) {
+        renderFeed();
+        return;
+      }
+      const filtered = allFeedPosts.filter(p => {
+        const textMatch = (p.content || '').toLowerCase().includes(query);
+        const authorMatch = (p.authorName || '').toLowerCase().includes(query);
+        const titleMatch = (p.authorTitle || '').toLowerCase().includes(query);
+        return textMatch || authorMatch || titleMatch;
+      });
+      renderFeed(filtered);
+    }
+
+    /* Modal Controls */
+    function openCreatePostModal(category = 'general') {
+      modalSelectedCategory = category;
+      selectModalCategory(category);
+      document.getElementById('modal-post-content').value = '';
+      document.getElementById('modal-image-url').value = '';
+      document.getElementById('modal-link-url').value = '';
+      document.getElementById('modal-link-title').value = '';
+      document.getElementById('create-post-modal').classList.add('active');
+      setTimeout(() => document.getElementById('modal-post-content').focus(), 150);
+    }
+
+    function closeCreatePostModal() {
+      document.getElementById('create-post-modal').classList.remove('active');
+    }
+
+    function selectModalCategory(category) {
+      modalSelectedCategory = category;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.classList.toggle('selected', btn.getAttribute('data-cat') === category);
+      });
+    }
+
+    async function submitNewPost() {
+      const content = document.getElementById('modal-post-content').value.trim();
+      if (!content) {
+        showToast('Lütfen gönderi içeriği yazın!', 'error');
+        return;
+      }
+
+      const imageUrl = document.getElementById('modal-image-url').value.trim();
+      const linkUrl = document.getElementById('modal-link-url').value.trim();
+      const linkTitle = document.getElementById('modal-link-title').value.trim();
+
+      const newPostPayload = {
+        authorName: 'Beyza Anacoğlu',
+        authorTitle: 'Platform Yöneticisi • Yönetim Bilişim Sistemleri',
+        authorAvatar: 'BA',
+        authorBadge: '🎓 Mezun',
+        category: modalSelectedCategory,
+        content: content,
+        imageUrl: imageUrl,
+        linkUrl: linkUrl,
+        linkTitle: linkTitle
+      };
+
+      try {
+        const res = await fetch('/api/feed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newPostPayload)
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          allFeedPosts.unshift(json.data);
+        } else {
+          // In-memory fallback
+          const localPost = {
+            id: Date.now(),
+            ...newPostPayload,
+            createdAt: new Date().toISOString(),
+            likesCount: 0,
+            isLiked: false,
+            comments: []
+          };
+          allFeedPosts.unshift(localPost);
+        }
+      } catch (err) {
+        const localPost = {
+          id: Date.now(),
+          ...newPostPayload,
+          createdAt: new Date().toISOString(),
+          likesCount: 0,
+          isLiked: false,
+          comments: []
+        };
+        allFeedPosts.unshift(localPost);
+      }
+
+      closeCreatePostModal();
+      showToast('Gönderiniz başarıyla paylaşıldı! 🚀');
+      renderFeed();
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    /* Right Sidebar Widgets Loader */
+    async function loadRightSidebarWidgets() {
+      // 1. Load Hot Jobs
+      const jobsList = document.getElementById('widget-jobs-list');
+      try {
+        const res = await fetch('/api/job-postings');
+        if (res.ok) {
+          const json = await res.json();
+          const postings = json.data || [];
+          if (postings.length > 0) {
+            jobsList.innerHTML = postings.slice(0, 3).map(j => `
+              <a href="/jobs" class="widget-item">
+                <div class="widget-item-title">${escapeHtml(j.title)}</div>
+                <div class="widget-item-meta">
+                  <span>🏢 ${escapeHtml(j.companyName)}</span>
+                  <span>•</span>
+                  <span>📍 ${escapeHtml(j.city || 'TR')}</span>
+                </div>
+              </a>
+            `).join('');
+          } else {
+            jobsList.innerHTML = `<div style="font-size: 0.8rem; color: var(--text-muted);">Aktif ilan bulunamadı.</div>`;
+          }
+        }
+      } catch (e) {
+        jobsList.innerHTML = `
+          <a href="/jobs" class="widget-item">
+            <div class="widget-item-title">Junior Backend Geliştirici</div>
+            <div class="widget-item-meta">🏢 Trendyol • İstanbul</div>
+          </a>
+          <a href="/jobs" class="widget-item">
+            <div class="widget-item-title">İş Analizi & Süreç Stajyeri</div>
+            <div class="widget-item-meta">🏢 Garanti BBVA • İstanbul</div>
+          </a>
+        `;
+      }
+
+      // 2. Load Announcements
+      const annList = document.getElementById('widget-announcements-list');
+      try {
+        const res = await fetch('/api/announcements');
+        if (res.ok) {
+          const json = await res.json();
+          const items = Array.isArray(json) ? json : (json.data || []);
+          if (items.length > 0) {
+            annList.innerHTML = items.slice(0, 3).map(a => `
+              <a href="/announcements" class="widget-item">
+                <div class="widget-item-title">${escapeHtml(a.title)}</div>
+                <div class="widget-item-meta">
+                  <span>📅 ${a.created_at ? a.created_at.slice(0, 10) : 'Güncel'}</span>
+                </div>
+              </a>
+            `).join('');
+          } else {
+            annList.innerHTML = `<div style="font-size: 0.8rem; color: var(--text-muted);">Duyuru bulunamadı.</div>`;
+          }
+        }
+      } catch (e) {
+        annList.innerHTML = `
+          <a href="/announcements" class="widget-item">
+            <div class="widget-item-title">Güz Dönemi Mezun Buluşması</div>
+            <div class="widget-item-meta">📅 2026-11-15</div>
+          </a>
+        `;
+      }
+    }
+
+    /* API Console Modal (For grading/previous requirements) */
+    function openApiConsoleModal() {
+      document.getElementById('api-console-modal').classList.add('active');
+    }
+    function closeApiConsoleModal() {
+      document.getElementById('api-console-modal').classList.remove('active');
+    }
+
+    async function testConsoleRoute(path, targetId) {
       const box = document.getElementById(targetId);
       box.textContent = 'İstek gönderiliyor...';
       try {
@@ -527,20 +2108,40 @@
       }
     }
 
-    async function testHello() {
-      const name = document.getElementById('input-name').value.trim() || 'Beyza';
-      testRoute(`/hello, ${encodeURIComponent(name)}`, 'res-hello');
+    async function testConsoleHello() {
+      const name = document.getElementById('console-name').value.trim() || 'Beyza';
+      testConsoleRoute(`/hello, ${encodeURIComponent(name)}`, 'res-hello');
     }
 
-    async function testMath() {
-      const op = document.getElementById('select-op').value;
-      const n1 = document.getElementById('input-n1').value;
-      const n2 = document.getElementById('input-n2').value;
+    async function testConsoleMath() {
+      const op = document.getElementById('console-op').value;
+      const n1 = document.getElementById('console-n1').value;
+      const n2 = document.getElementById('console-n2').value;
       if (n1 === '' || n2 === '') {
-        document.getElementById('res-math').textContent = 'Lütfen iki sayıyı da girin.';
+        document.getElementById('res-math').textContent = 'İki sayıyı da girin.';
         return;
       }
-      testRoute(`/${op}/${n1}/${n2}`, 'res-math');
+      testConsoleRoute(`/${op}/${n1}/${n2}`, 'res-math');
+    }
+
+    function getFallbackSeedPosts() {
+      return [
+        {
+          id: 1,
+          authorName: 'Ayşe Yılmaz',
+          authorTitle: 'Senior Software Engineer @ Trendyol • YBS \'18 Mezunu',
+          authorAvatar: 'AY',
+          authorBadge: '🎓 Mezun',
+          category: 'career',
+          content: 'Trendyol Core Payment ekibimizde yetiştirilmek üzere Junior Backend Developer ve Yazılım Stajyeri arıyoruz! 🚀\n\nÜniversitemiz mezun ve son sınıf öğrencilerine şirket içi referans olmak isterim. Go ve Node.js ekosistemine meraklı, mikroservis mimarileriyle çalışmak isteyen arkadaşlar doğrudan bana mesaj atabilir veya CV\'lerini iletebilir.\n\nBaşarılar dilerim! 💻✨ #Kariyer #Trendyol #YazilimGelistirme #AlumniReferral',
+          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          likesCount: 38,
+          isLiked: false,
+          linkUrl: '/jobs',
+          linkTitle: '💼 Trendyol - Junior Backend Geliştirici İlanını İncele',
+          comments: []
+        }
+      ];
     }
   </script>
 </body>

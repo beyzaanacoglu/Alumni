@@ -1,0 +1,124 @@
+[
+  {
+    "id": 5,
+    "authorName": "Beyza Anacoğlu",
+    "authorTitle": "Platform Yöneticisi • YBS Mezun Ağı",
+    "authorAvatar": "BA",
+    "authorBadge": "🎓 Mezun",
+    "category": "story",
+    "content": "Mezunlar portali yeni ana sayfasi ve genis ekran akisi harika g�r�n�yor! #Alumni #WebProgramming",
+    "createdAt": "2026-10-23T10:20:41.937Z",
+    "likesCount": 1,
+    "isLiked": true,
+    "likedBy": [
+      "Beyza Anacoğlu"
+    ],
+    "imageUrl": "",
+    "linkUrl": "",
+    "linkTitle": "",
+    "comments": [
+      {
+        "id": 1792751077326,
+        "authorName": "Beyza Anacoğlu",
+        "authorTitle": "Platform Yöneticisi • YBS",
+        "authorAvatar": "BA",
+        "text": "Teşekkürler!",
+        "createdAt": "2026-10-23T10:24:37.326Z"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "authorName": "Ayşe Yılmaz",
+    "authorTitle": "Senior Software Engineer @ Trendyol • YBS '18 Mezunu",
+    "authorAvatar": "AY",
+    "authorBadge": "🎓 Mezun",
+    "category": "career",
+    "content": "Trendyol Core Payment ekibimizde yetiştirilmek üzere Junior Backend Developer ve Yazılım Stajyeri arıyoruz! 🚀\n\nÜniversitemiz mezun ve son sınıf öğrencilerine şirket içi referans olmak isterim. Go ve Node.js ekosistemine meraklı, mikroservis mimarileriyle çalışmak isteyen arkadaşlar doğrudan bana mesaj atabilir veya CV'lerini iletebilir.\n\nBaşarılar dilerim! 💻✨ #Kariyer #Trendyol #YazilimGelistirme #AlumniReferral",
+    "createdAt": "2026-10-23T07:53:43.313Z",
+    "likesCount": 38,
+    "isLiked": false,
+    "likedBy": [],
+    "imageUrl": "",
+    "linkUrl": "/jobs",
+    "linkTitle": "💼 Trendyol - Junior Backend Geliştirici İlanını İncele",
+    "comments": [
+      {
+        "id": 101,
+        "authorName": "Mehmet Demir",
+        "authorTitle": "Ürün Yöneticisi @ SAP",
+        "authorAvatar": "MD",
+        "text": "Harika bir fırsat Ayşe! Yeni mezun olacak arkadaşlarımız mutlaka değerlendirmeli.",
+        "createdAt": "2026-10-23T08:53:43.313Z"
+      },
+      {
+        "id": 102,
+        "authorName": "Beyza Anacoğlu",
+        "authorTitle": "Platform Yöneticisi • YBS Öğrencisi",
+        "authorAvatar": "BA",
+        "text": "Paylaşım için teşekkürler Ayşe Hanım, CV'mi ilettim!",
+        "createdAt": "2026-10-23T09:23:43.313Z"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "authorName": "Mehmet Demir",
+    "authorTitle": "Ürün Yöneticisi @ SAP (Berlin) • YBS '15 Mezunu",
+    "authorAvatar": "MD",
+    "authorBadge": "🌍 Global Mezun",
+    "category": "story",
+    "content": "Yurt dışında kariyer hedefleyen mezun ve öğrenci arkadaşlarımız için önümüzdeki hafta Zoom üzerinden 'Avrupa'da Teknoloji Kariyeri, Vize ve Mülakat Süreçleri' başlıklı bir mezun söyleşisi düzenliyoruz. 🌍🇩🇪\n\nKendi Berlin deneyimimi ve kurumsal teknoloji şirketlerinin beklentilerini paylaşacağım. Katılmak ve soru sormak isteyenler yorumlarda belirtebilir, toplantı linkini ileteceğim!",
+    "createdAt": "2026-10-23T04:53:43.313Z",
+    "likesCount": 54,
+    "isLiked": false,
+    "likedBy": [],
+    "imageUrl": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
+    "linkUrl": "",
+    "linkTitle": "",
+    "comments": [
+      {
+        "id": 201,
+        "authorName": "Elif Kaya",
+        "authorTitle": "İş Analisti @ Garanti BBVA",
+        "authorAvatar": "EK",
+        "text": "Harika bir inisiyatif Mehmet! Ben de katılmayı çok isterim.",
+        "createdAt": "2026-10-23T06:53:43.313Z"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "authorName": "Rektörlük & Mezunlar Koordinatörlüğü",
+    "authorTitle": "Üniversite Kariyer & Mezun İlişkileri Ofisi",
+    "authorAvatar": "🏛️",
+    "authorBadge": "📢 Resmi Kurum",
+    "category": "announcement",
+    "content": "📢 2026 Güz Dönemi Mezun & Öğrenci Buluşması Tarihleri Açıklandı!\n\nKampüsümüzde düzenlenecek networking gününde 40'tan fazla teknoloji, finans ve danışmanlık firması stant açacak. Kariyer merkezimiz gün boyunca ücretsiz CV inceleme ve simülasyon mülakatı desteği sağlayacak. Tüm mezun ve öğrencilerimiz davetlidir!\n\nAyrıntılı program ve salon bilgisi için Duyurular sekmesini ziyaret edebilirsiniz. 🎓✨ #MezunBulusmasi #KariyerGunu #Etkinlik",
+    "createdAt": "2026-10-22T21:53:43.313Z",
+    "likesCount": 92,
+    "isLiked": false,
+    "likedBy": [],
+    "imageUrl": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
+    "linkUrl": "/announcements",
+    "linkTitle": "📢 Resmi Etkinlik Duyurusunu Görüntüle",
+    "comments": []
+  },
+  {
+    "id": 4,
+    "authorName": "Elif Kaya",
+    "authorTitle": "Kıdemli İş Analisti @ Garanti BBVA • İşletme '20 Mezunu",
+    "authorAvatar": "EK",
+    "authorBadge": "🎓 Mezun",
+    "category": "advice",
+    "content": "Bugün mezun ağımız üzerinden tanıştığım Yönetim Bilişim Sistemleri 3. sınıf öğrencisi bir arkadaşımızla ilk mentorluk seansımızı tamamladık. 📊\n\nFintek sektöründe iş analitiği, SQL becerileri ve agile metodolojiler üzerine konuştuk. Mezun olduğum okulun öğrencilerine birikimlerimi aktarabilmek ve mezun dayanışmasının gücünü görmek gerçekten gurur verici! 👏🤝 #Mentorluk #MezunDayanismasi #Fintek #VeriAnalitigi",
+    "createdAt": "2026-10-22T09:53:43.313Z",
+    "likesCount": 47,
+    "isLiked": false,
+    "likedBy": [],
+    "imageUrl": "",
+    "linkUrl": "",
+    "linkTitle": "",
+    "comments": []
+  }
+]

@@ -1,0 +1,81 @@
+# Laravel Alumni Tracking System - lightweight PHP + MySQL stack
+# Usage: docker compose -f docker-compose.yml up --build -d
+# (Kept separate from docker-compose.yml, which belongs to the existing Node.js app.)
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: alumni_laravel_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+    environment:
+      APP_ENV: local
+      DB_CONNECTION: mysql
+      DB_HOST: mysql          # compose service name, not localhost
+      DB_PORT: 3306
+      DB_DATABASE: alumni
+      DB_USERNAME: alumni
+      DB_PASSWORD: alumni_secret
+    depends_on:
+      mysql:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+          cpus: "0.50"
+
+  mysql:
+    image: mysql:8.0
+    container_name: alumni_laravel_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: alumni
+      MYSQL_USER: alumni
+      MYSQL_PASSWORD: alumni_secret
+      MYSQL_ROOT_PASSWORD: root_secret
+    # Lowest-memory settings: no performance_schema, no binary log, small buffers
+    command:
+      - --performance-schema=OFF
+      - --skip-log-bin
+      - --innodb-buffer-pool-size=48M
+      - --innodb-log-buffer-size=4M
+      - --innodb-buffer-pool-instances=1
+      - --max-connections=15
+      - --key-buffer-size=4M
+      - --table-open-cache=64
+      - --table-definition-cache=200
+      - --thread-cache-size=4
+      - --tmp-table-size=16M
+      - --max-heap-table-size=16M
+      - --sort-buffer-size=256K
+      - --join-buffer-size=256K
+      - --read-buffer-size=128K
+      - --read-rnd-buffer-size=128K
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - alumni_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+          cpus: "0.75"
+
+volumes:
+  alumni_mysql_data:
+    name: alumni_mysql_data

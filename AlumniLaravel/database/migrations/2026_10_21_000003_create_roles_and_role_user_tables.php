@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        // 1. Roles table
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();          // admin, alumni, company, student
+            $table->string('display_name');            // Yönetici, Mezun, Şirket Temsilcisi, Öğrenci
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
+
+        // 2. Many-to-Many pivot: role_user
+        Schema::create('role_user', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('role_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
+
+            $table->unique(['user_id', 'role_id']);
+        });
+
+        // 3. Extend users table role enum to support 'company' alongside 'student', 'alumni', 'admin'
+        // Using string/modify for flexible role attribute fallback
+        if (Schema::hasColumn('users', 'role')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('role', 30)->default('student')->change();
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('role_user');
+        Schema::dropIfExists('roles');
+    }
+};

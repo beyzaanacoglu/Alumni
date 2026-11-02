@@ -1,0 +1,13 @@
+﻿node_modules/
+.env
+*.log
+
+# Laravel inside repository
+AlumniLaravel/vendor/
+AlumniLaravel/node_modules/
+AlumniLaravel/.env
+AlumniLaravel/.phpunit.result.cache
+AlumniLaravel/storage/framework/cache/*
+AlumniLaravel/storage/framework/sessions/*
+AlumniLaravel/storage/framework/views/*
+AlumniLaravel/storage/logs/*.log

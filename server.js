@@ -9,6 +9,7 @@ const { handleApiAlumniRoutes } = require('./routes/apiAlumniRoutes');
 const { handleApiJobPostingRoutes } = require('./routes/apiJobPostingRoutes');
 const { handleApiFeedRoutes } = require('./routes/apiFeedRoutes');
 const { initDb } = require('./config/db');
+const { guardian404Middleware } = require('./middlewares/guardian404Middleware');
 
 const PORT = process.env.PORT || 80;
 const FALLBACK_PORT = 3000;
@@ -194,7 +195,8 @@ async function requestHandler(req, res) {
       return sendText(res, 200, String(result));
     }
 
-    return sendText(res, 404, 'Not Found');
+    // 404 Guardian Middleware
+    return guardian404Middleware(req, res, pathWithoutPrefix);
   }
 
   // Other HTTP methods

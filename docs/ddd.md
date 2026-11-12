@@ -212,6 +212,25 @@ Indexes: `(status, application_deadline)`, `(is_anonymous)`.
 | One application per user per posting/scholarship | UNIQUE `(job_posting_id, user_id)` & UNIQUE `(scholarship_id, user_id)` |
 | Foreign key cascade | FK `ON DELETE CASCADE` on `job_posting_id`, `scholarship_id`, and `user_id` |
 
+#### 1.13.1 Domain Rules & Validations
+
+##### JobPosting Entity
+- `title`: string, required, min: 5, max: 120
+- `companyName`: string, required, max: 100
+- `employmentType`: enum ['full-time', 'part-time', 'internship', 'contract'], required, default: 'full-time'
+- `workMode`: enum ['remote', 'hybrid', 'on-site'], required
+- `city`: string, optional, max: 50 (required if workMode is 'on-site')
+- `description`: string, optional, max: 2000
+- `applicationDeadline`: date, optional, must be in the future
+- `status`: enum ['active', 'closed', 'draft'], default: 'active'
+
+##### Application Entity
+- `jobPostingId`: uuid/integer, required, references JobPosting
+- `userId`: uuid/integer, required, references User
+- `status`: enum ['submitted', 'reviewing', 'accepted', 'rejected'], default: 'submitted'
+- `coverLetter`: string, optional, max: 500
+- **Constraint**: Unique combination of `(jobPostingId, userId)`
+
 ---
 
 ## 2. Node.js / PostgreSQL Schema

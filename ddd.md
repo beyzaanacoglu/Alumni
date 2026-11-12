@@ -120,7 +120,26 @@ Internal applications transition through the following states:
 | Create user posting (Nested) | `/api/users/{id}/jobs` | POST | User (Self), Admin | `201 Created` | `400`, `403`, `404` |
 | Withdraw application | `/api/jobs/{id}/applications/{appId}` | DELETE | Candidate (while pending) | `204 No Content` | `403`, `404` |
 
-## 7. Data Lifecycle & Migrations
+## 7. Domain Rules & Validations
+
+### JobPosting Entity
+- `title`: string, required, min: 5, max: 120
+- `companyName`: string, required, max: 100
+- `employmentType`: enum ['full-time', 'part-time', 'internship', 'contract'], required, default: 'full-time'
+- `workMode`: enum ['remote', 'hybrid', 'on-site'], required
+- `city`: string, optional, max: 50 (required if workMode is 'on-site')
+- `description`: string, optional, max: 2000
+- `applicationDeadline`: date, optional, must be in the future
+- `status`: enum ['active', 'closed', 'draft'], default: 'active'
+
+### Application Entity
+- `jobPostingId`: uuid/integer, required, references JobPosting
+- `userId`: uuid/integer, required, references User
+- `status`: enum ['submitted', 'reviewing', 'accepted', 'rejected'], default: 'submitted'
+- `coverLetter`: string, optional, max: 500
+- **Constraint**: Unique combination of `(jobPostingId, userId)`
+
+## 8. Data Lifecycle & Migrations
 
 - Node.js PostgreSQL migrations: `data/migrations/`
   - `001_create_alumni_table.js`: creates `alumni`
@@ -136,9 +155,9 @@ Running migrations and seeders:
 - Node.js: `npm run migrate` / `npm run seed` / `npm run db:fresh`
 - Laravel: `php artisan migrate --seed` (includes `ScholarshipSeeder` and `ApplicationSeeder`)
 
-## 8. RESTful Route Architecture (Laravel)
+## 9. RESTful Route Architecture (Laravel)
 
-### 8.1 Direct Resources
+### 9.1 Direct Resources
 | Resource | URI Pattern | Name Prefix | Controller / Action |
 |----------|-------------|-------------|---------------------|
 | Jobs / Postings | `/jobs`, `/job-postings` | `job-postings.*`, `jobs.*` | `JobPostingController` |
@@ -150,7 +169,7 @@ Running migrations and seeders:
 | Companies | `/api/companies` | `api.companies.*` | `CompanyController` |
 | Alumni Directory | `/api/alumni` | `api.alumni.*` | `AlumniController` |
 
-### 8.2 Nested Resources (Hiyerarşik / İlişkili Rotalar)
+### 9.2 Nested Resources (Hiyerarşik / İlişkili Rotalar)
 | Relationship | Nested URI Pattern | Route Name | Purpose |
 |--------------|-------------------|------------|---------|
 | Job → Applications | `/jobs/{job}/applications` | `jobs.applications.index` | Bir ilana ait başvuruları listeleme (Yayıncı / Admin) |
@@ -164,7 +183,7 @@ Running migrations and seeders:
 | User / Alumnus → Jobs | `/users/{user}/jobs` & `/alumni/{user}/jobs` | `users.jobs.index`, `alumni.jobs.index` | Belirli bir kullanıcı veya mezunun yayınladığı iş ilanları |
 
 
-### 8.3 Role-Based Middleware Groups
+### 9.3 Role-Based Middleware Groups
 | Group | Middleware | Permitted Roles | Actions Allowed |
 |-------|------------|-----------------|-----------------|
 | Public | `web` / `api` | All / Guests | Listing & viewing public postings, scholarships, announcements |

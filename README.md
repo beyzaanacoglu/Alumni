@@ -24,6 +24,98 @@ The project is a lightweight Node.js REST API with a simple web interface. It fo
 ---
 
 <br/>
+---
+
+## 🛡️ Middleware Architecture & Centralized Logging System
+
+Projemiz; kod tekrarlarını önlemek, istek doğrulamasını controller katmanından ayırmak ve merkezi hata yönetimini sağlamak amacıyla **Clean Architecture Middleware** yapısına geçirilmiştir.
+
+`mermaid
+flowchart LR
+    Client([HTTP Request]) --> Logger[1. Request Logger]
+    Logger --> JSON[2. JSON Body Parser]
+    JSON --> Val[3. Body Validator]
+    Val --> Ctrl[4. Controller / Use-Case]
+    Ctrl --> Res([HTTP Response])
+    Ctrl -. "next(err)" .-> ErrH[6. Central Error Handler]
+    Val -. "400 Bad Request" .-> Res
+    Ctrl -. "No Route Matched" .-> NF[5. Generic 404 Handler]
+    NF --> ErrH
+    ErrH --> FileLog[("logs/error.logs")]
+    ErrH --> ErrRes([Structured Error Response])
+`
+
+### 1. Express Pipeline Sıralaması
+Ana uygulama (pp.js / server.js) üzerinde ara yazılımlar şu sıralamayla çalıştırılır:
+1. **equestLogger**: Gelen her isteğin HTTP metodunu, yolunu (path), istemci IP'sini ve yanıt süresini (ms) hesaplayıp konsola renkli basar.
+2. **express.json()**: İstek gövdesini JSON formatında ayrıştırır.
+3. **alidate(rules)**: Controller öncesinde zorunlu parametreleri denetler. Eksik varsa controller'a girmeden anında 400 Bad Request döner.
+4. **Routes / Controllers**: İş mantığını çalıştırır, beklenmeyen durumlarda 
+ext(err) fırlatır.
+5. **
+otFoundHandler**: Eşleşmeyen tüm geçersiz istekleri yakalar ve NotFoundError fırlatır.
+6. **errorHandler**: Uygulamanın en sonunda tüm hataları yakalar, HTTP statüsünü belirler, logs/error.logs dosyasına kaydeder ve istemciye JSON/HTML döner.
+
+---
+
+### 2. Bileşenler ve Modüler Klasör Yapısı
+
+`	ext
+Alumni/
+├── logs/
+│   └── error.logs                  # Otomatik yazılan merkezi hata ve sistem kayıtları
+├── middlewares/
+│   ├── requestLogger.js            # İstek metodu, path ve süre loglayıcı
+│   ├── bodyValidator.js            # Jenerik req.body doğrulama ara yazılımı
+│   ├── notFoundHandler.js          # Geçersiz rotaları yakalayan 404 yöneticisi
+│   └── errorHandler.js             # Merkezi hata yakalayıcı (Central Error Handler)
+├── utils/
+│   ├── errors.js                   # Custom HTTP Error sınıfları (NotFoundError, DuplicateError vb.)
+│   └── fileLogger.js               # logs/error.logs dosyasına zaman damgalı yazıcı
+├── app.js                          # Express pipeline sıralama yapılandırması
+└── server.js                       # Sunucu başlatıcı ve veritabanı bağlantısı
+`
+
+---
+
+### 3. Kullanım Örnekleri
+
+#### A. Body Validation Middleware Kullanımı:
+`javascript
+const validate = require('./middlewares/bodyValidator');
+
+// Zorunlu alanlar eksikse controller'a girmeden anında 400 döner
+router.post('/api/users', validate({
+  name: { required: true, type: 'string', min: 2 },
+  email: { required: true, type: 'string' },
+  role: { required: true, enum: ['student', 'alumni', 'admin'] }
+}), userController.createUser);
+`
+
+#### B. Özel Hata Fırlatma (Central Error Handler):
+`javascript
+const { NotFoundError, DuplicateError } = require('./utils/errors');
+
+if (!user) {
+  return next(new NotFoundError('Kullanıcı bulunamadı.'));
+}
+if (emailExists) {
+  return next(new DuplicateError('Bu e-posta adresi zaten kullanımda.'));
+}
+`
+
+#### C. logs/error.logs Dosyasına Kaydedilen Örnek Format:
+`	ext
+--------------------------------------------------------------------------------
+TIMESTAMP  : [2026-11-12T03:49:10.123Z]
+STATUS     : 404
+METHOD/URL : GET /api/bilinmeyen-rota
+CLIENT IP  : 127.0.0.1
+MESSAGE    : İstenen 'GET /api/bilinmeyen-rota' uç noktası veya kaynağı bu sunucuda tanımlı değildir.
+STACKTRACE : NotFoundError: İstenen 'GET /api/bilinmeyen-rota' uç noktası...
+--------------------------------------------------------------------------------
+`
+
 
 ## ✨ Features
 
@@ -180,6 +272,98 @@ Developed with ❤️ as a **Course Project** for the **Web Programming** course
 ---
 
 <br/>
+---
+
+## 🛡️ Middleware Architecture & Centralized Logging System
+
+Projemiz; kod tekrarlarını önlemek, istek doğrulamasını controller katmanından ayırmak ve merkezi hata yönetimini sağlamak amacıyla **Clean Architecture Middleware** yapısına geçirilmiştir.
+
+`mermaid
+flowchart LR
+    Client([HTTP Request]) --> Logger[1. Request Logger]
+    Logger --> JSON[2. JSON Body Parser]
+    JSON --> Val[3. Body Validator]
+    Val --> Ctrl[4. Controller / Use-Case]
+    Ctrl --> Res([HTTP Response])
+    Ctrl -. "next(err)" .-> ErrH[6. Central Error Handler]
+    Val -. "400 Bad Request" .-> Res
+    Ctrl -. "No Route Matched" .-> NF[5. Generic 404 Handler]
+    NF --> ErrH
+    ErrH --> FileLog[("logs/error.logs")]
+    ErrH --> ErrRes([Structured Error Response])
+`
+
+### 1. Express Pipeline Sıralaması
+Ana uygulama (pp.js / server.js) üzerinde ara yazılımlar şu sıralamayla çalıştırılır:
+1. **equestLogger**: Gelen her isteğin HTTP metodunu, yolunu (path), istemci IP'sini ve yanıt süresini (ms) hesaplayıp konsola renkli basar.
+2. **express.json()**: İstek gövdesini JSON formatında ayrıştırır.
+3. **alidate(rules)**: Controller öncesinde zorunlu parametreleri denetler. Eksik varsa controller'a girmeden anında 400 Bad Request döner.
+4. **Routes / Controllers**: İş mantığını çalıştırır, beklenmeyen durumlarda 
+ext(err) fırlatır.
+5. **
+otFoundHandler**: Eşleşmeyen tüm geçersiz istekleri yakalar ve NotFoundError fırlatır.
+6. **errorHandler**: Uygulamanın en sonunda tüm hataları yakalar, HTTP statüsünü belirler, logs/error.logs dosyasına kaydeder ve istemciye JSON/HTML döner.
+
+---
+
+### 2. Bileşenler ve Modüler Klasör Yapısı
+
+`	ext
+Alumni/
+├── logs/
+│   └── error.logs                  # Otomatik yazılan merkezi hata ve sistem kayıtları
+├── middlewares/
+│   ├── requestLogger.js            # İstek metodu, path ve süre loglayıcı
+│   ├── bodyValidator.js            # Jenerik req.body doğrulama ara yazılımı
+│   ├── notFoundHandler.js          # Geçersiz rotaları yakalayan 404 yöneticisi
+│   └── errorHandler.js             # Merkezi hata yakalayıcı (Central Error Handler)
+├── utils/
+│   ├── errors.js                   # Custom HTTP Error sınıfları (NotFoundError, DuplicateError vb.)
+│   └── fileLogger.js               # logs/error.logs dosyasına zaman damgalı yazıcı
+├── app.js                          # Express pipeline sıralama yapılandırması
+└── server.js                       # Sunucu başlatıcı ve veritabanı bağlantısı
+`
+
+---
+
+### 3. Kullanım Örnekleri
+
+#### A. Body Validation Middleware Kullanımı:
+`javascript
+const validate = require('./middlewares/bodyValidator');
+
+// Zorunlu alanlar eksikse controller'a girmeden anında 400 döner
+router.post('/api/users', validate({
+  name: { required: true, type: 'string', min: 2 },
+  email: { required: true, type: 'string' },
+  role: { required: true, enum: ['student', 'alumni', 'admin'] }
+}), userController.createUser);
+`
+
+#### B. Özel Hata Fırlatma (Central Error Handler):
+`javascript
+const { NotFoundError, DuplicateError } = require('./utils/errors');
+
+if (!user) {
+  return next(new NotFoundError('Kullanıcı bulunamadı.'));
+}
+if (emailExists) {
+  return next(new DuplicateError('Bu e-posta adresi zaten kullanımda.'));
+}
+`
+
+#### C. logs/error.logs Dosyasına Kaydedilen Örnek Format:
+`	ext
+--------------------------------------------------------------------------------
+TIMESTAMP  : [2026-11-12T03:49:10.123Z]
+STATUS     : 404
+METHOD/URL : GET /api/bilinmeyen-rota
+CLIENT IP  : 127.0.0.1
+MESSAGE    : İstenen 'GET /api/bilinmeyen-rota' uç noktası veya kaynağı bu sunucuda tanımlı değildir.
+STACKTRACE : NotFoundError: İstenen 'GET /api/bilinmeyen-rota' uç noktası...
+--------------------------------------------------------------------------------
+`
+
 
 <div align="center">
 

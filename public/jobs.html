@@ -3,42 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>İş, Staj ve Proje İlanları - Alumni Portal</title>
+  <title>İş, Staj ve Proje İlanları - By Us, For Us</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Righteous&display=swap" rel="stylesheet">
   
+  <!-- Tabler Icons Webfont -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+
   <!-- Leaflet.js CSS (Harita Görünümü) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --accent: #06b6d4;
-      --bg: #0b0f19;
-      --card-bg: rgba(23, 32, 53, 0.75);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --input-bg: #111827;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --primary: #0f766e;
+      --primary-hover: #115e59;
+      --accent: #10b981;
+      --bg: #f8fafc;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: rgba(226, 232, 240, 0.85);
+      --input-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
       
       /* Kullanıcı tercihlerine göre kesin durum renkleri */
-      --status-pending: #fbffa8;
+      --status-pending: #fef08a;
       --status-pending-text: #713f12;
       --status-closed: #64748b;
       --status-rejected: #ef4444;
       --status-open: #10b981;
       --status-accepted: #10b981;
       --status-submitted: #f59e0b;
-      --status-reviewing: #38bdf8;
+      --status-reviewing: #0284c7;
+
+      --font-main: 'Montserrat', system-ui, -apple-system, sans-serif;
+      --font-display: 'Righteous', 'Montserrat', sans-serif;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: var(--font-main);
     }
 
     body {
@@ -57,20 +63,157 @@
       filter: blur(140px);
       pointer-events: none;
       z-index: 0;
+      opacity: 0.5;
     }
     .glow-1 {
       top: -120px;
       left: -100px;
-      width: 450px;
-      height: 450px;
-      background: rgba(99, 102, 241, 0.22);
+      width: 480px;
+      height: 480px;
+      background: linear-gradient(135deg, #e0f2fe, #bae6fd);
     }
     .glow-2 {
       bottom: -150px;
       right: -100px;
-      width: 500px;
-      height: 500px;
-      background: rgba(6, 182, 212, 0.16);
+      width: 520px;
+      height: 520px;
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    }
+
+    /* DOPAMINE BRAND & DOCK STYLES */
+    .dopamine-brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      user-select: none;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .dopamine-brand-lockup:hover { transform: scale(1.025); }
+    .dopamine-brand-emblem {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0f766e 0%, #10b981 50%, #38bdf8 100%);
+      padding: 2.5px;
+      box-shadow: 0 8px 18px -2px rgba(15, 118, 110, 0.35);
+      position: relative;
+      transform: rotate(-2.5deg);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dopamine-brand-lockup:hover .dopamine-brand-emblem { transform: rotate(6deg) scale(1.1); }
+    .dopamine-brand-emblem-inner {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #ffffff 0%, #f0fdfa 100%);
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dopamine-brand-emblem-inner i {
+      font-size: 1.55rem;
+      background: linear-gradient(135deg, #0f766e, #10b981);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .dopamine-brand-text { display: flex; flex-direction: column; gap: 2px; }
+    .dopamine-brand-title-row { display: flex; align-items: center; gap: 8px; }
+    .dopamine-brand-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dopamine-brand-title .word-by { color: #0f172a; }
+    .dopamine-brand-title .spark-star { color: #10b981; }
+    .dopamine-brand-title .word-for {
+      background: linear-gradient(135deg, #0f766e, #10b981);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .dopamine-sticker-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      color: #065f46;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      transform: rotate(-3deg);
+    }
+    .dopamine-brand-tagline {
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dopamine-live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
+
+    /* SEGMENTED DOCK CAPSULE */
+    .nav-links-wrapper { display: flex; align-items: center; gap: 12px; }
+    .nav-dock-capsule {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(241, 245, 249, 0.75);
+      border: 1px solid rgba(226, 232, 240, 0.85);
+      padding: 4px;
+      border-radius: 9999px;
+      backdrop-filter: blur(10px);
+    }
+    .nav-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 9999px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 600;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .nav-item:hover:not(.active) { color: #0f172a; background: rgba(255, 255, 255, 0.7); }
+    .nav-item.active {
+      color: #0f766e;
+      background: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 4px 12px -2px rgba(15, 118, 110, 0.15);
+      border: 1px solid rgba(15, 118, 110, 0.16);
+    }
+    .nav-item.active i { color: #10b981; }
+
+    .btn-api-console {
+      background: linear-gradient(135deg, #0f766e, #115e59);
+      border: none;
+      color: #ffffff;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 0.83rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.28);
     }
 
     .container {
@@ -831,7 +974,7 @@
   <div class="container">
     <!-- Header -->
     <header>
-      <a href="/" class="logo">🎓 Alumni Portal</a>
+      <a href="/" class="logo">🎓 By Us, For Us</a>
       <div class="nav-links">
         <a href="/" class="nav-link">Ana Sayfa</a>
         <a href="/jobs" class="nav-link active">💼 İş & Staj İlanları</a>

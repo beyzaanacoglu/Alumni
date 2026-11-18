@@ -3,362 +3,516 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Duyuru Yönetimi - Alumni Portal</title>
+  <title>Resmi Duyurular • By Us, For Us</title>
+
+  <!-- Typography: Montserrat & Righteous (3D Display) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Righteous&display=swap" rel="stylesheet">
+
+  <!-- Tabler Icons Webfont -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --accent: #06b6d4;
-      --bg: #0b0f19;
-      --card-bg: rgba(23, 32, 53, 0.75);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --input-bg: #111827;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --danger: #ef4444;
-      --success: #10b981;
+      --color-canvas: #f8fafc;
+      --color-white: #ffffff;
+      --color-sky-light: #e0f2fe;
+      --color-sky-accent: #38bdf8;
+      --color-mint-light: #d1fae5;
+      --color-mint-primary: #10b981;
+      --color-petrol: #0f766e;
+      --color-petrol-hover: #115e59;
+      --color-petrol-light: #f0fdfa;
+      --color-navy: #0f172a;
+      --color-navy-muted: #1e293b;
+      --color-slate-body: #334155;
+      --color-slate-muted: #64748b;
+      --color-slate-border: #e2e8f0;
+
+      --glass-bg: rgba(255, 255, 255, 0.88);
+      --glass-border: rgba(255, 255, 255, 0.95);
+      --glass-subtle-border: rgba(226, 232, 240, 0.85);
+      --glass-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+
+      --font-main: 'Montserrat', system-ui, -apple-system, sans-serif;
+      --font-display: 'Righteous', 'Montserrat', sans-serif;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: var(--font-main);
     }
 
     body {
-      background: var(--bg);
-      color: var(--text);
+      background-color: var(--color-canvas);
+      color: var(--color-navy-muted);
       min-height: 100vh;
-      overflow-x: hidden;
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+      line-height: 1.5;
     }
 
-    .glow {
+    .ambient-glow {
       position: fixed;
       border-radius: 50%;
       filter: blur(140px);
       pointer-events: none;
       z-index: 0;
+      opacity: 0.55;
     }
-    .glow-1 {
-      top: -120px;
-      left: -100px;
-      width: 450px;
-      height: 450px;
-      background: rgba(99, 102, 241, 0.2);
+    .ambient-glow-1 {
+      top: -100px;
+      left: -80px;
+      width: 520px;
+      height: 520px;
+      background: linear-gradient(135deg, #e0f2fe, #bae6fd);
     }
-    .glow-2 {
-      bottom: -150px;
+    .ambient-glow-2 {
+      top: 350px;
       right: -100px;
-      width: 500px;
-      height: 500px;
-      background: rgba(6, 182, 212, 0.15);
+      width: 580px;
+      height: 580px;
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
     }
 
-    .container {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 1100px;
+    .font-display-3d {
+      font-family: var(--font-display);
+      letter-spacing: 0.03em;
+      color: var(--color-petrol);
+      text-shadow: 
+        1px 1px 0px #a7f3d0,
+        2px 2px 0px #0f766e,
+        3px 3px 0px #0f172a,
+        4px 6px 14px rgba(15, 23, 42, 0.12);
+    }
+
+    /* TOP NAVBAR */
+    nav.top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-subtle-border);
+      padding: 12px 24px;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.03);
+    }
+
+    .nav-container {
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 32px 20px 48px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 36px;
-    }
-
-    header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--card-border);
-      flex-wrap: wrap;
-      gap: 16px;
+      gap: 24px;
     }
 
-    .logo {
-      font-size: 1.4rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #818cf8, #38bdf8);
+    /* DOPAMINE BRAND LOCKUP */
+    .dopamine-brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      user-select: none;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .dopamine-brand-lockup:hover {
+      transform: scale(1.025);
+    }
+
+    .dopamine-brand-emblem {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0f766e 0%, #10b981 50%, #38bdf8 100%);
+      padding: 2.5px;
+      box-shadow: 0 8px 18px -2px rgba(15, 118, 110, 0.35);
+      position: relative;
+      transform: rotate(-2.5deg);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dopamine-brand-lockup:hover .dopamine-brand-emblem {
+      transform: rotate(6deg) scale(1.1);
+    }
+
+    .dopamine-brand-emblem-inner {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #ffffff 0%, #f0fdfa 100%);
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dopamine-brand-emblem-inner i {
+      font-size: 1.55rem;
+      background: linear-gradient(135deg, #0f766e, #10b981);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    .dopamine-brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .dopamine-brand-title-row {
       display: flex;
       align-items: center;
       gap: 8px;
-      text-decoration: none;
+    }
+    .dopamine-brand-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      color: var(--color-navy);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dopamine-brand-title .word-by { color: #0f172a; }
+    .dopamine-brand-title .spark-star { color: #10b981; }
+    .dopamine-brand-title .word-for {
+      background: linear-gradient(135deg, #0f766e, #10b981);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .dopamine-sticker-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      color: #065f46;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      transform: rotate(-3deg);
+    }
+    .dopamine-brand-tagline {
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: var(--color-slate-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dopamine-live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
     }
 
-    .nav-links {
+    /* SEGMENTED DOCK CAPSULE */
+    .nav-links-wrapper {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-
-    .nav-link {
-      color: var(--text-muted);
+    .nav-dock-capsule {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(241, 245, 249, 0.75);
+      border: 1px solid rgba(226, 232, 240, 0.85);
+      padding: 4px;
+      border-radius: 9999px;
+      backdrop-filter: blur(10px);
+    }
+    .nav-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 9999px;
+      color: var(--color-slate-muted);
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.84rem;
       font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 8px;
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .nav-item:hover:not(.active) {
+      color: var(--color-navy);
+      background: rgba(255, 255, 255, 0.7);
+    }
+    .nav-item.active {
+      color: var(--color-petrol);
+      background: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 4px 12px -2px rgba(15, 118, 110, 0.15);
+      border: 1px solid rgba(15, 118, 110, 0.16);
+    }
+    .nav-item.active i {
+      color: #10b981;
     }
 
-    .nav-link:hover, .nav-link.active {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--card-border);
+    .btn-api-console {
+      background: linear-gradient(135deg, #0f766e, #115e59);
+      border: none;
+      color: #ffffff;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 0.83rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.28);
     }
 
-    .page-title-section {
-      text-align: center;
-      padding: 10px 0;
+    /* MAIN CONTAINER */
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
     }
 
-    .page-title-section h1 {
-      font-size: 2.3rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #ffffff, #94a3b8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+    /* PAGE HEADER */
+    .page-header-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 253, 250, 0.96));
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-left: 6px solid var(--color-petrol);
+      border-radius: 20px;
+      padding: 24px 32px;
+      box-shadow: var(--glass-shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .page-header-text h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .page-header-text p {
+      color: var(--color-slate-body);
+      font-size: 0.92rem;
+      font-weight: 500;
     }
 
-    .page-title-section p {
-      color: var(--text-muted);
-      font-size: 1rem;
-    }
-
+    /* GRID LAYOUT */
     .grid-layout {
       display: grid;
-      grid-template-columns: 1fr 1.6fr;
+      grid-template-columns: 380px 1fr;
       gap: 28px;
       align-items: start;
     }
-
-    @media (max-width: 860px) {
-      .grid-layout {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 960px) {
+      .grid-layout { grid-template-columns: 1fr; }
     }
 
-    .card {
-      background: var(--card-bg);
+    /* GLASS CARDS */
+    .glass-card {
+      background: var(--glass-bg);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: var(--glass-shadow);
     }
-
     .card-title {
-      font-size: 1.2rem;
+      font-size: 1.12rem;
       font-weight: 700;
-      color: #fff;
+      color: var(--color-navy);
       display: flex;
       align-items: center;
       gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--color-slate-border);
+      padding-bottom: 12px;
+    }
+    .card-title i {
+      color: var(--color-petrol);
+      font-size: 1.3rem;
     }
 
+    /* FORM STYLES */
     .form-group {
       display: flex;
       flex-direction: column;
       gap: 6px;
+      margin-bottom: 14px;
     }
-
     .form-group label {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
-      color: var(--text-muted);
+      color: var(--color-slate-body);
     }
-
     input, textarea {
       width: 100%;
-      background: var(--input-bg);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #fff;
+      background: #ffffff;
+      border: 1px solid var(--color-slate-border);
+      color: var(--color-navy);
       padding: 11px 14px;
       border-radius: 10px;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-
+    input:focus, textarea:focus {
+      border-color: var(--color-petrol);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
     textarea {
       resize: vertical;
-      min-height: 120px;
+      min-height: 130px;
       line-height: 1.5;
     }
-
-    input:focus, textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-    }
-
     .btn-submit {
-      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      background: linear-gradient(135deg, var(--color-petrol), #115e59);
       border: none;
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.95rem;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.92rem;
       padding: 12px 20px;
       border-radius: 10px;
       cursor: pointer;
       width: 100%;
       margin-top: 6px;
-      transition: transform 0.1s, opacity 0.2s;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-
     .btn-submit:hover {
-      opacity: 0.95;
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(15, 118, 110, 0.35);
     }
 
+    /* ANNOUNCEMENTS LIST */
     .announcements-list {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
-
     .announcement-item {
-      background: rgba(11, 15, 25, 0.6);
-      border: 1px solid var(--card-border);
+      background: #ffffff;
+      border: 1px solid var(--color-slate-border);
+      border-left: 4px solid var(--color-petrol);
       border-radius: 14px;
-      padding: 18px 20px;
+      padding: 18px 22px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      transition: transform 0.15s ease, border-color 0.15s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
     .announcement-item:hover {
-      border-color: rgba(99, 102, 241, 0.4);
       transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      border-color: var(--color-petrol);
     }
-
     .announcement-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 12px;
     }
-
-    .announcement-title-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
     .announcement-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      color: #fff;
+      color: var(--color-navy);
       margin: 0;
     }
-
     .badge {
       display: inline-block;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 0.78rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.74rem;
       font-weight: 700;
-      background: rgba(99, 102, 241, 0.15);
-      color: #a5b4fc;
-      border: 1px solid rgba(99, 102, 241, 0.3);
+      background: var(--color-petrol-light);
+      color: var(--color-petrol);
+      border: 1px solid rgba(15, 118, 110, 0.2);
     }
-
     .announcement-actions {
       display: flex;
       align-items: center;
       gap: 10px;
-      white-space: nowrap;
     }
-
     .action-btn {
       text-decoration: none;
       font-weight: 600;
-      font-size: 0.85rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      transition: opacity 0.15s;
+      font-size: 0.82rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid transparent;
     }
-
-    .action-btn:hover {
-      opacity: 0.8;
-    }
-
-    .action-view { color: #38bdf8; }
-    .action-edit { color: #a5b4fc; }
-    .action-delete { color: #f87171; }
+    .action-view { color: var(--color-petrol); background: var(--color-petrol-light); }
+    .action-edit { color: #0284c7; background: #f0f9ff; }
+    .action-delete { color: #e11d48; background: #fff1f2; }
+    .action-btn:hover { filter: brightness(0.95); transform: translateY(-1px); }
 
     .announcement-preview {
-      color: #cbd5e1;
+      color: var(--color-slate-body);
       font-size: 0.92rem;
-      line-height: 1.55;
+      line-height: 1.6;
       white-space: pre-wrap;
     }
-
     .announcement-footer {
       display: flex;
-      gap: 14px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      gap: 16px;
+      font-size: 0.78rem;
+      color: var(--color-slate-muted);
+      border-top: 1px solid var(--color-slate-border);
       padding-top: 10px;
-      flex-wrap: wrap;
     }
 
-    .empty-state {
-      text-align: center;
-      padding: 36px 16px;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
+    /* ALERTS */
     .alert {
-      padding: 12px 16px;
-      border-radius: 10px;
+      padding: 14px 18px;
+      border-radius: 12px;
       font-size: 0.9rem;
       font-weight: 600;
       display: flex;
       align-items: center;
       gap: 10px;
+      margin-bottom: 20px;
     }
-
     .alert-success {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #34d399;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
     }
-
     .alert-error {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #f87171;
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #9f1239;
     }
 
     footer {
       text-align: center;
       padding-top: 24px;
-      color: var(--text-muted);
-      font-size: 0.88rem;
-      border-top: 1px solid var(--card-border);
+      color: var(--color-slate-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--color-slate-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -368,51 +522,112 @@
   </style>
 </head>
 <body>
-  <div class="glow glow-1"></div>
-  <div class="glow glow-2"></div>
+  <div class="ambient-glow ambient-glow-1"></div>
+  <div class="ambient-glow ambient-glow-2"></div>
+
+  <!-- TOP NAVBAR -->
+  <nav class="top-navbar">
+    <div class="nav-container">
+      <a href="/" class="dopamine-brand-lockup" title="By Us, For Us Topluluk Portalı">
+        <div class="dopamine-brand-emblem">
+          <div class="dopamine-brand-emblem-inner">
+            <i class="ti ti-sparkles"></i>
+          </div>
+        </div>
+        <div class="dopamine-brand-text">
+          <div class="dopamine-brand-title-row">
+            <span class="dopamine-brand-title">
+              <span class="word-by">BY US</span>
+              <span class="spark-star">✦</span>
+              <span class="word-for">FOR US</span>
+            </span>
+            <span class="dopamine-sticker-badge">EST. 2026</span>
+          </div>
+          <span class="dopamine-brand-tagline">
+            <span class="dopamine-live-dot"></span>
+            <span>Rooted in the Past, Empowering the Future</span>
+          </span>
+        </div>
+      </a>
+
+      <div class="nav-links-wrapper">
+        <div class="nav-dock-capsule">
+          <a href="/" class="nav-item">
+            <i class="ti ti-home"></i>
+            <span>Ana Akış</span>
+          </a>
+          <a href="/jobs" class="nav-item">
+            <i class="ti ti-briefcase"></i>
+            <span>Fırsatlar & İlanlar</span>
+          </a>
+          <a href="/announcements" class="nav-item active">
+            <i class="ti ti-speakerphone"></i>
+            <span>Duyurular</span>
+          </a>
+          <a href="/users" class="nav-item">
+            <i class="ti ti-users"></i>
+            <span>Mezun Rehberi</span>
+          </a>
+          <a href="/docs" class="nav-item">
+            <i class="ti ti-book-2"></i>
+            <span>API Docs</span>
+          </a>
+        </div>
+
+        <a href="/" class="btn-api-console">
+          <i class="ti ti-arrow-left"></i>
+          <span>Ana Sayfaya Dön</span>
+        </a>
+      </div>
+    </div>
+  </nav>
 
   <div class="container">
-    <header>
-      <a href="/" class="logo">🎓 Alumni Portal</a>
-      <div class="nav-links">
-        <a href="/" class="nav-link">Ana Sayfa</a>
-        <a href="/jobs" class="nav-link">İş & Staj İlanları</a>
-        <a href="/users" class="nav-link">Kullanıcılar</a>
-        <a href="/announcements" class="nav-link active">Duyurular</a>
-        <a href="/docs" class="nav-link">Swagger UI</a>
-        <a href="/about" class="nav-link">About</a>
+    <div class="page-header-card">
+      <div class="page-header-text">
+        <h1 class="font-display-3d">Resmi Üniversite & Mezun Duyuruları</h1>
+        <p>Akademik takvim, mezun buluşmaları, seminerler ve vefa projeleri duyuru merkezi</p>
       </div>
-    </header>
-
-    <div class="page-title-section">
-      <h1>📢 Duyuru Yönetimi (View)</h1>
-      <p>MVC Mimarisi ile geliştirilmiş duyuru listeleme ve yayınlama arayüzü</p>
+      <div>
+        <span class="badge" style="font-size: 0.85rem; padding: 6px 14px; border-radius: 9999px;">
+          <i class="ti ti-shield-check"></i> Doğrulanmış Kurumsal Akış
+        </span>
+      </div>
     </div>
 
     <!-- NOTIFICATION_BANNER -->
 
     <div class="grid-layout">
       <!-- CREATE ANNOUNCEMENT FORM -->
-      <div class="card">
-        <div class="card-title">➕ Yeni Duyuru Yayınla</div>
+      <div class="glass-card">
+        <div class="card-title">
+          <i class="ti ti-pencil-plus"></i>
+          <span>Yeni Duyuru Yayınlayın</span>
+        </div>
         <form id="create-announcement-form" method="POST" action="/announcements">
           <div class="form-group">
             <label for="title">Duyuru Başlığı</label>
-            <input type="text" id="title" name="title" placeholder="Örn: 2026 Mezunlar Buluşması" required />
+            <input type="text" id="title" name="title" placeholder="Örn: 2026 Geleneksel Mezun Buluşması" required />
           </div>
 
-          <div class="form-group" style="margin-top: 14px;">
+          <div class="form-group">
             <label for="content">Duyuru İçeriği</label>
-            <textarea id="content" name="content" placeholder="Duyuru detaylarını buraya yazın..." required></textarea>
+            <textarea id="content" name="content" placeholder="Duyuru metnini saygılı ve açıklayıcı bir dille yazınız..." required></textarea>
           </div>
 
-          <button type="submit" class="btn-submit" style="margin-top: 18px;">Duyuruyu Yayınla</button>
+          <button type="submit" class="btn-submit">
+            <i class="ti ti-send"></i>
+            <span>Duyuruyu Yayınla</span>
+          </button>
         </form>
       </div>
 
       <!-- ANNOUNCEMENTS LIST -->
-      <div class="card">
-        <div class="card-title">📋 Yayınlanan Duyurular (Model)</div>
+      <div class="glass-card">
+        <div class="card-title">
+          <i class="ti ti-list"></i>
+          <span>Yayınlanan Duyurular</span>
+        </div>
         <div class="announcements-list">
           <!-- ANNOUNCEMENT_LIST -->
         </div>
@@ -420,32 +635,29 @@
     </div>
 
     <footer>
-      <p>© 2026 Alumni Web Project • MVC View Layer</p>
-      <p><a href="/docs" style="color: var(--accent); text-decoration: none;">API Dokümantasyonu (Swagger) →</a></p>
+      <p>© 2026 By Us, For Us • Mezun, Öğrenci & Akademi Ekosistemi</p>
+      <p><a href="/docs" style="color: var(--color-petrol); text-decoration: none; font-weight: 700;">API Dokümantasyonu (Swagger) →</a></p>
     </footer>
   </div>
 
   <script>
-    // Ensure form action adapts to sub-path prefix if needed
     window.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('create-announcement-form');
       if (form && window.location.pathname.toLowerCase().startsWith('/alumni')) {
         form.action = '/Alumni/announcements';
       }
 
-      // Bilgilendiriciler (alert) sadece 5 saniye kalsın
       const alerts = document.querySelectorAll('.alert, .alert-success, .alert-error');
       if (alerts.length > 0) {
         setTimeout(() => {
           alerts.forEach(al => {
-            al.style.transition = 'opacity 0.6s ease, transform 0.6s ease, max-height 0.6s ease, margin 0.6s ease, padding 0.6s ease';
+            al.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
             al.style.opacity = '0';
             al.style.transform = 'translateY(-10px)';
             setTimeout(() => al.remove(), 600);
           });
         }, 5000);
 
-        // URL'deki query parametrelerini temizle (?success=updated vb.)
         if (window.history && window.history.replaceState) {
           const cleanUrl = window.location.pathname;
           window.history.replaceState({}, document.title, cleanUrl);

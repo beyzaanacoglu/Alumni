@@ -12,6 +12,8 @@ It brings alumni records, community announcements and user accounts together in 
 <img src="https://img.shields.io/badge/API-OpenAPI_3.0-6BA539?style=flat-square&logo=openapiinitiative&logoColor=white" />
 <img src="https://img.shields.io/badge/Deploy-Docker-2496ED?style=flat-square&logo=docker&logoColor=white" />
 <img src="https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-E34F26?style=flat-square&logo=html5&logoColor=white" />
+<a href="brand.md"><img src="https://img.shields.io/badge/Brand-By_Us,_For_Us-0F766E?style=flat-square&logo=markdown&logoColor=white" /></a>
+<a href="style-reference.md"><img src="https://img.shields.io/badge/Style_Reference-Steep-17191C?style=flat-square&logo=markdown&logoColor=white" /></a>
 
 <br/><br/>
 
@@ -20,6 +22,17 @@ The project is a lightweight Node.js REST API with a simple web interface. It fo
 </div>
 
 <br/>
+
+---
+
+## 🎨 Brand Identity & Design System
+
+Platformun kurumsal kimliği, renk kodları, tipografi standartları, cam efekti (glassmorphism) ve UI mimarisi için aşağıdaki dokümanları inceleyebilirsiniz:
+
+- 📘 [**`brand.md`**](brand.md) — By Us, For Us Marka ve Tasarım Kılavuzu
+- 📙 [**`design.md`**](design.md) *(veya [**`style-reference.md`**](style-reference.md))* — Steep Editoryal Stil, Tasarım ve Token Referansı
+
+> **By Us, For Us** — *"Rooted in the Past, Empowering the Future Together."*
 
 ---
 

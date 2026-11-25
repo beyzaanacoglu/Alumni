@@ -142,7 +142,105 @@ STACKTRACE : NotFoundError: İstenen 'GET /api/bilinmeyen-rota' uç noktası...
 All resources support full CRUD (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`). Interactive API docs are served at `/docs` (OpenAPI 3.0, [`docs/openapi.json`](docs/openapi.json)).
 
 > [!NOTE]
-> The application has no authentication or authorization layer; every client can call every endpoint.
+> The application now has JWT-based authentication. Protected endpoints require a valid `Bearer` token; unauthenticated requests receive **401** and unauthorized role access receives **403**.
+
+---
+
+## 🔐 Authentication & Authorization
+
+### How It Works
+
+```
+POST /api/login  →  { email, password }  →  { token: "<JWT>" }
+```
+
+The JWT payload contains:
+
+```json
+{
+  "id": "user-id",
+  "email": "user@example.com",
+  "name": "Full Name",
+  "role": "guest | graduate | admin",
+  "exp": 1234567890
+}
+```
+
+The token is stored in the browser via `localStorage.setItem('authToken', token)` and sent on every protected request:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+### Auth Middleware (`middlewares/authMiddleware.js`)
+
+The **Bouncer** middleware runs before every `/api/*` route:
+
+| Step | Condition | Result |
+|------|-----------|--------|
+| 1 | `Authorization` header missing or not `Bearer` format | **401** – *"I do not know who you are"* |
+| 2 | Token invalid / expired / tampered | **401** – *"Invalid or expired token"* |
+| 3 | Token valid | Attaches `req.user = { id, email, role }` and calls `next()` |
+
+> [!IMPORTANT]
+> The middleware only handles **authentication (401)**. Role and ownership checks (403) are handled inside each route handler.
+
+---
+
+### Roles & Permissions
+
+| Role | Description | Key Permissions |
+|------|-------------|-----------------|
+| `guest` | Unauthenticated visitor | View public pages, login, register |
+| `graduate` | Authenticated alumni/student | Post Alumni Stories, view jobs, edit own profile |
+| `admin` | Platform administrator | Full CRUD on all resources, user management |
+
+```
+guest     → can NOT post Alumni Story  → 403 from /api/alumni/stories
+graduate  → CAN post Alumni Story      → 201
+admin     → CAN post Alumni Story      → 201
+```
+
+---
+
+### Dynamic Navigation (Frontend)
+
+`public/userInfoRenderer.js` reads the JWT on every page load and updates the UI:
+
+- **Avatar initials** (e.g. "BA" for Beyza Anacoğlu)
+- **Role icon** – `ti-user` (guest) / `ti-graduation-cap` (graduate) / `ti-shield-lock` (admin)
+- **Role label** – e.g. *Graduate • Management Information Systems*
+- **Role-specific feature icons** – guest sees Login/Register; graduate sees Job Postings/Profile; admin sees Admin Panel/User Management/Analytics
+- **Alumni Story button** – visible only for `graduate` and `admin`
+
+`public/menuConfig.js` defines which menu items each role can see:
+
+```js
+{ label: 'Alumni Story', path: '/Alumni/createStory.html', roles: ['graduate', 'admin'] }
+{ label: 'Yönetim',      path: '/Alumni/admin.html',       roles: ['admin'] }
+{ label: 'Giriş Yap',    path: '/Alumni/login.html',       roles: ['guest'] }
+```
+
+---
+
+### Status Codes
+
+| Code | Meaning |
+|------|---------|
+| **200** | Authenticated + authorized, operation successful |
+| **201** | Authenticated + authorized, resource created |
+| **401** | Token missing / invalid / expired |
+| **403** | Authenticated but insufficient role or trying to access another user's resource |
+
+---
+
+### Environment Variable
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `JWT_SECRET` | `CHANGE_ME_IN_PROD` | Secret key for signing/verifying JWTs – **must be changed in production** |
 
 <br/>
 

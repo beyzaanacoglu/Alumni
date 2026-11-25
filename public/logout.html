@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Çıkış Yapılıyor...</title>
+  <script>
+    // Oturum tokenını temizle ve login sayfasına yönlendir
+    localStorage.removeItem('authToken');
+    // Biraz gecikme (opsiyonel) ile kullanıcıya bilgi gösterebiliriz
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 200);
+  </script>
+</head>
+<body>
+  <p>Çıkış yapılıyor, lütfen bekleyiniz...</p>
+</body>
+</html>

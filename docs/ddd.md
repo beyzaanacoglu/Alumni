@@ -1,335 +1,208 @@
-# Data Design Documentation
+# Alumni — Domain-Driven Design & Security Architecture
 
-Physical data model of the Alumni Tracking System. It covers both implementations:
-
-- **Laravel app** (`AlumniLaravel/`): MySQL 8, InnoDB, managed by migrations in `database/migrations`.
-- **Node.js app** (`Alumni/`): PostgreSQL 16 plus a JSON user store, managed by `data/migrations` and `config/db.js`.
-
-Primary keys are auto-increment integers. Laravel tables carry `created_at` / `updated_at`.
+This document describes how Domain-Driven Design (DDD) concepts map onto the Node.js `Alumni` application and its Laravel counterpart, along with the foundational **Authentication, Authorization & Security Principles**. The physical data model is documented in [docs/ddd.md](docs/ddd.md).
 
 ---
 
-## 1. Laravel / MySQL Schema
+## 1. Ubiquitous Language
+
+| Term | Meaning |
+|------|---------|
+| **User** | An authenticated account holder: name, unique email, password hash, role (`student`, `alumni`, `admin`, `guest`). |
+| **Alumni (Graduate)** | A verified university graduate: graduation year, department, current employer, job title, city, and verified mentor status. |
+| **Student** | An enrolled university student seeking career mentorship, internship opportunities, and alumni connections. |
+| **Admin** | An administrative authority with two institutional branches: **Academician** (faculty/department head) and **Representer Student** (student council/community coordinator). |
+| **Guest** | An external guest user. Requires a verified **Admin Invitation Code** to register or access private community data. |
+| **Announcement** | A public or community notice (official academic calendar, summit, workshop) broadcasted by Administrators. |
+| **Job / Venture Posting** | An employment, internship, startup opportunity, or project notice published by an alumnus or admin. |
+| **Job Application** | An internal application submitted by a student or alumni candidate when no external application link is provided. |
+| **External Application Link** | A direct URL to an external corporate portal. If present, internal application submission is bypassed. |
+
+### 1.1 Roles & Actor Definitions (RBAC)
 
 ```mermaid
-erDiagram
-    users ||--o{ role_user : has
-    roles ||--o{ role_user : assigned_to
-    users ||--o| profiles : has
-    users ||--o{ announcements : authors
-    users ||--o{ feed_posts : writes
-    users ||--o{ work_experiences : has
-    users ||--o{ messages : sends
-    users ||--o{ messages : receives
-    users ||--o{ job_postings : publishes
-    companies ||--o{ job_postings : offers
-    users ||--o{ scholarships : funds
-    job_postings ||--o{ applications : receives
-    scholarships ||--o{ applications : receives
-    users ||--o{ applications : submits
+flowchart TD
+    subgraph Roles["System Roles & Hierarchies"]
+        Admin["admin (System Administrator)"]
+        Acad["Academician / Faculty"]
+        Rep["Representer Student"]
+        Alum["alumni (Verified Graduate)"]
+        Stud["student (Enrolled Candidate)"]
+        Guest["guest (External Guest)"]
+        CodeGate{Admin Invitation Code}
+        
+        Admin --- Acad
+        Admin --- Rep
+        Guest --> CodeGate
+        CodeGate -- "Valid Code" --> GuestAccess["Verified Guest Access"]
+        CodeGate -- "No/Invalid Code" --> Deny["403 Forbidden"]
+    end
 ```
 
-All foreign keys use `ON DELETE CASCADE` (or `SET NULL` for company association).
-
-### 1.1 `roles` (`database/migrations/2026_10_21_000003_create_roles_and_role_user_tables.php`)
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | BIGINT UNSIGNED | PK | Role ID |
-| `name` | VARCHAR(255) | NN, UQ | Machine name: `admin`, `alumni`, `company`, `student` |
-| `display_name` | VARCHAR(255) | NN | Human label: `Yönetici`, `Mezun`, `Şirket Temsilcisi`, `Öğrenci` |
-| `description` | VARCHAR(255) | N | Description |
-| `created_at` / `updated_at` | TIMESTAMP | NN | Timestamps |
-
-### 1.2 `role_user` (Many-to-Many Pivot)
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | BIGINT UNSIGNED | PK | Pivot row ID |
-| `user_id` | BIGINT UNSIGNED | FK → `users.id`, NN, CASCADE | User |
-| `role_id` | BIGINT UNSIGNED | FK → `roles.id`, NN, CASCADE | Assigned Role |
-| `created_at` / `updated_at` | TIMESTAMP | NN | Assignment timestamp |
-
-Constraints: UNIQUE `(user_id, role_id)`.
-
-### 1.3 `companies` (`database/migrations/2026_10_21_000004_create_companies_table.php`)
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | BIGINT UNSIGNED | PK | Company ID |
-| `user_id` | BIGINT UNSIGNED | FK → `users.id`, N, NULL ON DELETE | Representative / Owner user |
-| `name` | VARCHAR(255) | NN | Registered Company Name |
-| `industry` | VARCHAR(255) | N | Sector / Industry |
-| `website` | VARCHAR(255) | N | Official Website URL |
-| `email` | VARCHAR(255) | N | Official Company Email |
-| `phone` | VARCHAR(30) | N | Phone Number |
-| `city` | VARCHAR(100) | N | City Location |
-| `address` | VARCHAR(255) | N | Street Address |
-| `description` | TEXT | N | Company Overview |
-| `created_at` / `updated_at` | TIMESTAMP | NN | Timestamps |
-
-### 1.4 `users`
-| Column | Type | Constraints |
-|--------|------|-------------|
-| `id` | BIGINT UNSIGNED | PK |
-| `name` | VARCHAR(255) | NOT NULL |
-| `email` | VARCHAR(255) | NOT NULL, UNIQUE |
-| `email_verified_at` | TIMESTAMP | NULL |
-| `password` | VARCHAR(255) | NOT NULL (hashed) |
-| `role` | VARCHAR(30) | NOT NULL, default `student`, indexed (`admin`, `alumni`, `company`, `student`) |
-| `remember_token` | VARCHAR(100) | NULL |
-
-Framework tables: `password_reset_tokens`, `sessions`, `cache`, `jobs`.
-
-### 1.5 `profiles`
-| Column | Type | Constraints |
-|--------|------|-------------|
-| `id` | BIGINT UNSIGNED | PK |
-| `user_id` | BIGINT UNSIGNED | FK → `users.id`, UNIQUE (one profile per user) |
-| `graduation_year` | INT | NOT NULL |
-| `department` | VARCHAR(255) | NOT NULL |
-| `bio` | TEXT | NULL |
-
-### 1.6 `announcements`
-| Column | Type | Constraints |
-|--------|------|-------------|
-| `id` | BIGINT UNSIGNED | PK |
-| `user_id` | BIGINT UNSIGNED | FK → `users.id`; validated to be an `alumni` user |
-| `title` | VARCHAR(255) | NOT NULL |
-| `content` | TEXT | NOT NULL |
-| `company_name` | VARCHAR(255) | NULL |
-
-### 1.7 `feed_posts`
-| Column | Type | Constraints |
-|--------|------|-------------|
-| `id` | BIGINT UNSIGNED | PK |
-| `user_id` | BIGINT UNSIGNED | FK → `users.id` |
-| `body` | TEXT | NOT NULL (validated 2–5000 characters) |
-| `image_path` | VARCHAR(255) | NULL (validated as URL) |
-
-### 1.8 `work_experiences`
-| Column | Type | Constraints |
-|--------|------|-------------|
-| `id` | BIGINT UNSIGNED | PK |
-| `user_id` | BIGINT UNSIGNED | FK → `users.id` |
-| `company` | VARCHAR(255) | NOT NULL |
-| `position` | VARCHAR(255) | NOT NULL |
-| `latitude` | DECIMAL(10,8) | NOT NULL (−90 to 90) |
-| `longitude` | DECIMAL(11,8) | NOT NULL (−180 to 180) |
-
-### 1.9 `messages`
-| Column | Type | Constraints |
-|--------|------|-------------|
-| `id` | BIGINT UNSIGNED | PK |
-| `sender_id` | BIGINT UNSIGNED | FK → `users.id` |
-| `receiver_id` | BIGINT UNSIGNED | FK → `users.id` |
-| `content` | TEXT | NOT NULL |
-| `read_at` | TIMESTAMP | NULL (unread when NULL) |
-
-Index: `(receiver_id, read_at)` for unread-message lookups.
-
-### 1.10 `job_postings` (`database/migrations/2026_10_21_000001_create_job_postings_table.php`)
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | BIGINT UNSIGNED | PK | Primary key |
-| `user_id` | BIGINT UNSIGNED | FK → `users.id`, NN | Author/publisher (`alumni`, `company`, or `admin`) |
-| `company_id` | BIGINT UNSIGNED | FK → `companies.id`, N, NULL ON DELETE | Associated company profile (One-to-Many) |
-| `title` | VARCHAR(255) | NN | Job title |
-| `description` | TEXT | NN | Detailed position description & qualifications |
-| `company_name` | VARCHAR(255) | NN | Hiring company / institution name |
-| `city` | VARCHAR(255) | N | Work city |
-| `country` | VARCHAR(2) | N | Two-letter ISO country code (e.g. `TR`, `DE`) |
-| `employment_type` | ENUM | NN | `full_time`, `part_time`, `internship`, `volunteer`, `project`, `contract` |
-| `work_mode` | ENUM | NN, default `onsite` | `onsite`, `remote`, `hybrid` |
-| `experience_level` | ENUM | N | `entry`, `mid`, `senior` |
-| `required_skills` | TEXT | N | Comma-separated or bullet list of required skills |
-| `contact_email` | VARCHAR(255) | N | Direct HR or alumni contact email |
-| `external_application_link` | VARCHAR(500) | N | External portal URL. If set, applicants are redirected externally; if NULL, internal `applications` are used. |
-| `application_deadline` | DATE | N | Application closing date |
-| `status` | ENUM | NN, default `open` | `open`, `closed` |
-| `latitude` | DECIMAL(10,8) | N | Latitude for career map rendering (−90 to 90) |
-| `longitude` | DECIMAL(11,8) | N | Longitude for career map rendering (−180 to 180) |
-| `created_at` / `updated_at` | TIMESTAMP | NN | Timestamps |
-
-Indexes: `(status, application_deadline)`, `(employment_type)`.
-
-### 1.11 `applications` (`database/migrations/2026_10_21_000002_create_applications_table.php`)
-Used when `external_application_link` is NULL. Supports jobs, internships, volunteer positions, projects, and scholarships.
-
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | BIGINT UNSIGNED | PK | Primary key |
-| `job_posting_id` | BIGINT UNSIGNED | FK → `job_postings.id`, N, CASCADE | Associated job/internship/project posting |
-| `scholarship_id` | BIGINT UNSIGNED | FK → `scholarships.id`, N, CASCADE | Associated scholarship opportunity |
-| `user_id` | BIGINT UNSIGNED | FK → `users.id`, NN, CASCADE | Candidate / student / applicant user |
-| `type` | ENUM | NN, default `job` | `job`, `internship`, `volunteer`, `project`, `scholarship` |
-| `cover_letter` | TEXT | N | Optional motivation / cover letter / statement of need |
-| `status` | ENUM | NN, default `pending` | `pending`, `submitted`, `reviewing`, `accepted`, `rejected` |
-| `created_at` / `updated_at` | TIMESTAMP | NN | Timestamps |
-
-Constraints: UNIQUE `(job_posting_id, user_id)` and UNIQUE `(scholarship_id, user_id)`.
-
-### 1.12 `scholarships` (`database/migrations/2026_10_21_000005_create_scholarships_table.php`)
-Scholarship opportunities created by alumni donors, foundations, or administrators.
-
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | BIGINT UNSIGNED | PK | Primary key |
-| `user_id` | BIGINT UNSIGNED | FK → `users.id`, NN, CASCADE | Author / funding alumnus or admin |
-| `title` | VARCHAR(255) | NN | Scholarship program title |
-| `description` | TEXT | NN | Detailed grant terms and purpose |
-| `donor_name` | VARCHAR(255) | N | Visible donor name if non-anonymous |
-| `is_anonymous` | BOOLEAN | NN, default `false` | Anonymity preference. If `true`, display name defaults to 'Anonim Mezun' |
-| `amount` | DECIMAL(10,2) | N | Financial stipend amount |
-| `currency` | VARCHAR(3) | NN, default `TRY` | Currency code |
-| `duration` | VARCHAR(100) | N | Grant duration (e.g. '9 Ay', '1 Yıl', 'Tek Seferlik') |
-| `quota` | INT UNSIGNED | N | Number of recipient students |
-| `requirements` | TEXT | N | Eligibility conditions (minimum GPA, department, financial need) |
-| `contact_email` | VARCHAR(255) | N | Direct contact email |
-| `external_application_link` | VARCHAR(500) | N | External foundation URL (e.g. TEV, KYK). If set, redirects externally; if NULL, internal `applications` are used. |
-| `application_deadline` | DATE | N | Application closing date |
-| `status` | ENUM | NN, default `open` | `open`, `closed` |
-| `created_at` / `updated_at` | TIMESTAMP | NN | Timestamps |
-
-Indexes: `(status, application_deadline)`, `(is_anonymous)`.
-
-#### 1.12.1 Hybrid Application Flow & Anonymity Logic
-- **Routing Decision**:
-  - `external_application_link != NULL`: The applicant is directly redirected to the foundation/institution's external portal.
-  - `external_application_link == NULL`: Student applies directly inside the platform; stored in `applications` (`type: scholarship`).
-- **Donor Anonymity**:
-  - If `is_anonymous == true`: Public views display 'Anonim Mezun' as the grantor.
-  - In the donor's private portal: The donor or Admin can view and review all applicant students and evaluate their cover letters.
-
-### 1.13 Business Rules & Authorization
-| Rule | Enforced by |
-|------|-------------|
-| Only `alumni`, `company`, or `admin` users may author job postings and scholarships | Controller validation & Policies (`JobPostingPolicy`, `ScholarshipPolicy`) |
-| Hybrid application routing | If `external_application_link` is present, applicant is redirected externally; if NULL, internal submission is stored in `applications` |
-| Candidate internal application permissions | Only `student`, `alumni`, and `admin` roles can submit internal applications (`ApplicationPolicy@create`) |
-| Application visibility | Candidates can only view their own applications; posting authors and admins can view candidate lists (`ApplicationPolicy@view`) |
-| Application status management | Only job posting / scholarship author or admin can update status (`ApplicationPolicy@update`) |
-| Application withdrawal | Candidates can withdraw an application while status is `pending`/`submitted` (`ApplicationPolicy@delete`) |
-| Donor anonymity enforcement | `Scholarship::getDonorDisplayNameAttribute()` automatically masks donor names when `is_anonymous` is true |
-| One profile per user | UNIQUE `profiles.user_id` |
-| One application per user per posting/scholarship | UNIQUE `(job_posting_id, user_id)` & UNIQUE `(scholarship_id, user_id)` |
-| Foreign key cascade | FK `ON DELETE CASCADE` on `job_posting_id`, `scholarship_id`, and `user_id` |
-
-#### 1.13.1 Domain Rules & Validations
-
-##### JobPosting Entity
-- `title`: string, required, min: 5, max: 120
-- `companyName`: string, required, max: 100
-- `employmentType`: enum ['full-time', 'part-time', 'internship', 'contract'], required, default: 'full-time'
-- `workMode`: enum ['remote', 'hybrid', 'on-site'], required
-- `city`: string, optional, max: 50 (required if workMode is 'on-site')
-- `description`: string, optional, max: 2000
-- `applicationDeadline`: date, optional, must be in the future
-- `status`: enum ['active', 'closed', 'draft'], default: 'active'
-
-##### Application Entity
-- `jobPostingId`: uuid/integer, required, references JobPosting
-- `userId`: uuid/integer, required, references User
-- `status`: enum ['submitted', 'reviewing', 'accepted', 'rejected'], default: 'submitted'
-- `coverLetter`: string, optional, max: 500
-- **Constraint**: Unique combination of `(jobPostingId, userId)`
+| Role | Machine Name | Scope & Authority Boundaries |
+|:-----|:-------------|:------------------------------|
+| **Student** | `student` | Candidate member. Can view public feeds and jobs, apply to internal postings/scholarships (`JobApplication`), request mentorship, and comment on feed posts. |
+| **Alumni** | `alumni` | Verified graduate. Can publish job/internship opportunities, share Career Step & Venture posts, offer mentorship, review applicant candidacies, and bookmark posts. |
+| **Admin** | `admin` | Comprehensive platform administrator covering two roles:<br>1. **Academician (Faculty / Department Rep):** Official institutional announcements, academic schedules, and formal mentorship matching.<br>2. **Representer Student:** Student body coordination, club activities, and campus summit initiatives.<br>Has full moderation and bypass ownership powers. |
+| **Guest** | `guest` | External applicant/observer. **Mandatory Rule:** Must possess and validate an **Admin Invitation Code (`invitation_code`)** issued by an `admin` to register or unlock private alumni directory features. |
 
 ---
 
-## 2. Node.js / PostgreSQL Schema
+## 2. Bounded Contexts
 
-### 2.1 `alumni` (`data/migrations/001_create_alumni_table.js`)
-| Column | Type | Constraints |
-|--------|------|-------------|
-| `id` | SERIAL | PK |
-| `first_name` | VARCHAR(100) | NOT NULL |
-| `last_name` | VARCHAR(100) | NOT NULL |
-| `email` | VARCHAR(255) | NOT NULL, UNIQUE |
-| `phone` | VARCHAR(30) | NULL |
-| `graduation_year` | SMALLINT | NOT NULL, CHECK 1950–2100 |
-| `department` | VARCHAR(150) | NOT NULL |
-| `current_company` | VARCHAR(150) | NULL |
-| `job_title` | VARCHAR(150) | NULL |
-| `city` | VARCHAR(100) | NULL |
-| `linkedin_url` | VARCHAR(255) | NULL |
-| `created_at` | TIMESTAMPTZ | NOT NULL, default `NOW()` |
-| `updated_at` | TIMESTAMPTZ | NULL |
+```mermaid
+flowchart LR
+    subgraph Identity["Identity & Access Context"]
+        U[User]
+        AuthGuard[Auth Middleware / The Bouncer]
+    end
+    subgraph Directory["Alumni Directory Context"]
+        A[Alumni]
+    end
+    subgraph Comm["Communication Context"]
+        N[Announcement]
+        F[Feed Post]
+    end
+    subgraph Career["Career & Opportunities Context"]
+        JP[Job / Venture Posting]
+        JA[Job Application]
+    end
 
-Indexes: `idx_alumni_graduation_year`, `idx_alumni_department`.
+    Identity -. "authenticates & authorizes" .-> Directory
+    Identity -. "authors & owns" .-> Career
+    Directory -. "publishes" .-> Career
+    Career -. "applies to" .-> Identity
+    Identity -. "moderates" .-> Comm
+```
 
-### 2.2 `announcements` (created in `config/db.js`)
-| Column | Type | Constraints |
-|--------|------|-------------|
-| `id` | SERIAL | PK |
-| `title` | VARCHAR(255) | NOT NULL |
-| `content` | TEXT | NOT NULL |
-| `created_at` | TIMESTAMPTZ | default `NOW()` |
-| `updated_at` | TIMESTAMPTZ | NULL |
-
-### 2.3 `job_postings` (`data/migrations/002_create_job_postings_tables.js`)
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | SERIAL | PK | Primary key |
-| `alumni_id` | INTEGER | FK → `alumni(id)` ON DELETE CASCADE, NN | Author alumnus |
-| `title` | VARCHAR(255) | NN | Job title |
-| `description` | TEXT | NN | Detailed job description |
-| `company_name` | VARCHAR(255) | NN | Company name |
-| `city` | VARCHAR(100) | N | Location city |
-| `country` | CHAR(2) | N | ISO country code |
-| `employment_type` | VARCHAR(20) | NN, CHECK `in ('full_time','part_time','internship','contract')` | Work type |
-| `work_mode` | VARCHAR(10) | NN, default `'onsite'`, CHECK `in ('onsite','remote','hybrid')` | Work model |
-| `experience_level` | VARCHAR(10) | N, CHECK `in ('entry','mid','senior')` | Seniority level |
-| `required_skills` | TEXT | N | Required tech stack / skills |
-| `contact_email` | VARCHAR(255) | N | Contact email |
-| `external_application_link` | VARCHAR(500) | N | External redirect URL (nullable) |
-| `application_deadline` | DATE | N | Deadline date |
-| `status` | VARCHAR(10) | NN, default `'open'`, CHECK `in ('open','closed')` | Posting status |
-| `latitude` | NUMERIC(10,8) | N, CHECK between -90 and 90 | Map latitude |
-| `longitude` | NUMERIC(11,8) | N, CHECK between -180 and 180 | Map longitude |
-| `created_at` | TIMESTAMPTZ | NN, default `NOW()` | Creation timestamp |
-| `updated_at` | TIMESTAMPTZ | N | Update timestamp |
-
-Indexes: `idx_job_postings_status_deadline`, `idx_job_postings_employment_type`.
-
-### 2.4 `applications` (`data/migrations/002_create_job_postings_tables.js` & `003_create_scholarships_tables.js`)
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | SERIAL | PK | Primary key |
-| `job_posting_id` | INTEGER | FK → `job_postings(id)` ON DELETE CASCADE, N | Target job/project |
-| `scholarship_id` | INTEGER | FK → `scholarships(id)` ON DELETE CASCADE, N | Target scholarship |
-| `applicant_user_id` | INTEGER | NN | Applicant ID (from `data/users.json`) |
-| `type` | VARCHAR(20) | NN, default `'job'`, CHECK `in ('job','internship','volunteer','project','scholarship')` | Application category |
-| `cover_letter` | TEXT | N | Candidate note |
-| `status` | VARCHAR(15) | NN, default `'pending'`, CHECK `in ('pending','submitted','reviewing','accepted','rejected')` | Application progress |
-| `created_at` | TIMESTAMPTZ | NN, default `NOW()` | Submission timestamp |
-| `updated_at` | TIMESTAMPTZ | N | Timestamp |
-
-Constraints: UNIQUE `(job_posting_id, applicant_user_id)` and UNIQUE `(scholarship_id, applicant_user_id)`.
-
-### 2.5 `scholarships` (`data/migrations/003_create_scholarships_tables.js`)
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `id` | SERIAL | PK | Primary key |
-| `alumni_id` | INTEGER | FK → `alumni(id)` ON DELETE CASCADE, NN | Sponsoring alumnus |
-| `title` | VARCHAR(255) | NN | Program title |
-| `description` | TEXT | NN | Program terms |
-| `donor_name` | VARCHAR(255) | N | Donor public label |
-| `is_anonymous` | BOOLEAN | NN, default `false` | Anonymity indicator |
-| `amount` | NUMERIC(10,2) | N | Financial stipend |
-| `currency` | CHAR(3) | NN, default `'TRY'` | Currency code |
-| `duration` | VARCHAR(100) | N | Duration string |
-| `quota` | INTEGER | N | Student quota |
-| `requirements` | TEXT | N | Eligibility terms |
-| `contact_email` | VARCHAR(255) | N | Contact email |
-| `external_application_link` | VARCHAR(500) | N | External foundation URL |
-| `application_deadline` | DATE | N | Deadline date |
-| `status` | VARCHAR(10) | NN, default `'open'`, CHECK `in ('open','closed')` | Program status |
-| `created_at` | TIMESTAMPTZ | NN, default `NOW()` | Creation timestamp |
-| `updated_at` | TIMESTAMPTZ | N | Timestamp |
-
-### 2.6 Users (`data/users.json`)
-JSON array of `{ id, name, email, passwordHash, createdAt, updatedAt? }`. `passwordHash` is `salt:hash` (PBKDF2-SHA512, 1000 iterations); it is never returned by the API.
+| Context | Responsibility | Aggregate Root | Storage |
+|---------|----------------|----------------|---------|
+| **Identity & Access** | Account registration, salt+hash password storage, token generation, role verification, invitation code gate | `User` | `data/users.json` / MySQL `users` |
+| **Alumni Directory** | Managing and querying verified alumni records, company histories, mentorship status | `Alumni` | PostgreSQL `alumni` / MySQL `profiles` |
+| **Communication** | Publishing community news, official academic notices, dynamic feeds, comments | `Announcement`, `FeedPost` | PostgreSQL / JSON `announcements`, `feed.json` |
+| **Career & Opportunities** | Job/internship postings, venture announcements, candidate application workflows | `JobPosting` (with `JobApplication` entity) | PostgreSQL / MySQL `job_postings`, `job_applications` |
 
 ---
 
-## 3. Naming and Conventions
-- Tables: plural `snake_case`; foreign keys: `<singular>_id`.
-- API fields are `camelCase` (`employmentType`, `companyName`, `applicationDeadline`); the repository layer maps them to `snake_case` database columns.
-- Passwords are stored only as salted hashes.
+## 3. Entities & Aggregate Roots
+
+| Entity | Role | File | Invariants & Rules |
+|--------|------|------|--------------------|
+| `User` | Aggregate Root | [models/userModel.js](models/userModel.js) | Unique email; `passwordHash` never exposed in responses; roles restricted to (`student`, `alumni`, `admin`, `guest`). |
+| `Role` | Entity (Identity) | `app/Models/Role.php` | Unique machine name (`admin`, `alumni`, `student`, `guest`). |
+| `Alumni` | Aggregate Root | [models/alumniModel.js](models/alumniModel.js) | Unique email; `graduationYear` between 1950 and 2100; computed `fullName`. |
+| `Announcement` | Aggregate Root | [models/announcementModel.js](models/announcementModel.js) | Non-empty `title` and `content`; authored only by `admin` (Academician/Representer). |
+| `JobPosting` | Aggregate Root | `models/jobPostingModel.js` | Authored by `Alumni` or `Admin`; supports `employment_type` (full-time, part-time, internship, contract). |
+| `Application` | Entity within `JobPosting` / `Scholarship` | `app/Models/Application.php` | Candidate application; applicant can apply at most once per posting; only permitted if `external_application_link` is NULL and posting is active. |
+
+---
+
+## 4. Layers and Folder Mapping
+
+| DDD Layer | Folders | Rule |
+|-----------|---------|------|
+| **Interface / Presentation** | `routes/`, `public/` | HTTP request routing, parameter parsing, HTML and JSON response delivery. No business rules. |
+| **Application** | `controllers/`, `middlewares/` | Input validation, auth enforcement, use-case coordination, status translation (`200`, `201`, `204`, `400`, `401`, `403`, `404`, `409`). |
+| **Domain** | `models/` | Core domain entities, business validation, aggregate invariant checks. |
+| **Infrastructure** | `repositories/`, `config/`, `data/` | Database persistence (PostgreSQL / JSON), migration files, sample seeders. |
+
+Dependency direction: `routes → middlewares → controllers → models → repositories → config/db`.
+
+---
+
+## 5. Authentication, Authorization & Security Architecture
+
+```mermaid
+flowchart TD
+    Req[Incoming Request] --> Bouncer{1. The Bouncer: Auth Middleware}
+    Bouncer -- "No Token / Invalid / Expired" --> E401["401 Unauthorized\n('I do not know who you are')"]
+    Bouncer -- "Valid Bearer JWT" --> AttachUser["Attach req.user (id, role)"]
+    
+    AttachUser --> RoleCheck{2. Role Check: In allowedRoles?}
+    RoleCheck -- "No" --> E403_Role["403 Forbidden\n('I know who you are, but answer is no')"]
+    
+    RoleCheck -- "Yes" --> OwnershipCheck{3. Ownership: Own resource OR admin?}
+    OwnershipCheck -- "No (Someone else's resource)" --> E403_Owner["403 Forbidden\n('Yours, Not Someone Else's')"]
+    OwnershipCheck -- "Yes" --> Execute[Execute Action: 200 / 201 / 204]
+```
+
+### 5.1 Password Storage & Login (`POST /api/login`)
+1. **Password Storage Rule:** Passwords must never be stored in plaintext.
+2. **Salt + Hash:** Each user record must generate a unique cryptographic salt. Password hashing must apply strong one-way hashing (e.g. bcrypt `$2b$12$...` or PBKDF2). Two identical passwords across different accounts produce completely distinct hashes.
+3. **Login Logic (IF / ELSE):**
+   - `IF` incoming `email` and `password` match an existing record:
+     - Generate an authenticated token (JWT) embedding `userId` and `role`.
+     - Return `200 OK` with the token.
+   - `ELSE` (`email` does not exist OR `password` does not match):
+     - Return a generic **`401 Unauthorized`** response without revealing whether the email or password was wrong (*Information Leakage Prevention*).
+
+### 5.2 The Bouncer: Authentication Middleware (`401 Guard`)
+For every protected endpoint:
+- **STEP 1:** Inspect the request and extract the `Authorization: Bearer <token>` header.
+- `IF` token is missing, malformed, or expired:
+  - Halt request execution before reaching the route handler.
+  - Return **`401 Unauthorized`** (*"I do not know who you are"*).
+- `ELSE` (token is valid):
+  - Extract the verified payload and attach it to the request: `req.user = { id, role }`.
+  - Pass control to the route handler via `next()`.
+
+### 5.3 Role & Ownership Enforcement (`403 Guard`)
+
+#### A. Role Verification ("Who May Do What")
+- `IF` `req.user.role` is not present in the route's `allowedRoles` list:
+  - Return **`403 Forbidden`** (*"I know who you are, and the answer is no"*).
+  - *Example:* A user with role `student` attempting `POST /api/job-postings` receives `403`.
+
+#### B. Resource Ownership Verification ("Yours, Not Someone Else's")
+- **Trust Rule:** Never trust user ID fields supplied in the request body (`req.body.userId`). Always establish identity from verified `req.user.id`.
+- `IF` a non-admin user attempts to mutate or delete a resource authored by another member (e.g. Graduate A attempting to edit Graduate B's job posting or profile):
+  - Return **`403 Forbidden`** (*"Cannot modify a resource belonging to another member"*).
+- `ELSE` (the resource belongs to `req.user.id` OR `req.user.role === 'admin'`):
+  - Execute the requested operation and return the appropriate HTTP code (`200 OK` / `204 No Content`).
+
+### 5.4 Guest Access Code Gate
+- The `guest` role is restricted from open browsing of private directory records.
+- To register or elevate permissions, a guest must supply a valid `invitation_code` issued by an `admin`:
+  - `IF` `guest` provides no invitation code or an invalid code:
+    - Return **`403 Forbidden`** (*"Guest access requires a valid invitation code from an Admin"*).
+
+---
+
+## 6. Job & Opportunity Architecture
+
+### 6.1 Hybrid Application Routing Logic
+1. **External Redirect**: If `external_application_link` contains a URL, candidates are forwarded directly to that portal. No internal record is created.
+2. **Internal Application System**: If `external_application_link` is `NULL`, applicants submit their candidacy directly within the system.
+
+### 6.2 Application Lifecycle States
+- `pending` / `submitted`: Initial state upon candidate submission.
+- `reviewing`: Alumnus publisher is reviewing the application.
+- `accepted`: Candidate selected for interview or opportunity.
+- `rejected`: Application was not selected.
+
+### 6.3 Use Cases & Endpoints (with Security Codes)
+
+| Use Case | Endpoint | Method | Permitted Role | Success | Auth Errors |
+|:---------|:---------|:-------|:---------------|:--------|:------------|
+| List postings | `/api/job-postings` | GET | Public / Guest (with code) | `200 OK` | - |
+| View posting detail | `/api/job-postings/{id}` | GET | Public / Guest | `200 OK` | `404` |
+| Create posting | `/api/job-postings` | POST | Alumni, Admin | `201 Created` | `401`, `403` |
+| Full update posting | `/api/job-postings/{id}` | PUT | Author (Alumni), Admin | `200 OK` | `401`, `403`, `404` |
+| Delete posting | `/api/job-postings/{id}` | DELETE | Author (Alumni), Admin | `204 No Content` | `401`, `403`, `404` |
+| List my applications | `/api/my/applications` | GET | Candidate (Student, Alumni) | `200 OK` | `401` |
+| Submit application | `/api/jobs/{id}/applications` | POST | Candidate (Student, Alumni) | `201 Created` | `401`, `403`, `409` |
+| List applicants for posting | `/api/jobs/{id}/applications` | GET | Author (Alumni), Admin | `200 OK` | `401`, `403`, `404` |
+| Update application status | `/api/jobs/{id}/applications/{appId}` | PATCH | Author (Alumni), Admin | `200 OK` | `401`, `403`, `404` |
+| Withdraw application | `/api/jobs/{id}/applications/{appId}` | DELETE | Candidate (Self) | `204 No Content` | `401`, `403`, `404` |
+
+---
+
+## 7. Role-Based Middleware Groups (REST Architecture)
+
+| Group | Middleware Stack | Permitted Roles | Actions Allowed |
+|:------|:-----------------|:----------------|:----------------|
+| **Public** | `web` / `api` | All / Public | Browsing public feed, view non-confidential announcements |
+| **Guest Gated** | `auth:guest`, `code:verify` | Guest (with Admin Code) | Entering portal, viewing restricted alumni index |
+| **Candidate** | `auth`, `role:student,alumni,admin` | Student, Alumni, Admin | Submitting job/internship applications, managing `/my-applications` |
+| **Publisher** | `auth`, `role:alumni,admin` | Alumni, Admin | Creating & updating job opportunities, venture notices, candidate review |
+| **System Admin** | `auth`, `role:admin` | Admin (Academician & Representer) | Full institutional announcements, invitation code generation, ownership bypass |

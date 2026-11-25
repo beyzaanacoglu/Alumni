@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>By Us, For Us • Mezun, Öğrenci & Akademi Topluluk Portalı</title>
+  <title>By Us, For Us • Alumni, Student & Academic Community Portal</title>
 
   <!-- Typography: Montserrat & Righteous (3D Display) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1748,6 +1748,94 @@
       to { transform: translateX(0); opacity: 1; }
     }
 
+    /* Career Step & Venture Opportunity Callout Banners */
+    .career-move-banner {
+      background: linear-gradient(135deg, rgba(209, 250, 229, 0.6) 0%, rgba(224, 242, 254, 0.6) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .career-move-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #ffffff;
+      color: var(--color-mint-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+      flex-shrink: 0;
+    }
+    .career-move-headline {
+      font-size: 0.96rem;
+      color: var(--color-navy);
+      line-height: 1.4;
+    }
+    .career-move-location {
+      font-size: 0.8rem;
+      color: var(--color-petrol);
+      font-weight: 600;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .venture-banner {
+      background: linear-gradient(135deg, rgba(254, 243, 199, 0.7) 0%, rgba(254, 215, 170, 0.5) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .venture-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #d97706;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+      flex-shrink: 0;
+    }
+    .venture-tag {
+      display: inline-block;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #92400e;
+      background: rgba(254, 243, 199, 0.9);
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+    }
+    .venture-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--color-navy);
+    }
+    .venture-company {
+      font-size: 0.8rem;
+      color: #78350f;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     /* Responsive Breakdown */
     @media (max-width: 1180px) {
       .app-layout {
@@ -1799,7 +1887,7 @@
   <!-- ==================== ÜST GEZİNME ÇUBUĞU (NAVBAR) ==================== -->
   <nav class="top-navbar">
     <div class="nav-container">
-      <a href="/" class="dopamine-brand-lockup" title="By Us, For Us Topluluk Portalı">
+      <a href="/" class="dopamine-brand-lockup" title="By Us, For Us Alumni Portal">
         <div class="dopamine-brand-emblem">
           <div class="dopamine-brand-emblem-inner">
             <i class="ti ti-sparkles"></i>
@@ -1823,26 +1911,26 @@
 
       <div class="nav-search">
         <span class="nav-search-icon"><i class="ti ti-search"></i></span>
-        <input type="text" id="feed-search-input" placeholder="Mezunlarda, duyurularda veya konularda arayın..." oninput="handleFeedSearch(this.value)" />
+        <input type="text" id="feed-search-input" placeholder="Search alumni, announcements, or topics..." oninput="handleFeedSearch(this.value)" />
       </div>
 
       <div class="nav-links-wrapper">
         <div class="nav-dock-capsule">
           <a href="/" class="nav-item active">
             <i class="ti ti-home"></i>
-            <span>Ana Akış</span>
+            <span>Live Feed</span>
           </a>
           <a href="/jobs" class="nav-item">
             <i class="ti ti-briefcase"></i>
-            <span>Fırsatlar & İlanlar</span>
+            <span>Jobs & Internships</span>
           </a>
           <a href="/announcements" class="nav-item">
             <i class="ti ti-speakerphone"></i>
-            <span>Duyurular</span>
+            <span>Announcements</span>
           </a>
           <a href="/users" class="nav-item">
             <i class="ti ti-users"></i>
-            <span>Mezun Rehberi</span>
+            <span>Alumni Directory</span>
           </a>
           <a href="/docs" class="nav-item">
             <i class="ti ti-book-2"></i>
@@ -1850,10 +1938,7 @@
           </a>
         </div>
 
-        <button class="btn-api-console" onclick="openApiConsoleModal()" title="Canlı REST API Test Konsolunu Aç">
-          <i class="ti ti-bolt"></i>
-          <span>Test Konsolu</span>
-        </button>
+        <a href="/logout.html" class="nav-item" title="Log out of the portal"><i class="ti ti-logout"></i><span>Log Out</span></a>
       </div>
     </div>
   </nav>
@@ -1864,7 +1949,7 @@
       <div class="dopamine-hero-content">
         <div class="dopamine-eyebrow-chip">
           <i class="ti ti-sparkles"></i>
-          <span>✦ MEZUN & AKADEMİ DAYANIŞMA PLATFORMU ✦</span>
+          <span>✦ ALUMNI, STUDENT & ACADEMIC EMPOWERMENT NETWORK ✦</span>
         </div>
 
         <h1 class="dopamine-hero-title">
@@ -1875,33 +1960,33 @@
 
         <p class="dopamine-hero-subtitle">
           <strong>"Rooted in the Past, Empowering the Future Together."</strong> — 
-          Mezun birikimini, öğrenci dinamizmini ve akademi ciddiyetini vefa duygusuyla birleştiren yeni nesil topluluk ekosistemi.
+          A next-generation community uniting alumni expertise, student drive, and academic excellence with institutional loyalty.
         </p>
 
         <div class="dopamine-stickers-row">
-          <span class="dopamine-sticker sticker-mint"><i class="ti ti-award"></i> Vefa & Aidiyet</span>
-          <span class="dopamine-sticker sticker-sky"><i class="ti ti-briefcase"></i> 100+ Kariyer & Staj</span>
-          <span class="dopamine-sticker sticker-peach"><i class="ti ti-users"></i> Aktif Mentorluk Ağı</span>
-          <span class="dopamine-sticker sticker-navy"><i class="ti ti-rosette-discount-check"></i> %100 Topluluk Gücü</span>
+          <span class="dopamine-sticker sticker-mint"><i class="ti ti-award"></i> Heritage & Loyalty</span>
+          <span class="dopamine-sticker sticker-sky"><i class="ti ti-briefcase"></i> 100+ Jobs & Internships</span>
+          <span class="dopamine-sticker sticker-peach"><i class="ti ti-users"></i> Active Mentorship Network</span>
+          <span class="dopamine-sticker sticker-navy"><i class="ti ti-rosette-discount-check"></i> 100% Community-Driven</span>
         </div>
       </div>
 
       <div class="dopamine-hero-actions">
         <button class="btn-dopamine-primary" onclick="openCreatePostModal('general')">
           <i class="ti ti-pencil-plus"></i>
-          <span>Paylaşım Yapın</span>
+          <span>Share an Update</span>
         </button>
         <a href="/jobs" class="btn-dopamine-ghost">
           <i class="ti ti-compass"></i>
-          <span>Fırsatları Keşfet →</span>
+          <span>Explore Opportunities →</span>
         </a>
       </div>
     </div>
   </div>
 
-  <!-- ==================== GENİŞ & FERAH ANA DÜZEN ==================== -->
+  <!-- ==================== APP LAYOUT ==================== -->
   <main class="app-layout">
-    <!-- SOL SÜTUN: PROFİL KARTI & HIZLI KISAYOLLAR -->
+    <!-- LEFT COLUMN: PROFILE CARD & SHORTCUTS -->
     <aside class="left-rail">
       <div class="glass-card profile-card">
         <div class="profile-cover"></div>
@@ -1911,21 +1996,21 @@
         <div class="profile-info">
           <div class="profile-name">
             <span id="current-user-name">Beyza Anacoğlu</span>
-            <i class="ti ti-rosette-discount-check-filled" style="color: var(--color-petrol); font-size: 1.1rem;" title="Doğrulanmış Üye"></i>
+            <i class="ti ti-rosette-discount-check-filled" style="color: var(--color-petrol); font-size: 1.1rem;" title="Verified Member"></i>
           </div>
-          <div class="profile-headline">Platform Yöneticisi • Yönetim Bilişim Sistemleri</div>
+          <div class="profile-headline"><span id="current-user-role-icon" class="ti ti-settings" style="margin-right:4px;"></span><span id="current-user-role-text"></span></div>
           
           <div class="profile-stats">
             <div class="profile-stat-row">
-              <span>Profil Görüntüleme</span>
+              <span>Profile Views</span>
               <span class="profile-stat-val">142</span>
             </div>
             <div class="profile-stat-row">
-              <span>Mezun Bağlantılarım</span>
+              <span>Alumni Connections</span>
               <span class="profile-stat-val">86</span>
             </div>
             <div class="profile-stat-row">
-              <span>Kaydedilen Gönderiler</span>
+              <span>Saved Bookmarks</span>
               <span class="profile-stat-val" id="saved-posts-count">0</span>
             </div>
           </div>
@@ -1934,131 +2019,141 @@
 
       <div class="glass-card left-menu-card">
         <div class="menu-section-header">
-          <span class="menu-title">Hızlı Modüller</span>
-          <span class="badge-sharp badge-sharp-petrol">Aktif</span>
+          <span class="menu-title">Quick Modules</span>
+          <span class="badge-sharp badge-sharp-petrol">Active</span>
         </div>
         <ul class="menu-list">
-          <li class="menu-item"><a href="/jobs"><i class="ti ti-briefcase"></i> İş & Staj Fırsatları</a></li>
-          <li class="menu-item"><a href="/announcements"><i class="ti ti-speakerphone"></i> Üniversite Duyuruları</a></li>
-          <li class="menu-item"><a href="/users"><i class="ti ti-users"></i> Mezun Rehberi & Ağ</a></li>
-          <li class="menu-item"><a href="/about"><i class="ti ti-info-circle"></i> Hakkında (About)</a></li>
+          <li class="menu-item"><a href="/jobs"><i class="ti ti-briefcase"></i> Jobs & Internships</a></li>
+          <li class="menu-item"><a href="/announcements"><i class="ti ti-speakerphone"></i> Official Announcements</a></li>
+          <li class="menu-item"><a href="/users"><i class="ti ti-users"></i> Alumni Directory & Network</a></li>
+          <li class="menu-item"><a href="/about"><i class="ti ti-info-circle"></i> About Portal</a></li>
         </ul>
 
         <div class="menu-section-header" style="margin-top: 22px;">
-          <span class="menu-title">Gündemdeki Konular</span>
+          <span class="menu-title">Trending Topics</span>
         </div>
         <div class="tags-container">
-          <span class="topic-tag" onclick="filterFeedByTag('#Kariyer')">#Kariyer</span>
-          <span class="topic-tag" onclick="filterFeedByTag('#YBS')">#YBS</span>
-          <span class="topic-tag" onclick="filterFeedByTag('#Mentorluk')">#Mentorluk</span>
-          <span class="topic-tag" onclick="filterFeedByTag('#YazilimGelistirme')">#YazilimGelistirme</span>
-          <span class="topic-tag" onclick="filterFeedByTag('#MezunBulusmasi')">#MezunBulusmasi</span>
-          <span class="topic-tag" onclick="filterFeedByTag('#Akademi')">#Akademi</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#Career')">#Career</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#MIS')">#MIS</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#Mentorship')">#Mentorship</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#Entrepreneurship')">#Entrepreneurship</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#AlumniSummit')">#AlumniSummit</span>
+          <span class="topic-tag" onclick="filterFeedByTag('#AI')">#AI</span>
         </div>
       </div>
     </aside>
 
-    <!-- ORTA SÜTUN: FERAH & GENİŞ AKIŞ (FEED) -->
+    <!-- CENTER COLUMN: FEED -->
     <section class="feed-rail">
-      <!-- GÖNDERİ PAYLAŞMA KUTUSU (POST CREATOR) -->
+      <!-- POST CREATOR TRIGGER BOX -->
       <div class="glass-card post-creator-box">
         <div class="creator-header-row">
           <div class="creator-avatar">BA</div>
           <div class="creator-fake-input" onclick="openCreatePostModal('general')">
-            Bir mezun hikayesi, iş fırsatı veya düşüncenizi toplulukla paylaşın...
+            Share a career move, startup venture, alumni story or mentorship note...
           </div>
         </div>
         <div class="creator-action-buttons">
+          <button class="creator-btn" onclick="openCreatePostModal('career_move')">
+            <i class="ti ti-rocket" style="color: var(--color-mint-primary);"></i>
+            <span>Career Step</span>
+          </button>
+          <button class="creator-btn" onclick="openCreatePostModal('venture')">
+            <i class="ti ti-bulb" style="color: var(--color-warning);"></i>
+            <span>Venture & Startup</span>
+          </button>
           <button class="creator-btn" onclick="openCreatePostModal('career')">
             <i class="ti ti-briefcase" style="color: var(--color-petrol);"></i>
-            <span>İş Fırsatı</span>
-          </button>
-          <button class="creator-btn" onclick="openCreatePostModal('announcement')">
-            <i class="ti ti-speakerphone" style="color: var(--color-warning);"></i>
-            <span>Duyuru</span>
+            <span>Job / Referral</span>
           </button>
           <button class="creator-btn" onclick="openCreatePostModal('story')">
-            <i class="ti ti-photo" style="color: var(--color-sky-accent);"></i>
-            <span>Mezun Hikayesi</span>
+            <i class="ti ti-award" style="color: var(--color-sky-accent);"></i>
+            <span>Alumni Story</span>
           </button>
           <button class="creator-btn" onclick="openCreatePostModal('advice')">
-            <i class="ti ti-bulb" style="color: var(--color-mint-primary);"></i>
-            <span>Tavsiye</span>
+            <i class="ti ti-heart-handshake" style="color: var(--color-petrol);"></i>
+            <span>Mentorship</span>
           </button>
         </div>
       </div>
 
-      <!-- KATEGORİ FİLTRELEME & SIRALAMA ÇUBUĞU -->
+      <!-- FEED CATEGORY FILTER BAR -->
       <div class="feed-filter-bar">
         <div class="filter-pills">
           <button class="filter-pill active" data-cat="all" onclick="selectCategoryFilter('all')">
-            <i class="ti ti-layout-grid"></i> Tümü
+            <i class="ti ti-layout-grid"></i> All
+          </button>
+          <button class="filter-pill" data-cat="career_move" onclick="selectCategoryFilter('career_move')">
+            <i class="ti ti-rocket"></i> Career Steps
+          </button>
+          <button class="filter-pill" data-cat="venture" onclick="selectCategoryFilter('venture')">
+            <i class="ti ti-bulb"></i> Ventures & Startups
           </button>
           <button class="filter-pill" data-cat="career" onclick="selectCategoryFilter('career')">
-            <i class="ti ti-briefcase"></i> Kariyer & İlanlar
-          </button>
-          <button class="filter-pill" data-cat="announcement" onclick="selectCategoryFilter('announcement')">
-            <i class="ti ti-speakerphone"></i> Resmi Duyurular
+            <i class="ti ti-briefcase"></i> Jobs & Referrals
           </button>
           <button class="filter-pill" data-cat="story" onclick="selectCategoryFilter('story')">
-            <i class="ti ti-award"></i> Mezun Hikayeleri
+            <i class="ti ti-award"></i> Alumni Stories
           </button>
           <button class="filter-pill" data-cat="advice" onclick="selectCategoryFilter('advice')">
-            <i class="ti ti-bulb"></i> Tavsiyeler
+            <i class="ti ti-heart-handshake"></i> Mentorship
+          </button>
+          <button class="filter-pill" data-cat="announcement" onclick="selectCategoryFilter('announcement')">
+            <i class="ti ti-speakerphone"></i> Announcements
           </button>
         </div>
         <div style="font-size: 0.8rem; color: var(--color-slate-muted); font-weight: 600;">
-          By Us, For Us Akışı
+          Live Community Feed
         </div>
       </div>
 
-      <!-- GÖNDERİ KARTLARI LİSTESİ (FEED CONTAINER) -->
+      <!-- FEED CONTAINER -->
       <div id="feed-posts-container" style="display: flex; flex-direction: column; gap: 20px;">
         <div style="text-align: center; padding: 48px; color: var(--color-slate-muted);" class="glass-card">
           <div style="font-size: 1.8rem; margin-bottom: 8px;"><i class="ti ti-loader-2 ti-spin"></i></div>
-          <div style="font-weight: 600;">Topluluk akışı yükleniyor, lütfen bekleyiniz...</div>
+          <div style="font-weight: 600;">Loading community feed, please wait...</div>
         </div>
       </div>
     </section>
 
-    <!-- SAĞ SÜTUN: GÜNDEMDEKİ İLANLAR & AKADEMİK DUYURULAR -->
+    <!-- RIGHT COLUMN: TRENDING JOBS & OFFICIAL ANNOUNCEMENTS -->
     <aside class="right-rail">
-      <!-- Öne Çıkan İş & Staj Fırsatları -->
+      <!-- Trending Jobs & Internships -->
       <div class="glass-card widget-card">
         <div class="widget-header">
           <div class="widget-title">
             <i class="ti ti-briefcase"></i>
-            <span>Gündemdeki İlanlar</span>
+            <span>Trending Opportunities</span>
           </div>
-          <a href="/jobs" class="widget-link">Tümü →</a>
+          <a href="/jobs" class="widget-link">View All →</a>
         </div>
         <div class="widget-list" id="widget-jobs-list">
-          <div style="color: var(--color-slate-muted); font-size: 0.82rem;">İlanlar taranıyor...</div>
+          <div style="color: var(--color-slate-muted); font-size: 0.82rem;">Scanning opportunities...</div>
         </div>
       </div>
 
-      <!-- Resmi Duyurular -->
+      <!-- Official Announcements -->
       <div class="glass-card widget-card">
         <div class="widget-header">
           <div class="widget-title">
             <i class="ti ti-speakerphone"></i>
-            <span>Resmi Duyurular</span>
+            <span>Official Announcements</span>
           </div>
-          <a href="/announcements" class="widget-link">Tümü →</a>
+          <a href="/announcements" class="widget-link">View All →</a>
         </div>
         <div class="widget-list" id="widget-announcements-list">
-          <div style="color: var(--color-slate-muted); font-size: 0.82rem;">Duyurular taranıyor...</div>
+          <div style="color: var(--color-slate-muted); font-size: 0.82rem;">Loading announcements...</div>
         </div>
       </div>
 
-      <!-- Önerilen Mezun Bağlantıları -->
+      <!-- Suggested Alumni Connections -->
       <div class="glass-card widget-card">
         <div class="widget-header">
           <div class="widget-title">
             <i class="ti ti-user-plus"></i>
-            <span>Ağınızı Genişletin</span>
+            <span>Expand Your Network</span>
           </div>
-          <a href="/users" class="widget-link">Rehber →</a>
+          <a href="/users" class="widget-link">Directory →</a>
         </div>
         <div class="widget-list">
           <div class="user-suggest-item">
@@ -2066,41 +2161,41 @@
               <div class="user-suggest-avatar">AY</div>
               <div>
                 <strong style="color: var(--color-navy); font-size: 0.86rem; display: block;">Ayşe Yılmaz</strong>
-                <span style="color: var(--color-slate-muted); font-size: 0.74rem;">Trendyol • Senior Engineer</span>
+                <span style="color: var(--color-slate-muted); font-size: 0.74rem;">Trendyol • Senior Software Engineer</span>
               </div>
             </div>
-            <a href="/users" class="btn-connect">İncele</a>
+            <a href="/users" class="btn-connect">Connect</a>
           </div>
           <div class="user-suggest-item">
             <div class="user-suggest-info">
               <div class="user-suggest-avatar">KD</div>
               <div>
                 <strong style="color: var(--color-navy); font-size: 0.86rem; display: block;">Prof. Dr. Kemal Demir</strong>
-                <span style="color: var(--color-slate-muted); font-size: 0.74rem;">Bölüm Başkanı • Akademi</span>
+                <span style="color: var(--color-slate-muted); font-size: 0.74rem;">Department Head • Academia</span>
               </div>
             </div>
-            <a href="/users" class="btn-connect">İncele</a>
+            <a href="/users" class="btn-connect">Connect</a>
           </div>
           <div class="user-suggest-item">
             <div class="user-suggest-info">
               <div class="user-suggest-avatar">MÇ</div>
               <div>
                 <strong style="color: var(--color-navy); font-size: 0.86rem; display: block;">Mehmet Çelik</strong>
-                <span style="color: var(--color-slate-muted); font-size: 0.74rem;">SAP Berlin • Mezun Temsilcisi</span>
+                <span style="color: var(--color-slate-muted); font-size: 0.74rem;">SAP Berlin • Alumni Representative</span>
               </div>
             </div>
-            <a href="/users" class="btn-connect">İncele</a>
+            <a href="/users" class="btn-connect">Connect</a>
           </div>
         </div>
       </div>
     </aside>
   </main>
 
-  <!-- ==================== GÖNDERİ OLUŞTURMA MODALI ==================== -->
+  <!-- ==================== CREATE POST MODAL ==================== -->
   <div class="modal-backdrop" id="create-post-modal">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width: 620px;">
       <div class="modal-header">
-        <h3><i class="ti ti-pencil"></i> Yeni Paylaşım Yapın</h3>
+        <h3><i class="ti ti-pencil"></i> Create a Community Post</h3>
         <button class="modal-close-btn" onclick="closeCreatePostModal()">✕</button>
       </div>
       <div class="modal-body">
@@ -2109,43 +2204,108 @@
           <div>
             <strong style="color: var(--color-navy); font-size: 0.95rem;">Beyza Anacoğlu</strong>
             <div style="font-size: 0.78rem; color: var(--color-petrol); font-weight: 600;">
-              <i class="ti ti-world"></i> Herkese Açık Topluluk Paylaşımı
+              <i class="ti ti-world"></i> Public Alumni & Student Community
             </div>
           </div>
         </div>
 
         <div>
-          <label style="font-size: 0.8rem; font-weight: 600; color: var(--color-slate-body); margin-bottom: 6px; display: block;">Kategori Seçiniz:</label>
-          <div class="category-select-group">
-            <button type="button" class="cat-btn selected" data-cat="general" onclick="selectModalCategory('general')">🌐 Genel Paylaşım</button>
-            <button type="button" class="cat-btn" data-cat="career" onclick="selectModalCategory('career')">💼 Kariyer & İlan</button>
-            <button type="button" class="cat-btn" data-cat="announcement" onclick="selectModalCategory('announcement')">📢 Duyuru & Etkinlik</button>
-            <button type="button" class="cat-btn" data-cat="story" onclick="selectModalCategory('story')">🎓 Mezun Hikayesi</button>
-            <button type="button" class="cat-btn" data-cat="advice" onclick="selectModalCategory('advice')">💡 Kariyer Tavsiyesi</button>
+          <label style="font-size: 0.8rem; font-weight: 600; color: var(--color-slate-body); margin-bottom: 6px; display: block;">Select Post Category:</label>
+          <div class="category-select-group" style="flex-wrap: wrap; gap: 6px;">
+            <button type="button" class="cat-btn selected" data-cat="general" onclick="selectModalCategory('general')">🌐 General Update</button>
+            <button type="button" class="cat-btn" data-cat="career_move" onclick="selectModalCategory('career_move')">🚀 Career Step</button>
+            <button type="button" class="cat-btn" data-cat="venture" onclick="selectModalCategory('venture')">💡 Venture & Startup</button>
+            <button type="button" class="cat-btn" data-cat="story" onclick="selectModalCategory('story')">🎓 Alumni Story</button>
+            <button type="button" class="cat-btn" data-cat="career" onclick="selectModalCategory('career')">💼 Job / Referral</button>
+            <button type="button" class="cat-btn" data-cat="advice" onclick="selectModalCategory('advice')">🤝 Mentorship</button>
+            <button type="button" class="cat-btn" data-cat="announcement" onclick="selectModalCategory('announcement')">📢 Announcement</button>
           </div>
         </div>
 
-        <textarea id="modal-post-content" class="modal-textarea" placeholder="Mezunlarımız, öğrencilerimiz veya akademisyenlerimizle paylaşmak istediğiniz mesajınızı yazınız... (Örn: #Kariyer, #Mentorluk, #Vefa)"></textarea>
+        <!-- CONDITIONAL FORM: CAREER MOVE -->
+        <div id="modal-section-career-move" style="display: none; background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 12px; padding: 14px; margin-top: 4px;">
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--color-petrol); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <i class="ti ti-rocket"></i> Career Step Details (New Job, Promotion, Relocation)
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 600; color: var(--color-slate-body);">Step Type:</label>
+              <select id="modal-career-subtype" class="modal-input" style="padding: 7px;">
+                <option value="new_job">🎉 New Job / Role</option>
+                <option value="promotion">⭐ Promotion / New Title</option>
+                <option value="relocation">🌍 Country / City Relocation</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 600; color: var(--color-slate-body);">Position / Title:</label>
+              <input type="text" id="modal-career-position" class="modal-input" style="padding: 7px;" placeholder="e.g. Senior Cloud Architect" />
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 600; color: var(--color-slate-body);">Company / Organization:</label>
+              <input type="text" id="modal-career-company" class="modal-input" style="padding: 7px;" placeholder="e.g. Stripe, AWS, Trendyol" />
+            </div>
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 600; color: var(--color-slate-body);">Location / Country:</label>
+              <input type="text" id="modal-career-location" class="modal-input" style="padding: 7px;" placeholder="e.g. Zurich, Switzerland 🇨🇭" />
+            </div>
+          </div>
+        </div>
+
+        <!-- CONDITIONAL FORM: VENTURE & STARTUP -->
+        <div id="modal-section-venture" style="display: none; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px; margin-top: 4px;">
+          <div style="font-size: 0.82rem; font-weight: 700; color: #b45309; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <i class="ti ti-bulb"></i> Entrepreneurship & Opportunity (Event, Product, Internship, Job)
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 600; color: var(--color-slate-body);">Announcement Type:</label>
+              <select id="modal-venture-subtype" class="modal-input" style="padding: 7px;">
+                <option value="internship">💼 Internship Opportunity</option>
+                <option value="job_opening">🚀 Job / Hiring Opening</option>
+                <option value="product">✨ Product / Startup Launch</option>
+                <option value="event">🗓️ Event / Webinar / Workshop</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 600; color: var(--color-slate-body);">Title / Header:</label>
+              <input type="text" id="modal-venture-title" class="modal-input" style="padding: 7px;" placeholder="e.g. Summer AI Engineering Internship" />
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 600; color: var(--color-slate-body);">Startup / Project Name:</label>
+              <input type="text" id="modal-venture-company" class="modal-input" style="padding: 7px;" placeholder="e.g. CognitiveWave Labs" />
+            </div>
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 600; color: var(--color-slate-body);">Application / Info URL:</label>
+              <input type="text" id="modal-venture-link" class="modal-input" style="padding: 7px;" placeholder="e.g. /jobs or https://..." />
+            </div>
+          </div>
+        </div>
+
+        <textarea id="modal-post-content" class="modal-textarea" placeholder="Share your message with alumni, students, and faculty... (e.g. #Career, #Mentorship, #Venture)"></textarea>
 
         <div>
-          <label style="font-size: 0.8rem; font-weight: 600; color: var(--color-slate-body); margin-bottom: 4px; display: block;">Görsel URL (Opsiyonel):</label>
-          <input type="url" id="modal-image-url" class="modal-input" placeholder="https://images.unsplash.com/... doğrudan görsel linki" />
+          <label style="font-size: 0.8rem; font-weight: 600; color: var(--color-slate-body); margin-bottom: 4px; display: block;">Image URL (Optional):</label>
+          <input type="url" id="modal-image-url" class="modal-input" placeholder="https://images.unsplash.com/... direct image link" />
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-            <label style="font-size: 0.8rem; font-weight: 600; color: var(--color-slate-body); margin-bottom: 4px; display: block;">İlgili Bağlantı URL (Opsiyonel):</label>
-            <input type="text" id="modal-link-url" class="modal-input" placeholder="/jobs veya https://..." />
+            <label style="font-size: 0.8rem; font-weight: 600; color: var(--color-slate-body); margin-bottom: 4px; display: block;">External Link URL (Optional):</label>
+            <input type="text" id="modal-link-url" class="modal-input" placeholder="/jobs or https://..." />
           </div>
           <div>
-            <label style="font-size: 0.8rem; font-weight: 600; color: var(--color-slate-body); margin-bottom: 4px; display: block;">Bağlantı Başlığı:</label>
-            <input type="text" id="modal-link-title" class="modal-input" placeholder="💼 Detayları İnceleyin" />
+            <label style="font-size: 0.8rem; font-weight: 600; color: var(--color-slate-body); margin-bottom: 4px; display: block;">Link Button Label:</label>
+            <input type="text" id="modal-link-title" class="modal-input" placeholder="💼 View Details / Apply" />
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeCreatePostModal()">Vazgeç</button>
-        <button class="btn-primary" onclick="submitNewPost()">Paylaşımı Yayınla</button>
+        <button class="btn-secondary" onclick="closeCreatePostModal()">Cancel</button>
+        <button class="btn-primary" onclick="submitNewPost()">Publish Update</button>
       </div>
     </div>
   </div>
@@ -2231,11 +2391,13 @@
     let savedPostIds = new Set(JSON.parse(localStorage.getItem('bufu_saved_posts') || '[]'));
 
     const CATEGORY_META = {
-      career: { label: 'Kariyer & İlan', badgeCls: 'badge-sharp-petrol', icon: 'ti-briefcase' },
-      announcement: { label: 'Resmi Duyuru', badgeCls: 'badge-sharp-navy', icon: 'ti-speakerphone' },
-      story: { label: 'Mezun Hikayesi', badgeCls: 'badge-sharp-mint', icon: 'ti-award' },
-      advice: { label: 'Kariyer Tavsiyesi', badgeCls: 'badge-sharp-petrol', icon: 'ti-bulb' },
-      general: { label: 'Topluluk Paylaşımı', badgeCls: 'badge-sharp-petrol', icon: 'ti-world' }
+      career_move: { label: 'Career Step', badgeCls: 'badge-sharp-mint', icon: 'ti-rocket' },
+      venture: { label: 'Venture & Opportunity', badgeCls: 'badge-sharp-petrol', icon: 'ti-bulb' },
+      career: { label: 'Job & Referral', badgeCls: 'badge-sharp-petrol', icon: 'ti-briefcase' },
+      announcement: { label: 'Official Announcement', badgeCls: 'badge-sharp-navy', icon: 'ti-speakerphone' },
+      story: { label: 'Alumni Story', badgeCls: 'badge-sharp-mint', icon: 'ti-award' },
+      advice: { label: 'Mentorship & Advice', badgeCls: 'badge-sharp-petrol', icon: 'ti-heart-handshake' },
+      general: { label: 'Community Post', badgeCls: 'badge-sharp-petrol', icon: 'ti-world' }
     };
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -2244,7 +2406,7 @@
       updateSavedCountUI();
     });
 
-    /* Toast Notification (Polite & Respectful Tone) */
+    /* Toast Notification */
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
@@ -2260,26 +2422,26 @@
       }, 4000);
     }
 
+    // Safe HTML escape without breaking single quotes into raw entity codes
     function escapeHtml(str) {
       if (!str) return '';
       return String(str)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        .replace(/"/g, '&quot;');
     }
 
     function formatTimeAgo(isoString) {
-      if (!isoString) return 'Az önce';
+      if (!isoString) return 'Just now';
       const past = new Date(isoString);
       const diffMinutes = Math.floor((Date.now() - past.getTime()) / (1000 * 60));
-      if (diffMinutes < 1) return 'Az önce';
-      if (diffMinutes < 60) return `${diffMinutes} dakika önce`;
+      if (diffMinutes < 1) return 'Just now';
+      if (diffMinutes < 60) return `${diffMinutes}m ago`;
       const diffHours = Math.floor(diffMinutes / 60);
-      if (diffHours < 24) return `${diffHours} saat önce`;
+      if (diffHours < 24) return `${diffHours}h ago`;
       const diffDays = Math.floor(diffHours / 24);
-      return `${diffDays} gün önce`;
+      return `${diffDays}d ago`;
     }
 
     function formatContentWithHashtags(text) {
@@ -2315,10 +2477,10 @@
         container.innerHTML = `
           <div class="glass-card" style="padding: 48px 24px; text-align: center; color: var(--color-slate-muted);">
             <div style="font-size: 2.2rem; margin-bottom: 12px; color: var(--color-petrol);"><i class="ti ti-inbox"></i></div>
-            <strong style="color: var(--color-navy); font-size: 1.1rem; display: block; margin-bottom: 6px;">Henüz bu kategoride paylaşılan bir gönderi bulunmamaktadır.</strong>
-            <p style="font-size: 0.9rem; margin-bottom: 18px;">Topluluğumuza ilk katkıyı siz sunabilir, akışı başlatabilirsiniz.</p>
+            <strong style="color: var(--color-navy); font-size: 1.1rem; display: block; margin-bottom: 6px;">No posts yet in this category.</strong>
+            <p style="font-size: 0.9rem; margin-bottom: 18px;">Be the first to share an update, announce an opportunity, or ask a question!</p>
             <button class="btn-primary" onclick="openCreatePostModal('${currentCategory}')">
-              <i class="ti ti-pencil"></i> İlk Paylaşımı Yapın
+              <i class="ti ti-pencil"></i> Create First Post
             </button>
           </div>
         `;
@@ -2333,6 +2495,42 @@
         const bookmarkIcon = isSaved ? 'ti-bookmark-filled' : 'ti-bookmark';
         const bookmarkColor = isSaved ? 'color: var(--color-petrol);' : '';
 
+        // Career Move Special Callout
+        let careerMoveHtml = '';
+        if (post.category === 'career_move' || post.position) {
+          const subTypeLabel = post.subType === 'promotion' ? '⭐ Promoted to' : post.subType === 'relocation' ? '🌍 Relocated as' : '🎉 Started New Role as';
+          careerMoveHtml = `
+            <div class="career-move-banner">
+              <div class="career-move-icon"><i class="ti ti-rocket"></i></div>
+              <div>
+                <div class="career-move-headline">
+                  ${subTypeLabel} <strong>${escapeHtml(post.position || 'Specialist Role')}</strong>
+                  ${post.company ? `at <strong>${escapeHtml(post.company)}</strong>` : ''}
+                </div>
+                ${post.location ? `<div class="career-move-location"><i class="ti ti-map-pin"></i> ${escapeHtml(post.location)}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }
+
+        // Venture / Opportunity Special Callout
+        let ventureHtml = '';
+        if (post.category === 'venture' || post.ventureTitle) {
+          const typeTag = post.subType === 'internship' ? '💼 Internship Opportunity' :
+                         post.subType === 'job_opening' ? '🚀 Job Opening' :
+                         post.subType === 'event' ? '🗓️ Event / Webinar' : '✨ Startup Launch';
+          ventureHtml = `
+            <div class="venture-banner">
+              <div class="venture-icon"><i class="ti ti-bulb"></i></div>
+              <div style="flex: 1;">
+                <span class="venture-tag">${typeTag}</span>
+                <div class="venture-title">${escapeHtml(post.ventureTitle || post.linkTitle || 'Venture Opportunity')}</div>
+                ${post.company ? `<div class="venture-company"><i class="ti ti-building"></i> ${escapeHtml(post.company)} ${post.location ? `• ${escapeHtml(post.location)}` : ''}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }
+
         return `
           <article class="glass-card post-card" id="post-${post.id}">
             <div class="post-header">
@@ -2345,7 +2543,7 @@
                       <i class="ti ${meta.icon}"></i> ${meta.label}
                     </span>
                   </div>
-                  <div class="post-author-title">${escapeHtml(post.authorTitle || 'Mezun Topluluğu Üyesi')}</div>
+                  <div class="post-author-title">${escapeHtml(post.authorTitle || 'Community Member')}</div>
                 </div>
               </div>
               <div class="post-time-meta">
@@ -2354,44 +2552,61 @@
               </div>
             </div>
 
+            ${careerMoveHtml}
+            ${ventureHtml}
+
             <div class="post-body">
               ${formatContentWithHashtags(post.content)}
             </div>
 
             ${post.imageUrl ? `
               <div style="margin-bottom: 16px; border-radius: 12px; overflow: hidden; border: 1px solid var(--color-slate-border);">
-                <img src="${escapeHtml(post.imageUrl)}" alt="Gönderi Görseli" style="width: 100%; max-height: 420px; object-fit: cover; display: block;" onerror="this.parentElement.style.display='none'" />
+                <img src="${escapeHtml(post.imageUrl)}" alt="Post Attachment" style="width: 100%; max-height: 420px; object-fit: cover; display: block;" onerror="this.parentElement.style.display='none'" />
               </div>
             ` : ''}
 
             ${post.linkUrl ? `
               <a href="${escapeHtml(post.linkUrl)}" class="post-link-card">
                 <div>
-                  <div class="post-link-title">${escapeHtml(post.linkTitle || 'Bağlantıyı İnceleyin')}</div>
+                  <div class="post-link-title">${escapeHtml(post.linkTitle || 'Explore Linked Opportunity')}</div>
                   <div class="post-link-url">${escapeHtml(post.linkUrl)}</div>
                 </div>
                 <i class="ti ti-arrow-up-right" style="font-size: 1.25rem; color: var(--color-petrol);"></i>
               </a>
+            <a href="/register.html" class="nav-item">
+              <i class="ti ti-user-plus"></i>
+              <span>Sign Up</span>
+            </a>
             ` : ''}
 
             <div class="post-actions-row">
-              <div style="display: flex; gap: 8px;">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <button class="post-action-btn ${post.isLiked ? 'active' : ''}" onclick="toggleLikePost(${post.id})">
                   <i class="ti ${likeIcon}" style="${likeColor}"></i>
-                  <span id="like-count-${post.id}">${post.likesCount || 0}</span> Beğeni
+                  <span id="like-count-${post.id}">${post.likesCount || 0}</span> ${post.category === 'career_move' ? 'Celebrate' : 'Likes'}
                 </button>
                 <button class="post-action-btn" onclick="toggleComments(${post.id})">
                   <i class="ti ti-message-circle"></i>
-                  <span>${post.comments ? post.comments.length : 0}</span> Yorum
+                  <span>${post.comments ? post.comments.length : 0}</span> Comments
                 </button>
                 <button class="post-action-btn" onclick="sharePost(${post.id})">
-                  <i class="ti ti-share-3"></i> Paylaş
+                  <i class="ti ti-share-3"></i> Share
                 </button>
+                ${post.category === 'career_move' ? `
+                  <button class="post-action-btn" onclick="sendDirectMessage('${escapeHtml(post.authorName)}')">
+                    <i class="ti ti-send"></i> Congratulate
+                  </button>
+                ` : ''}
+                ${post.category === 'venture' ? `
+                  <button class="post-action-btn" onclick="openApplyOpportunity('${escapeHtml(post.linkUrl || '/jobs')}')">
+                    <i class="ti ti-external-link"></i> Apply / Details
+                  </button>
+                ` : ''}
               </div>
 
-              <button class="post-action-btn" onclick="toggleSavePost(${post.id})" title="Gönderiyi Kaydet">
+              <button class="post-action-btn" onclick="toggleSavePost(${post.id})" title="Save Bookmark">
                 <i class="ti ${bookmarkIcon}" style="${bookmarkColor}"></i>
-                <span>${isSaved ? 'Kaydedildi' : 'Kaydet'}</span>
+                <span>${isSaved ? 'Saved' : 'Save'}</span>
               </button>
             </div>
 
@@ -2408,13 +2623,25 @@
                 `).join('')}
               </div>
               <div class="comment-input-row">
-                <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Düşüncenizi saygılı ve yapıcı bir dille iletin..." onkeydown="if(event.key==='Enter') submitComment(${post.id})" />
-                <button class="btn-comment-submit" onclick="submitComment(${post.id})">Gönder</button>
+                <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Write a thoughtful, constructive comment..." onkeydown="if(event.key==='Enter') submitComment(${post.id})" />
+                <button class="btn-comment-submit" onclick="submitComment(${post.id})">Reply</button>
               </div>
             </div>
           </article>
         `;
       }).join('');
+    }
+
+    function sendDirectMessage(author) {
+      showToast(`Initiating direct conversation with ${author}...`);
+    }
+
+    function openApplyOpportunity(url) {
+      if (url && url !== '#') {
+        window.location.href = url;
+      } else {
+        showToast('Application details will open shortly.');
+      }
     }
 
     async function toggleLikePost(postId) {
@@ -2519,10 +2746,7 @@
 
     /* Modal Controls */
     function openCreatePostModal(category = 'general') {
-      modalSelectedCategory = category;
-      document.querySelectorAll('.cat-btn').forEach(b => {
-        b.classList.toggle('selected', b.dataset.cat === category);
-      });
+      selectModalCategory(category);
       document.getElementById('create-post-modal').classList.add('show');
     }
 
@@ -2535,25 +2759,60 @@
       document.querySelectorAll('.cat-btn').forEach(b => {
         b.classList.toggle('selected', b.dataset.cat === category);
       });
+
+      // Conditional form sections visibility
+      const careerSection = document.getElementById('modal-section-career-move');
+      const ventureSection = document.getElementById('modal-section-venture');
+
+      if (careerSection) careerSection.style.display = (category === 'career_move') ? 'block' : 'none';
+      if (ventureSection) ventureSection.style.display = (category === 'venture') ? 'block' : 'none';
     }
 
     async function submitNewPost() {
       const content = document.getElementById('modal-post-content').value.trim();
       const imageUrl = document.getElementById('modal-image-url').value.trim();
-      const linkUrl = document.getElementById('modal-link-url').value.trim();
-      const linkTitle = document.getElementById('modal-link-title').value.trim();
+      let linkUrl = document.getElementById('modal-link-url').value.trim();
+      let linkTitle = document.getElementById('modal-link-title').value.trim();
 
-      if (!content) {
-        alert('Lütfen paylaşmak istediğiniz içeriği giriniz.');
+      // Conditional fields
+      let subType = null;
+      let position = null;
+      let company = null;
+      let location = null;
+      let ventureTitle = null;
+
+      if (modalSelectedCategory === 'career_move') {
+        subType = document.getElementById('modal-career-subtype')?.value || 'new_job';
+        position = document.getElementById('modal-career-position')?.value.trim() || null;
+        company = document.getElementById('modal-career-company')?.value.trim() || null;
+        location = document.getElementById('modal-career-location')?.value.trim() || null;
+      } else if (modalSelectedCategory === 'venture') {
+        subType = document.getElementById('modal-venture-subtype')?.value || 'internship';
+        ventureTitle = document.getElementById('modal-venture-title')?.value.trim() || null;
+        company = document.getElementById('modal-venture-company')?.value.trim() || null;
+        const vLink = document.getElementById('modal-venture-link')?.value.trim();
+        if (vLink) {
+          linkUrl = vLink;
+          if (!linkTitle) linkTitle = 'Apply / Explore Opportunity';
+        }
+      }
+
+      if (!content && !ventureTitle && !position) {
+        alert('Please enter your post message or announcement details.');
         return;
       }
 
       const newPost = {
         id: Date.now(),
         authorName: 'Beyza Anacoğlu',
-        authorTitle: 'Platform Yöneticisi • Yönetim Bilişim Sistemleri',
+        authorTitle: 'Platform Administrator • Management Information Systems',
         authorAvatar: 'BA',
         category: modalSelectedCategory,
+        subType: subType,
+        position: position,
+        company: company,
+        location: location,
+        ventureTitle: ventureTitle,
         content: content,
         imageUrl: imageUrl || null,
         linkUrl: linkUrl || null,
@@ -2572,8 +2831,14 @@
       document.getElementById('modal-image-url').value = '';
       document.getElementById('modal-link-url').value = '';
       document.getElementById('modal-link-title').value = '';
+      if (document.getElementById('modal-career-position')) document.getElementById('modal-career-position').value = '';
+      if (document.getElementById('modal-career-company')) document.getElementById('modal-career-company').value = '';
+      if (document.getElementById('modal-career-location')) document.getElementById('modal-career-location').value = '';
+      if (document.getElementById('modal-venture-title')) document.getElementById('modal-venture-title').value = '';
+      if (document.getElementById('modal-venture-company')) document.getElementById('modal-venture-company').value = '';
+      if (document.getElementById('modal-venture-link')) document.getElementById('modal-venture-link').value = '';
 
-      showToast('Paylaşımınız başarıyla yayınlandı.');
+      showToast('Post published successfully!');
 
       try {
         await fetch('/api/feed', {
@@ -2599,10 +2864,14 @@
               <a href="/jobs" class="job-widget-item">
                 <span class="job-widget-title">${escapeHtml(j.title)}</span>
                 <div class="job-widget-company">
-                  <span>${escapeHtml(j.company || 'Mezun Şirketi')}</span>
-                  <span style="color: var(--color-slate-muted); font-weight: normal;">${escapeHtml(j.city || 'İstanbul')}</span>
+                  <span>${escapeHtml(j.company || 'Alumni Company')}</span>
+                  <span style="color: var(--color-slate-muted); font-weight: normal;">${escapeHtml(j.city || 'Remote')}</span>
                 </div>
               </a>
+            <a href="/register.html" class="nav-item">
+              <i class="ti ti-user-plus"></i>
+              <span>Sign Up</span>
+            </a>
             `).join('');
           } else {
             renderFallbackJobs(jobsContainer);
@@ -2625,6 +2894,10 @@
                 <span class="announcement-widget-title">${escapeHtml(a.title)}</span>
                 <span class="announcement-widget-date">${formatTimeAgo(a.created_at || a.createdAt)}</span>
               </a>
+            <a href="/register.html" class="nav-item">
+              <i class="ti ti-user-plus"></i>
+              <span>Sign Up</span>
+            </a>
             `).join('');
           } else {
             renderFallbackAnnouncements(announcementsContainer);
@@ -2640,24 +2913,24 @@
     function renderFallbackJobs(container) {
       container.innerHTML = `
         <a href="/jobs" class="job-widget-item">
-          <span class="job-widget-title">Junior Backend Developer</span>
+          <span class="job-widget-title">Junior Backend Developer (Go / Node.js)</span>
           <div class="job-widget-company">
-            <span>Trendyol</span>
-            <span style="color: var(--color-slate-muted); font-weight: normal;">Hibrit • İstanbul</span>
+            <span>Trendyol Group</span>
+            <span style="color: var(--color-slate-muted); font-weight: normal;">Hybrid • Istanbul</span>
           </div>
         </a>
         <a href="/jobs" class="job-widget-item">
-          <span class="job-widget-title">Veri Analisti & İş Zekası Uzmanı</span>
+          <span class="job-widget-title">Cloud Infrastructure Intern</span>
           <div class="job-widget-company">
-            <span>Garanti BBVA</span>
-            <span style="color: var(--color-slate-muted); font-weight: normal;">Maslak • İstanbul</span>
+            <span>Amazon Web Services</span>
+            <span style="color: var(--color-slate-muted); font-weight: normal;">Zurich, CH</span>
           </div>
         </a>
         <a href="/jobs" class="job-widget-item">
-          <span class="job-widget-title">Yazılım Mühendisliği Stajyeri</span>
+          <span class="job-widget-title">Business Analytics Associate</span>
           <div class="job-widget-company">
-            <span>Getir Tech</span>
-            <span style="color: var(--color-slate-muted); font-weight: normal;">Uzaktan</span>
+            <span>Garanti BBVA FinTech</span>
+            <span style="color: var(--color-slate-muted); font-weight: normal;">Istanbul, TR</span>
           </div>
         </a>
       `;
@@ -2666,16 +2939,16 @@
     function renderFallbackAnnouncements(container) {
       container.innerHTML = `
         <a href="/announcements" class="announcement-widget-item">
-          <span class="announcement-widget-title">2026 Bahar Dönemi Mezun-Öğrenci Mentorluk Eşleşmeleri Başladı</span>
-          <span class="announcement-widget-date">2 saat önce</span>
+          <span class="announcement-widget-title">Fall 2026 Alumni-Student Mentorship Pairings Announced</span>
+          <span class="announcement-widget-date">2h ago</span>
         </a>
         <a href="/announcements" class="announcement-widget-item">
-          <span class="announcement-widget-title">Yönetim Bilişim Zirvesi & Kariyer Fuarı Kayıtları Açıldı</span>
-          <span class="announcement-widget-date">1 gün önce</span>
+          <span class="announcement-widget-title">Annual Tech & Career Networking Summit Registration Open</span>
+          <span class="announcement-widget-date">1d ago</span>
         </a>
         <a href="/announcements" class="announcement-widget-item">
-          <span class="announcement-widget-title">Bölümümüz 2026 Mezuniyet Yıllığı Dijital Arşivi Erişime Açıldı</span>
-          <span class="announcement-widget-date">3 gün önce</span>
+          <span class="announcement-widget-title">Digital Yearbook Archive Open for All Graduating Batches</span>
+          <span class="announcement-widget-date">3d ago</span>
         </a>
       `;
     }
@@ -2703,13 +2976,13 @@
     async function testConsoleHello() {
       const name = document.getElementById('console-name').value.trim();
       const el = document.getElementById('res-hello');
-      el.textContent = 'İstek gönderiliyor...';
+      el.textContent = 'Sending request...';
       try {
         const res = await fetch(`/hello?name=${encodeURIComponent(name)}`);
         const text = await res.text();
         el.textContent = text.slice(0, 160);
       } catch (err) {
-        el.textContent = `Hata: ${err.message}`;
+        el.textContent = `Error: ${err.message}`;
       }
     }
 
@@ -2718,13 +2991,13 @@
       const n2 = document.getElementById('console-n2').value;
       const op = document.getElementById('console-op').value;
       const el = document.getElementById('res-math');
-      el.textContent = 'Hesaplanıyor...';
+      el.textContent = 'Calculating...';
       try {
         const res = await fetch(`/${op}/${n1}/${n2}`);
         const text = await res.text();
         el.textContent = text.slice(0, 160);
       } catch (err) {
-        el.textContent = `Hata: ${err.message}`;
+        el.textContent = `Error: ${err.message}`;
       }
     }
 
@@ -2732,55 +3005,96 @@
     function getFallbackSeedPosts() {
       return [
         {
+          id: 6,
+          authorName: 'Selin Yılmaz',
+          authorTitle: 'Co-Founder & CEO @ AI Studio • MIS \'19 Alum',
+          authorAvatar: 'SY',
+          category: 'venture',
+          subType: 'internship',
+          ventureTitle: 'Summer 2026 AI & Full-Stack Engineering Internship Program',
+          company: 'CognitiveWave Labs',
+          location: 'Remote / London, UK',
+          content: 'Exciting news from our startup! CognitiveWave Labs has secured seed funding and we are opening 2 dedicated internship positions for our university\'s students and recent graduates. You will work directly with generative AI pipelines, LLM agent workflows, and modern React backends.\n\nStudents who want to contribute and learn are encouraged to apply directly through our portal! 🚀🇬🇧 #Entrepreneurship #Internship #Startup #AI #AlumniNetwork',
+          createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+          likesCount: 68,
+          isLiked: false,
+          linkUrl: '/jobs',
+          linkTitle: 'Apply for Summer AI Internship',
+          comments: []
+        },
+        {
+          id: 5,
+          authorName: 'Ali Vural',
+          authorTitle: 'Senior Cloud Solutions Architect @ AWS • CS \'16 Alum',
+          authorAvatar: 'AV',
+          category: 'career_move',
+          subType: 'relocation',
+          position: 'Senior Cloud Solutions Architect',
+          company: 'Amazon Web Services (AWS)',
+          location: 'Zurich, Switzerland 🇨🇭',
+          content: 'Excited to announce my new career chapter! I have joined AWS in Zurich as a Senior Cloud Solutions Architect, relocating from Istanbul. 🇨🇭🏔️\n\nA huge thank you to everyone who supported me throughout this journey. For fellow alumni and students interested in cloud computing careers in Switzerland or relocation advice, my inbox is always open! #CareerStep #NewJob #Relocation #AWS #AlumniVefa',
+          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          likesCount: 112,
+          isLiked: true,
+          linkUrl: '/users',
+          linkTitle: 'Connect on Alumni Directory',
+          comments: []
+        },
+        {
           id: 1,
           authorName: 'Ayşe Yılmaz',
-          authorTitle: 'Senior Software Engineer @ Trendyol • YBS \'18 Mezunu',
+          authorTitle: 'Senior Software Engineer @ Trendyol • MIS \'18 Alum',
           authorAvatar: 'AY',
           category: 'career',
-          content: 'Trendyol Core Payment ekibimizde yetiştirilmek üzere Junior Backend Developer ve Yazılım Stajyeri arayışımız bulunmaktadır! 💼\n\nÜniversitemizin mezun ve son sınıf öğrencilerine şirket içi referans olmaktan memnuniyet duyarım. Go ve Node.js ekosistemine ilgi duyan, mikroservis mimarileriyle çalışmak isteyen arkadaşlarımız CV\'lerini iletebilir.\n\nBaşarılar dilerim! 🌿 #Kariyer #Trendyol #YazilimGelistirme #Vefa',
-          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          content: 'Our Trendyol Core Payment team is hiring a Junior Backend Developer and a Software Engineering Intern! 💼\n\nI would be delighted to provide an internal employee referral for our university\'s alumni and senior-year students. If you are passionate about Go, Node.js, and event-driven microservices, please send me your resume directly.\n\nBest of luck to all candidates! 🌿 #Career #Trendyol #Referral #Backend #ByUsForUs',
+          createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
           likesCount: 42,
           isLiked: false,
           linkUrl: '/jobs',
-          linkTitle: '💼 Trendyol - Junior Backend Geliştirici Pozisyonunu İnceleyin',
-          comments: [
-            {
-              authorName: 'Can Berk',
-              text: 'Merhaba Ayşe Hanım, başvurumu gerçekleştirdim. Paylaşımınız için çok teşekkürler.',
-              createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString()
-            }
-          ]
+          linkTitle: '💼 Trendyol - View Junior Backend Developer Opening',
+          comments: []
         },
         {
           id: 2,
           authorName: 'Prof. Dr. Kemal Demir',
-          authorTitle: 'Bölüm Başkanı • Yönetim Bilişim Sistemleri',
+          authorTitle: 'Department Head • Management Information Systems',
           authorAvatar: 'KD',
           category: 'announcement',
-          content: 'Değerli mezunlarımız ve kıymetli öğrencilerimiz,\n\n2026 Bahar Dönemi Mezun-Öğrenci Mentorluk Programı eşleşmeleri tamamlanmıştır. Üniversitemizin vefa kültürünü yaşatarak öğrencilerimizin kariyer basamaklarında rehberlik eden tüm mezunlarımıza teşekkür eder, verimli bir dönem dilerim.\n\n#Mentorluk #Akademi #ByUsForUs #Vefa',
-          createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+          content: 'Dear alumni, esteemed colleagues, and students,\n\nThe Fall 2026 Alumni-Student Mentorship pairings are now complete. We sincerely thank all participating alumni who continue our institutional loyalty culture and guide our students along their professional journeys.\n\n#Mentorship #Academia #ByUsForUs #AlumniGiving',
+          createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
           likesCount: 89,
           isLiked: true,
           linkUrl: '/announcements',
-          linkTitle: '📢 Mentorluk Programı Detayları ve Akademik Takvim',
+          linkTitle: '📢 View Mentorship Guidelines & Schedule',
           comments: []
         },
         {
           id: 3,
-          authorName: 'Mehmet Çelik',
-          authorTitle: 'Product Lead @ SAP Berlin • YBS \'15 Mezunu',
-          authorAvatar: 'MÇ',
+          authorName: 'Mehmet Demir',
+          authorTitle: 'Product Lead @ SAP Berlin • MIS \'15 Alum',
+          authorAvatar: 'MD',
           category: 'story',
-          content: 'Geçtiğimiz hafta üniversitemizde gerçekleşen mezun söyleşisinde genç arkadaşlarımızla bir araya gelmekten büyük bir onur duydum. Yıllar önce oturduğumuz sıralarda şimdi aynı heyecanla projeler üreten öğrencileri görmek, köklerimize olan bağlılığımızı ve vefa duygumuzu pekiştiriyor.\n\nHer zaman birlikte daha güçlüyüz. ✨ #MezunHikayesi #MezunBulusmasi #AlumniNetwork',
+          content: 'For our fellow alumni and current students aiming for an international career, we are hosting an online Zoom session next week titled “Technology Careers in Europe: Visa, Tech Stack & Interview Insights”! 🌍🇩🇪\n\nI will be sharing my firsthand experience in Berlin along with what global tech companies expect from candidates. Anyone interested in participating or asking questions can drop a comment below and I will send over the meeting invite!',
           createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
           likesCount: 65,
           isLiked: false,
           linkUrl: '/users',
-          linkTitle: '👥 Mezun Rehberi Üzerinden Bağlantı Kurun',
+          linkTitle: '👥 Connect with Mehmet via Alumni Directory',
           comments: []
         }
       ];
     }
   </script>
+<script>
+  // ---- Auth guard -------------------------------------------------
+  (function () {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      const redirect = encodeURIComponent(window.location.pathname);
+      window.location.href = `/login.html?next=${redirect}`;
+    }
+  })();
+  // ----------------------------------------------------------------
+</script>
 </body>
 </html>

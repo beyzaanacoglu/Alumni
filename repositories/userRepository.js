@@ -35,6 +35,21 @@ function hashPassword(password) {
   return `${salt}:${hash}`;
 }
 
+function verifyPasswordHash(password, storedHash) {
+  if (!storedHash || typeof storedHash !== 'string' || !storedHash.includes(':')) return false;
+  try {
+    const [salt, originalHash] = storedHash.split(':');
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    return crypto.timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(originalHash, 'hex'));
+  } catch (err) {
+    return false;
+  }
+}
+
+function verifyPassword(password, storedHash) {
+  return verifyPasswordHash(password, storedHash);
+}
+
 const userRepository = {
   findByEmail(email) {
     if (!email) return null;
@@ -58,7 +73,7 @@ const userRepository = {
     return users.find(u => String(u.id) === String(id)) || null;
   },
 
-  create({ name, email, password }) {
+  create({ name, email, password, role = 'student', profile = {} }) {
     const users = getAll();
     const nextId = users.length > 0 ? Math.max(...users.map(u => Number(u.id) || 0)) + 1 : 1;
 
@@ -66,7 +81,9 @@ const userRepository = {
       id: nextId,
       name: name.trim(),
       email: email.trim().toLowerCase(),
+      role: role.trim().toLowerCase(),
       passwordHash: hashPassword(password),
+      profile: profile || {},
       createdAt: new Date().toISOString()
     };
 
@@ -78,8 +95,14 @@ const userRepository = {
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,
+      role: newUser.role,
+      profile: newUser.profile,
       createdAt: newUser.createdAt
     };
+  },
+
+  verifyPassword(password, storedHash) {
+    return verifyPassword(password, storedHash);
   },
 
   update(id, fields) {

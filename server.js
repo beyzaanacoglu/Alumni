@@ -11,7 +11,7 @@ const { handleApiFeedRoutes } = require('./routes/apiFeedRoutes');
 const { initDb } = require('./config/db');
 const { guardian404Middleware } = require('./middlewares/guardian404Middleware');
 
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 3000;
 const FALLBACK_PORT = 3000;
 
 function sendJson(res, statusCode, data) {
@@ -75,6 +75,28 @@ async function requestHandler(req, res) {
         return res.end(htmlContent);
       }
       return sendText(res, 200, 'ok');
+    }
+
+    // 1b. Register Page
+    if (pathWithoutPrefix.toLowerCase() === '/register' || pathWithoutPrefix.toLowerCase() === '/register.html') {
+      const htmlPath = path.join(__dirname, 'public', 'register.html');
+      if (fs.existsSync(htmlPath)) {
+        const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        return res.end(htmlContent);
+      }
+      return sendText(res, 404, 'Register page not found.');
+    }
+
+    // 1c. Login Page (separate)
+    if (pathWithoutPrefix.toLowerCase() === '/login' || pathWithoutPrefix.toLowerCase() === '/login.html') {
+      const htmlPath = path.join(__dirname, 'public', 'login.html');
+      if (fs.existsSync(htmlPath)) {
+        const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        return res.end(htmlContent);
+      }
+      return sendText(res, 404, 'Login page not found.');
     }
 
     // 2. Swagger / OpenAPI Spec JSON
@@ -193,6 +215,30 @@ async function requestHandler(req, res) {
       }
 
       return sendText(res, 200, String(result));
+    }
+
+    // 5. Serve static assets (css, js, images, etc.)
+    const staticExtensions = ['.html', '.css', '.js', '.png', '.jpg', '.jpeg', '.svg', '.json'];
+    if (staticExtensions.some(ext => pathWithoutPrefix.toLowerCase().endsWith(ext))) {
+      const assetPath = path.join(__dirname, 'public', pathWithoutPrefix);
+      if (fs.existsSync(assetPath)) {
+        const ext = path.extname(assetPath).toLowerCase();
+        const mimeMap = {
+          '.html': 'text/html; charset=utf-8',
+          '.css':  'text/css; charset=utf-8',
+          '.js':   'application/javascript; charset=utf-8',
+          '.png':  'image/png',
+          '.jpg':  'image/jpeg',
+          '.jpeg': 'image/jpeg',
+          '.svg':  'image/svg+xml',
+          '.json': 'application/json; charset=utf-8'
+        };
+        const mime = mimeMap[ext] || 'application/octet-stream';
+        const content = fs.readFileSync(assetPath);
+        res.writeHead(200, { 'Content-Type': mime });
+        return res.end(content);
+      }
+      return sendText(res, 404, `${pathWithoutPrefix} not found.`);
     }
 
     // 404 Guardian Middleware

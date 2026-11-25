@@ -1,4 +1,21 @@
 const UserModel = require('../models/userModel');
+const userRepository = require('../repositories/userRepository');
+const crypto = require('crypto');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'bufu-super-secret-key-2026';
+
+function generateAuthToken(user) {
+  const payload = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role || 'student',
+    exp: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
+  };
+  const str = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto.createHmac('sha256', JWT_SECRET).update(str).digest('base64url');
+  return `${str}.${signature}`;
+}
 
 /**
  * Helper to parse request body as JSON
@@ -333,6 +350,176 @@ const ApiUserController = {
       return sendJson(res, 201, created);
     } catch (err) {
       return sendJson(res, 500, { error: 'Internal server error.' });
+    }
+  },
+
+  /**
+   * POST /api/register
+   * Registers a new user adhering to DDD Identity context & Security Principles.
+   */
+  async register(req, res) {
+    try {
+      const rawBody = await getRequestBody(req);
+      let parsed;
+      try {
+        parsed = JSON.parse(rawBody || '{}');
+      } catch (jsonErr) {
+        return sendJson(res, 400, { error: 'Invalid JSON format.' });
+      }
+
+      const {
+        name,
+        email,
+        password,
+        confirmPassword,
+        role = 'student',
+        studentId,
+        department,
+        yearOfStudy,
+        graduationYear,
+        company,
+        jobTitle,
+        location,
+        mentorshipOptIn,
+        invitationCode,
+        adminBranch,
+        masterKey,
+        affiliation
+      } = parsed;
+
+      // 1. Basic validation
+      if (!name || !name.trim() || !email || !email.trim() || !password || !password.trim()) {
+        return sendJson(res, 400, { error: 'Name, email, and password are required fields.' });
+      }
+
+      if (confirmPassword && password !== confirmPassword) {
+        return sendJson(res, 400, { error: 'Passwords do not match.' });
+      }
+
+      if (password.length < 6) {
+        return sendJson(res, 400, { error: 'Password must be at least 6 characters long.' });
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        return sendJson(res, 400, { error: 'Invalid email address format.' });
+      }
+
+      const targetRole = String(role).trim().toLowerCase();
+      const validRoles = ['student', 'alumni', 'admin', 'guest'];
+      if (!validRoles.includes(targetRole)) {
+        return sendJson(res, 400, { error: `Invalid role selected. Permitted: ${validRoles.join(', ')}` });
+      }
+
+      // 2. Uniqueness Check (409 Conflict)
+      const existingUser = userRepository.findByEmail(email.trim());
+      if (existingUser) {
+        return sendJson(res, 409, { error: 'An account with this email address already exists.' });
+      }
+
+      // 3. Guest Access Code Gate (403 Forbidden)
+      if (targetRole === 'guest') {
+        const validCodes = ['ALUMNI-GUEST-2026', 'DEAN-VIP-GUEST', 'INVITE-2026'];
+        if (!invitationCode || !validCodes.includes(invitationCode.trim().toUpperCase())) {
+          return sendJson(res, 403, {
+            error: 'Guest access requires a valid Admin invitation code (e.g. ALUMNI-GUEST-2026).'
+          });
+        }
+      }
+
+      // 4. Admin Master Key Gate (403 Forbidden)
+      if (targetRole === 'admin') {
+        if (!masterKey || masterKey.trim() !== 'ADMIN-MASTER-2026') {
+          return sendJson(res, 403, {
+            error: 'Administrator registration requires a valid Institutional Master Key.'
+          });
+        }
+      }
+
+      // 5. Construct Profile Metadata by Role
+      const profile = {};
+      if (targetRole === 'student') {
+        profile.studentId = studentId ? String(studentId).trim() : null;
+        profile.department = department ? String(department).trim() : 'Management Information Systems';
+        profile.yearOfStudy = yearOfStudy ? String(yearOfStudy).trim() : '3rd Year';
+      } else if (targetRole === 'alumni') {
+        profile.graduationYear = graduationYear ? Number(graduationYear) : new Date().getFullYear();
+        profile.department = department ? String(department).trim() : 'Management Information Systems';
+        profile.company = company ? String(company).trim() : null;
+        profile.jobTitle = jobTitle ? String(jobTitle).trim() : null;
+        profile.location = location ? String(location).trim() : 'Istanbul, TR';
+        profile.mentorshipOptIn = Boolean(mentorshipOptIn);
+      } else if (targetRole === 'guest') {
+        profile.affiliation = affiliation ? String(affiliation).trim() : 'External Guest';
+        profile.invitationCode = invitationCode ? String(invitationCode).trim().toUpperCase() : null;
+      } else if (targetRole === 'admin') {
+        profile.adminBranch = adminBranch === 'academician' ? 'Academician (Faculty)' : 'Representer Student';
+      }
+
+      // 6. Persistence with Salt + Hash (Done in repository)
+      const createdUser = userRepository.create({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password: password.trim(),
+        role: targetRole,
+        profile
+      });
+
+      // 7. Generate Signed Token
+      const token = generateAuthToken(createdUser);
+
+      return sendJson(res, 201, {
+        success: true,
+        message: 'Account registered successfully.',
+        token,
+        user: createdUser
+      });
+    } catch (err) {
+      return sendJson(res, 500, { error: 'Internal server error during registration.' });
+    }
+  },
+
+  /**
+   * POST /api/login
+   * Authenticates a user and returns an Auth Token.
+   * Adheres to Information Leakage Prevention (generic 401 on failure).
+   */
+  async login(req, res) {
+    try {
+      const rawBody = await getRequestBody(req);
+      let parsed;
+      try {
+        parsed = JSON.parse(rawBody || '{}');
+      } catch (jsonErr) {
+        return sendJson(res, 400, { error: 'Invalid JSON format.' });
+      }
+
+      const { email, password } = parsed;
+      if (!email || !password) {
+        return sendJson(res, 400, { error: 'Email and password are required.' });
+      }
+
+      const user = userRepository.findByEmail(email.trim());
+      // IF email not found OR password hash does not match -> Generic 401
+      if (!user || !userRepository.verifyPassword(password, user.passwordHash)) {
+        return sendJson(res, 401, { error: 'Invalid email or password.' });
+      }
+
+      const token = generateAuthToken(user);
+      return sendJson(res, 200, {
+        success: true,
+        message: 'Login successful.',
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role || 'student',
+          profile: user.profile || {}
+        }
+      });
+    } catch (err) {
+      return sendJson(res, 500, { error: 'Internal server error during login.' });
     }
   }
 };

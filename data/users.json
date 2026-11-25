@@ -13,5 +13,30 @@
     "email": "ahmet@example.com",
     "passwordHash": "e194823f35ee2c7b2b3b682ee7823fc9:1c010003b4091346662af6d820d9eaa7351695425679feca24236f39a0f9a61d3d30d7edb89505008f7327c121e0427956dbea79155e68df98864560f47aff7f",
     "createdAt": "2026-10-07T23:09:27.149Z"
+  },
+  {
+    "id": 3,
+    "name": "first login",
+    "email": "beyza@gmail.com",
+    "role": "student",
+    "passwordHash": "3f5249f01d144ac6cbc93f5fb3729a1f:0864a14be2e884e0c32d96afaa3b178f14a647bbfbdbf94cadfe8c7387c47ef33253685af09f8968c3b1917996b96df63f6ded878720a55e8a0411df4a0ae887",
+    "profile": {},
+    "createdAt": "2026-11-25T21:56:56.806Z"
+  },
+  {
+    "id": 4,
+    "name": "aa",
+    "email": "alperen@gmail.com",
+    "role": "alumni",
+    "passwordHash": "ae4d1359d1828a041cc20cafdacb6cd1:d092959225d4cf1e603c8c9b0739b1fd783139ad9d57e6b2c34f4cf9558838ae635e5bf9c18d69746c625520ef07cf0b29969d6c2b6e7db50adc6a280195c6f1",
+    "profile": {
+      "graduationYear": 2022,
+      "department": "Management Information Systems",
+      "company": "dhl",
+      "jobTitle": "pilot",
+      "location": "bursa",
+      "mentorshipOptIn": true
+    },
+    "createdAt": "2026-11-25T22:35:31.256Z"
   }
 ]

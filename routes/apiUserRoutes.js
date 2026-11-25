@@ -11,6 +11,18 @@ async function handleApiUserRoutes(req, res, pathWithoutPrefix) {
   const method = req.method;
   const path = pathWithoutPrefix.toLowerCase();
 
+  // POST /api/register
+  if (method === 'POST' && (path === '/api/register' || path === '/register')) {
+    await ApiUserController.register(req, res);
+    return true;
+  }
+
+  // POST /api/login
+  if (method === 'POST' && (path === '/api/login' || path === '/login')) {
+    await ApiUserController.login(req, res);
+    return true;
+  }
+
   // GET /api/users
   if (method === 'GET' && path === '/api/users') {
     await ApiUserController.getAllUsers(req, res);

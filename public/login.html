@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login • By Us, For Us Alumni Portal</title>
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Righteous&display=swap" rel="stylesheet" />
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+
+  <style>
+    :root {
+      --color-canvas: #f8fafc;
+      --color-white: #ffffff;
+      --color-sky-light: #e0f2fe;
+      --color-petrol: #0f766e;
+      --color-mint-primary: #10b981;
+      --glass-bg: rgba(255,255,255,0.92);
+      --glass-border: rgba(255,255,255,0.95);
+      --glass-shadow: 0 16px 36px -8px rgba(15,23,42,0.08), 0 6px 16px -4px rgba(15,118,110,0.05);
+      --font-main: 'Montserrat', system-ui, -apple-system, sans-serif;
+      --font-display: 'Righteous', 'Montserrat', sans-serif;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; font-family:var(--font-main); }
+    body { background-color:var(--color-canvas); color:var(--color-petrol); display:flex; align-items:center; justify-content:center; min-height:100vh; padding:32px; }
+    .login-card { background:var(--glass-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid var(--glass-border); border-radius:24px; width:100%; max-width:480px; padding:40px; box-shadow:var(--glass-shadow); }
+    .brand-header { text-align:center; margin-bottom:24px; }
+    .brand-emblem { width:56px; height:56px; border-radius:18px; background:linear-gradient(135deg,#0f766e 0%,#10b981 50%,#38bdf8 100%); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; box-shadow:0 8px 20px -2px rgba(15,118,110,0.35); }
+    .brand-emblem i { font-size:1.6rem; color:#fff; }
+    .brand-title { font-family:var(--font-display); font-size:1.4rem; color:var(--color-petrol); }
+    .form-group { margin-bottom:16px; }
+    label { display:block; margin-bottom:4px; font-size:0.85rem; color:var(--color-petrol); }
+    input { width:100%; padding:10px 12px; border:1px solid var(--color-sky-light); border-radius:8px; font-size:0.95rem; }
+    button { width:100%; padding:12px; background:linear-gradient(135deg,#0f766e,#10b981); color:#fff; border:none; border-radius:8px; font-weight:600; cursor:pointer; transition:background 0.2s; }
+    button:hover { background:linear-gradient(135deg,#10b981,#0f766e); }
+    .toast { position:fixed; top:24px; right:24px; background:#fff; border-left:5px solid var(--color-petrol); padding:12px 20px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:none; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="brand-header">
+      <div class="brand-emblem"><i class="ti ti-lock"></i></div>
+      <div class="brand-title">Welcome Back</div>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@example.com" required />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="••••••••" required />
+    </div>
+    <button onclick="login()">Log In</button>
+    <div class="navigation-link" style="margin-top:12px;text-align:center;">
+      <a href="/register" class="ti ti-user-plus" style="color:var(--color-petrol);text-decoration:none;"> Register</a>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => (t.style.display = 'none'), 3000);
+    }
+    async function login() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      if (!email || !password) return showToast('Please fill in all fields');
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          // store token (basic example)
+          localStorage.setItem('authToken', data.token);
+          const next = new URLSearchParams(window.location.search).get('next') || '/';
+          showToast('Login successful! Redirecting…');
+          setTimeout(() => (window.location.href = decodeURIComponent(next)), 1500);
+        } else {
+          showToast(data.message || 'Login failed');
+        }
+      } catch (e) {
+        showToast('Network error');
+      }
+    }
+  </script>
+</body>
+</html>

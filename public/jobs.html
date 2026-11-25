@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>İş, Staj ve Proje İlanları - By Us, For Us</title>
+  <title>Jobs, Internships & Ventures - By Us, For Us</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Righteous&display=swap" rel="stylesheet">
@@ -976,37 +976,37 @@
     <header>
       <a href="/" class="logo">🎓 By Us, For Us</a>
       <div class="nav-links">
-        <a href="/" class="nav-link">Ana Sayfa</a>
-        <a href="/jobs" class="nav-link active">💼 İş & Staj İlanları</a>
-        <a href="/users" class="nav-link">👥 Kullanıcılar</a>
-        <a href="/announcements" class="nav-link">📢 Duyurular</a>
+        <a href="/" class="nav-link">Home</a>
+        <a href="/jobs" class="nav-link active">💼 Jobs & Internships</a>
+        <a href="/users" class="nav-link">👥 Members Directory</a>
+        <a href="/announcements" class="nav-link">📢 Announcements</a>
         <a href="/docs" class="nav-link" style="color: var(--accent);">📖 Swagger UI</a>
       </div>
     </header>
 
-    <!-- Soru 6: Rol / Kullanıcı Simülatörü Barı -->
+    <!-- Role / Persona Simulator Bar -->
     <div class="role-bar">
       <div class="role-bar-left">
-        <span>👤 <strong>Aktif Görünüm / Rol:</strong></span>
-        <span id="active-user-label" style="color: var(--accent);">Aday Öğrenci (Örn: Ahmet Yılmaz)</span>
+        <span>👤 <strong>Active Persona / Role:</strong></span>
+        <span id="active-user-label" style="color: var(--accent);">Student (e.g. Ahmet Yılmaz)</span>
       </div>
       <div class="role-pills">
-        <button class="role-btn active" onclick="setRole('student', 2, 'Ahmet Yılmaz (Öğrenci)')">🎓 Öğrenci (Aday)</button>
-        <button class="role-btn" onclick="setRole('alumni', 1, 'Ayşe Yılmaz (Mezun / Şirket)')">👔 Mezun (İlan Sahibi)</button>
-        <button class="role-btn" onclick="setRole('admin', 1, 'Sistem Yöneticisi (Admin)')">🛡️ Admin</button>
+        <button class="role-btn active" onclick="setRole('student', 2, 'Ahmet Yılmaz (Student)')">🎓 Student (Applicant)</button>
+        <button class="role-btn" onclick="setRole('alumni', 1, 'Ayşe Yılmaz (Alumni / Employer)')">👔 Alumni (Employer)</button>
+        <button class="role-btn" onclick="setRole('admin', 1, 'System Administrator (Admin)')">🛡️ Admin</button>
       </div>
     </div>
 
-    <!-- Sekmeler (Tabs) -->
+    <!-- Tabs Nav -->
     <div class="tabs-nav">
       <button class="tab-btn active" id="tab-btn-jobs" onclick="switchTab('jobs')">
-        📌 Tüm İlanlar (Kartlar) <span class="tab-badge" id="badge-jobs-count">0</span>
+        📌 All Opportunities <span class="tab-badge" id="badge-jobs-count">0</span>
       </button>
       <button class="tab-btn" id="tab-btn-map" onclick="switchTab('map')" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.35);">
-        🗺️ İlan Haritası (Leaflet) <span class="tab-badge" id="badge-map-count" style="background: var(--primary); color: #fff;">0</span>
+        🗺️ Opportunity Map (Leaflet) <span class="tab-badge" id="badge-map-count" style="background: var(--primary); color: #fff;">0</span>
       </button>
       <button class="tab-btn" id="tab-btn-my-apps" onclick="switchTab('my-apps')">
-        📋 Başvurularım <span class="tab-badge" id="badge-my-apps-count">0</span>
+        📋 My Applications <span class="tab-badge" id="badge-my-apps-count">0</span>
       </button>
       <button class="tab-btn" id="tab-btn-manage" onclick="switchTab('manage')">
         💼 İlan Yönetimi & Başvuranlar <span class="tab-badge" id="badge-manage-count">0</span>

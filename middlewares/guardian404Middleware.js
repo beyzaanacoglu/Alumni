@@ -71,7 +71,7 @@ function guardian404Middleware(req, res, path) {
       <div>${reason}</div>
     </div>
     <div class="suggestion">💡 <strong>Öneri:</strong> ${suggestion}</div>
-    <a href="/Alumni" class="btn">Ana Sayfaya Dön</a>
+    <a href="/" class="btn">Ana Sayfaya Dön</a>
   </div>
 </body>
 </html>`;

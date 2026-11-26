@@ -1,7 +1,8 @@
 /**
  * 404 Guardian Middleware
- * Catches unhandled routes and returns structured 404 responses with detailed reasons.
+ * Catches unhandled routes, logs 404 warnings to logs/error.log, and returns structured 404 responses.
  */
+const { logErrorToFile } = require('../utils/fileLogger');
 
 function guardian404Middleware(req, res, path) {
   const method = req.method;
@@ -24,6 +25,13 @@ function guardian404Middleware(req, res, path) {
     reason = `The static page or asset '${path}' does not exist on the file system.`;
     suggestion = 'Return to the home feed at / or view available pages.';
   }
+
+  // Log 404 warning to logs/error.log
+  logErrorToFile({
+    statusCode: 404,
+    level: 'WARN',
+    message: reason
+  }, req);
 
   // 1. JSON Yanıtı (API veya Postman istekleri için)
   if (isApi) {

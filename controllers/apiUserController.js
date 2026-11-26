@@ -1,20 +1,9 @@
 const UserModel = require('../models/userModel');
 const userRepository = require('../repositories/userRepository');
-const crypto = require('crypto');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'bufu-super-secret-key-2026';
+const { signToken } = require('../config/auth');
 
 function generateAuthToken(user) {
-  const payload = {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role || 'student',
-    exp: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
-  };
-  const str = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const signature = crypto.createHmac('sha256', JWT_SECRET).update(str).digest('base64url');
-  return `${str}.${signature}`;
+  return signToken(user);
 }
 
 /**

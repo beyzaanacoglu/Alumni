@@ -16,13 +16,21 @@
  * }), controller.createAnnouncement);
  */
 
+function sendBadRequest(res, payload) {
+  if (typeof res.status === 'function') {
+    return res.status(400).json(payload);
+  }
+  res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+  return res.end(JSON.stringify(payload, null, 2));
+}
+
 function validate(rules) {
   return function bodyValidatorMiddleware(req, res, next) {
     const body = req.body;
 
     // Body hiç yoksa
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
-      return res.status(400).json({
+      return sendBadRequest(res, {
         status: 400,
         error: 'Bad Request',
         message: 'İstek gövdesi (JSON body) eksik veya geçersiz formatta.',
@@ -109,7 +117,7 @@ function validate(rules) {
 
     // Hata varsa controller'a GEÇME, anında 400 Bad Request dön
     if (errors.length > 0) {
-      return res.status(400).json({
+      return sendBadRequest(res, {
         status: 400,
         error: 'Bad Request',
         message: 'İstek doğrulaması başarısız oldu. Lütfen parametreleri kontrol edin.',

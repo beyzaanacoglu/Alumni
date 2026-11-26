@@ -12,9 +12,11 @@
     "location": "Remote / London, UK",
     "content": "Exciting news from our startup! CognitiveWave Labs has secured seed funding and we are opening 2 dedicated internship positions for our university's students and recent graduates. You will work directly with generative AI pipelines, LLM agent workflows, and modern React backends.\n\nStudents who want to contribute and learn are encouraged to apply directly through our portal! 🚀🇬🇧 #Entrepreneurship #Internship #Startup #AI #AlumniNetwork",
     "createdAt": "2026-10-24T12:00:00.000Z",
-    "likesCount": 68,
-    "isLiked": false,
-    "likedBy": [],
+    "likesCount": 69,
+    "isLiked": true,
+    "likedBy": [
+      "Beyza Anacoğlu"
+    ],
     "imageUrl": "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80",
     "linkUrl": "/jobs",
     "linkTitle": "Apply for Summer AI Internship",

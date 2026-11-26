@@ -3,9 +3,13 @@ function getPayload() {
   const raw = localStorage.getItem('authToken');
   if (!raw) return null;
   const parts = raw.split('.');
-  if (parts.length !== 3) return null;
+  // Supports both 2-part HMAC tokens (payload.sig) and 3-part JWTs (header.payload.sig)
+  const payloadPart = parts.length === 2 ? parts[0] : parts.length === 3 ? parts[1] : null;
+  if (!payloadPart) return null;
   try {
-    const b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    let b64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = b64.length % 4;
+    if (pad) b64 += '='.repeat(4 - pad);
     const json = atob(b64);
     return JSON.parse(json);
   } catch (e) {
@@ -69,36 +73,6 @@ function populateUserInfo() {
     };
     const feats = featureMap[role.toLowerCase()] || [];
     featuresContainer.innerHTML = feats.map(f=>`<div class="feature-item"><i class="${f.icon}"></i> ${f.label}</div>`).join('');
-  }
-}
-
-  const payload = getPayload();
-  if (!payload) return;
-  const name = payload.name || payload.fullName || payload.email?.split('@')[0] || '';
-  const role = payload.role || 'Guest';
-  const department = payload.department || '';
-
-  // Name display
-  const nameEl = document.getElementById('current-user-name');
-  if (nameEl) nameEl.textContent = name;
-
-  // Headline (role • department)
-  const headlineEl = document.querySelector('.profile-headline');
-  if (headlineEl) {
-    const parts = [role];
-    if (department) parts.push(department);
-    headlineEl.textContent = parts.join(' • ');
-  }
-
-  // Avatar initials (e.g., "BA")
-  const avatarEl = document.getElementById('current-user-avatar');
-  if (avatarEl) {
-    const initials = name
-      .split(' ')
-      .map(p => p[0].toUpperCase())
-      .join('')
-      .slice(0, 2);
-    avatarEl.textContent = initials;
   }
 }
 

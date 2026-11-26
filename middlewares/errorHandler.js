@@ -32,9 +32,10 @@ function errorHandler(err, req, res, next) {
     message = 'Gönderilen JSON verisi geçersiz sözdizimine (syntax) sahip.';
   }
 
-  // 2. Hata Detayını logs/error.logs Dosyasına Kaydet
+  // 2. Hata Detayını logs/error.log Dosyasına Kaydet (gerçek mesaj ve stack her zaman loglanır)
   logErrorToFile({
     statusCode,
+    level: statusCode >= 500 ? 'ERROR' : 'WARN',
     name: errorName,
     message,
     details: err.details || null,
@@ -44,23 +45,34 @@ function errorHandler(err, req, res, next) {
   // 3. Konsola Hata Özeti Bas
   console.error(`\x1b[31m[ERROR HANDLER] [${statusCode}] ${req.method} ${req.originalUrl || req.url} - ${message}\x1b[0m`);
 
+  // Production ortamında 5xx iç hata detaylarını istemciye sızdırma
+  const isProd = process.env.NODE_ENV === 'production';
+  const clientMessage = (isProd && statusCode >= 500)
+    ? 'Sunucu tarafında beklenmeyen bir hata meydana geldi.'
+    : message;
+
   // 4. Yanıt Başlığı ve Formatı
   const isApi = req.originalUrl?.startsWith('/api') || 
                 req.url?.startsWith('/api') || 
                 (req.headers.accept && req.headers.accept.includes('application/json'));
 
-  if (isApi || !res.render) {
-    return res.status(statusCode).json({
+  if (isApi) {
+    const payload = {
       status: statusCode,
       error: errorName,
-      message: message,
-      details: err.details || undefined,
+      message: clientMessage,
+      details: (isProd && statusCode >= 500) ? undefined : (err.details || undefined),
       timestamp: new Date().toISOString(),
-    });
+    };
+    if (typeof res.status === 'function') {
+      return res.status(statusCode).json(payload);
+    }
+    res.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8' });
+    return res.end(JSON.stringify(payload, null, 2));
   }
 
-  // HTML Yanıtı (Tarayıcı için)
-  return res.status(statusCode).send(`
+  // HTML Yanıtı (Tarayıcı için - 5xx Guardian)
+  const htmlBody = `
     <!DOCTYPE html>
     <html lang="tr">
     <head>
@@ -78,12 +90,18 @@ function errorHandler(err, req, res, next) {
       <div class="box">
         <h1>${statusCode}</h1>
         <h3>${errorName}</h3>
-        <p>${message}</p>
+        <p>${clientMessage}</p>
         <a href="/">Ana Sayfaya Dön</a>
       </div>
     </body>
     </html>
-  `);
+  `;
+
+  if (typeof res.status === 'function') {
+    return res.status(statusCode).send(htmlBody);
+  }
+  res.writeHead(statusCode, { 'Content-Type': 'text/html; charset=utf-8' });
+  return res.end(htmlBody);
 }
 
 module.exports = errorHandler;

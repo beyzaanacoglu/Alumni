@@ -1,4 +1,5 @@
 const ApiUserController = require('../controllers/apiUserController');
+const { checkRole, requireOwnerOrAdmin } = require('../middlewares/roleMiddleware');
 
 /**
  * Dispatches API User requests to ApiUserController.
@@ -29,8 +30,9 @@ async function handleApiUserRoutes(req, res, pathWithoutPrefix) {
     return true;
   }
 
-  // POST /api/users
+  // POST /api/users (Admin only)
   if (method === 'POST' && path === '/api/users') {
+    if (!checkRole(req, res, ['admin'])) return true;
     await ApiUserController.createUser(req, res);
     return true;
   }
@@ -61,16 +63,19 @@ async function handleApiUserRoutes(req, res, pathWithoutPrefix) {
     }
 
     if (method === 'PUT') {
+      if (!requireOwnerOrAdmin(req, res, id)) return true;
       await ApiUserController.updateUser(req, res, id);
       return true;
     }
 
     if (method === 'PATCH') {
+      if (!requireOwnerOrAdmin(req, res, id)) return true;
       await ApiUserController.patchUser(req, res, id);
       return true;
     }
 
     if (method === 'DELETE') {
+      if (!requireOwnerOrAdmin(req, res, id)) return true;
       await ApiUserController.deleteUser(req, res, id);
       return true;
     }

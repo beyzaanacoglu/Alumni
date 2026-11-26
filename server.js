@@ -8,7 +8,10 @@ const { handleAnnouncementRoutes } = require('./routes/announcementRoutes');
 const { handleApiAlumniRoutes } = require('./routes/apiAlumniRoutes');
 const { handleApiJobPostingRoutes } = require('./routes/apiJobPostingRoutes');
 const { handleApiFeedRoutes } = require('./routes/apiFeedRoutes');
-const { initDb } = require('./config/db');
+const { initDb, pool } = require('./config/db');
+const requestLogger = require('./middlewares/requestLogger');
+const errorHandler = require('./middlewares/errorHandler');
+const { authMiddleware, verifyToken } = require('./middlewares/authMiddleware');
 const { guardian404Middleware } = require('./middlewares/guardian404Middleware');
 
 const PORT = process.env.PORT || 3000;
@@ -25,18 +28,53 @@ function sendText(res, statusCode, text) {
 }
 
 async function requestHandler(req, res) {
-  const rawPath = decodeURIComponent(req.url.split('?')[0]);
-  let cleanPath = rawPath.trim().replace(/\/+$/, '');
-  if (!cleanPath) cleanPath = '/';
+  // Security Headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-  // /Alumni prefix'ini normalize et
-  let pathWithoutPrefix = cleanPath;
-  if (pathWithoutPrefix.toLowerCase().startsWith('/alumni')) {
-    pathWithoutPrefix = pathWithoutPrefix.slice(7);
-    if (!pathWithoutPrefix) pathWithoutPrefix = '/';
-  }
+  requestLogger(req, res);
 
-  // 1. API User Routes (/api/users...)
+  try {
+    const rawPath = decodeURIComponent(req.url.split('?')[0]);
+    let cleanPath = rawPath.trim().replace(/\/+$/, '');
+    if (!cleanPath) cleanPath = '/';
+
+    // /Alumni prefix'ini normalize et
+    let pathWithoutPrefix = cleanPath;
+    if (pathWithoutPrefix.toLowerCase().startsWith('/alumni')) {
+      pathWithoutPrefix = pathWithoutPrefix.slice(7);
+      if (!pathWithoutPrefix) pathWithoutPrefix = '/';
+    }
+
+    // Attach req.user if a valid Bearer token is present; enforce 401 on protected API routes
+    const lowerPath = pathWithoutPrefix.toLowerCase();
+    const isPublicAuthRoute =
+      lowerPath === '/api/login' ||
+      lowerPath === '/login' ||
+      lowerPath === '/api/register' ||
+      lowerPath === '/register' ||
+      lowerPath === '/api/health';
+
+    if (lowerPath.startsWith('/api/') && !isPublicAuthRoute) {
+      const requiresAuth =
+        lowerPath.startsWith('/api/users') ||
+        ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
+
+      if (requiresAuth) {
+        let passed = false;
+        authMiddleware(req, res, () => { passed = true; });
+        if (!passed) return;
+      } else {
+        const authHeader = req.headers['authorization'];
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+          const payload = verifyToken(authHeader.slice(7).trim());
+          if (payload) req.user = payload;
+        }
+      }
+    }
+
+    // 1. API User Routes (/api/users...)
   const isApiUserHandled = await handleApiUserRoutes(req, res, pathWithoutPrefix);
   if (isApiUserHandled) return;
 
@@ -128,9 +166,21 @@ async function requestHandler(req, res) {
 
     // 4. GET /api/health (Health check)
     if (pathWithoutPrefix.toLowerCase() === '/api/health') {
+      let dbStatus = 'in-memory';
+      if (pool) {
+        try {
+          await pool.query('SELECT 1');
+          dbStatus = 'connected';
+        } catch {
+          dbStatus = 'disconnected';
+        }
+      }
       return sendJson(res, 200, {
         status: 'ok',
-        message: 'API is running'
+        message: 'API is running',
+        uptimeSeconds: Math.round(process.uptime()),
+        database: dbStatus,
+        timestamp: new Date().toISOString()
       });
     }
 
@@ -238,16 +288,18 @@ async function requestHandler(req, res) {
         res.writeHead(200, { 'Content-Type': mime });
         return res.end(content);
       }
-      return sendText(res, 404, `${pathWithoutPrefix} not found.`);
+      return guardian404Middleware(req, res, pathWithoutPrefix);
     }
 
     // 404 Guardian Middleware
     return guardian404Middleware(req, res, pathWithoutPrefix);
   }
 
-  // Other HTTP methods
-  res.writeHead(405, { 'Content-Type': 'text/plain; charset=utf-8' });
-  res.end('Method Not Allowed');
+  // Unhandled routes on other HTTP methods -> 404 Guardian
+  return guardian404Middleware(req, res, pathWithoutPrefix);
+  } catch (err) {
+    return errorHandler(err, req, res);
+  }
 }
 
 const server = http.createServer(requestHandler);
